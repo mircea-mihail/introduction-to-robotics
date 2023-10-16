@@ -3,7 +3,7 @@ This repo is designed to track my progress through the homework of the Introduti
 
 This is a mandatory course taken in the 3rd year of my scholarship at the Faculty of Mathematics and Computer Science, University of Bucharest.  
 
-Throught this repo you can find homework-specific requirements, implementation details, code, image files and more.
+Throughout this repo you can find homework-specific requirements, implementation details, code, image files and more.
 
 ## Homework 1
 TBA
