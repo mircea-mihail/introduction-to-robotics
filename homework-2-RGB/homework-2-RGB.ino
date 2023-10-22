@@ -6,6 +6,12 @@
 #define GREEN_LED 10
 #define BLUE_LED 11
 
+#define MIN_ANALOG_INPUT_VAL 0
+#define MIN_PWM_OUTPUT_VAL 0
+
+#define MAX_ANALOG_INPUT_VAL 1023
+#define MAX_PWM_OUTPUT_VAL 255
+
 void setup()
 {
   pinMode(RED_LED, OUTPUT);
@@ -23,9 +29,9 @@ void loop()
   int nGreenControlValue = analogRead(GREEN_LED_CONTROL);
   int nBlueControlValue = analogRead(BLUE_LED_CONTROL);
   
-  nRedControlValue = map(nRedControlValue, 0, 1023, 0, 255);
-  nGreenControlValue = map(nGreenControlValue, 0, 1023, 0, 255);
-  nBlueControlValue = map(nBlueControlValue, 0, 1023, 0, 255);
+  nRedControlValue = map(nRedControlValue, MIN_ANALOG_INPUT_VAL, MAX_ANALOG_INPUT_VAL, MIN_PWM_OUTPUT_VAL, MAX_PWM_OUTPUT_VAL);
+  nGreenControlValue = map(nGreenControlValue, MIN_ANALOG_INPUT_VAL, MAX_ANALOG_INPUT_VAL, MIN_PWM_OUTPUT_VAL, MAX_PWM_OUTPUT_VAL);
+  nBlueControlValue = map(nBlueControlValue, MIN_ANALOG_INPUT_VAL, MAX_ANALOG_INPUT_VAL, MIN_PWM_OUTPUT_VAL, MAX_PWM_OUTPUT_VAL);
 
   analogWrite(RED_LED, nRedControlValue);
   analogWrite(GREEN_LED, nGreenControlValue);
