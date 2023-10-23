@@ -12,6 +12,10 @@
 #define MAX_ANALOG_INPUT_VAL 1023
 #define MAX_PWM_OUTPUT_VAL 255
 
+#define MINIMUM_INPUT_ACCEPTED 30
+
+#define deleteResidualVoltage(input) (input = (input < MINIMUM_INPUT_ACCEPTED ? MIN_ANALOG_INPUT_VAL : input))
+
 void setup()
 {
   pinMode(RED_LED, OUTPUT);
@@ -28,6 +32,10 @@ void loop()
   int nRedControlValue = analogRead(RED_LED_CONTROL);
   int nGreenControlValue = analogRead(GREEN_LED_CONTROL);
   int nBlueControlValue = analogRead(BLUE_LED_CONTROL);
+
+  deleteResidualVoltage(nRedControlValue);
+  deleteResidualVoltage(nGreenControlValue);
+  deleteResidualVoltage(nBlueControlValue);
   
   nRedControlValue = map(nRedControlValue, MIN_ANALOG_INPUT_VAL, MAX_ANALOG_INPUT_VAL, MIN_PWM_OUTPUT_VAL, MAX_PWM_OUTPUT_VAL);
   nGreenControlValue = map(nGreenControlValue, MIN_ANALOG_INPUT_VAL, MAX_ANALOG_INPUT_VAL, MIN_PWM_OUTPUT_VAL, MAX_PWM_OUTPUT_VAL);
