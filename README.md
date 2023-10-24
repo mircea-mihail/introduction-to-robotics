@@ -26,6 +26,15 @@ using an Arduino and then write a mapped value of that to the LED's input pins.
 
 ### Hardware Implementation
 
+#### Components:
+* an Arduino UNO
+* the common Cathode RGB LED
+* three 50KΩ potentiometer
+* four 100Ω resistors. 
+The Blue and Green LEDs needed 90Ω resistors to funciton so I used one 100Ω resistor for each
+and for the Red LED I used two 100Ω resistors in series to get a 200Ω resistence, as the required resistence for the Red LED was 150Ω.
+* multi-coloured wires, properly colour-coded  
+
 Below is a youtube link that shows the homework in action and there is also a picture of the project.
 
 https://www.youtube.com/shorts/vDVLX95Q7Ww 
