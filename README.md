@@ -41,5 +41,48 @@ https://www.youtube.com/shorts/vDVLX95Q7Ww
 
 <img src="media/Hw2-project.jpg" alt="drawing" width="300"/>
 
+## Homework 3
 
+### Task 
 
+Design a control system that simulates a 3-floor elevator using the Arduino
+platform. Here are the specific requirements:
+
+* LED Indicators: Each of the 3 LEDs should represent one of the 3 floors.
+The LED corresponding to the current floor should light up. Additionally,
+another LED should represent the elevator’s operational state. It should
+blink when the elevator is moving and remain static when stationary.
+
+* Buzzer: The buzzer should sound briefly during the following scenarios:
+  * Elevator arriving at the desired floor (something resembling a ”cling”). I ended
+    up playing a melody when opening and closing the door.
+  * Elevator movement.
+
+* State Change & Timers: If the elevator is already at the desired floor,
+pressing the button for that floor should have no effect. Otherwise, after
+a button press, the elevator should ”wait for the doors to close” and then
+”move” to the corresponding floor. If the elevator is in movement, it
+should either do nothing or it should stack its decision (get to the first
+programmed floor, open the doors, wait, close them and then go to the
+next desired floor).
+
+* Debounce: Remember to implement debounce for the buttons to avoid
+unintentional repeated button presses.
+
+### Hardware Implementation
+
+I ended up using:
+* 3 Red LEDs
+* 1 Green LED
+* 4 330Ω Resistors for the LEDs
+* 1 100Ω Resistor for the buzzer
+* a buzzer
+* three push buttons
+* wires
+* an Arduino Uno
+
+Below is a youtube link that shows the homework in action and there is also a picture of the project.
+
+https://www.youtube.com/watch?v=6XHYGthXycI
+
+<img src="media/Hw3-project.jpg" alt="drawing" width="300"/>
