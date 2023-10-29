@@ -39,7 +39,7 @@ Below is a youtube link that shows the homework in action and there is also a pi
 
 https://www.youtube.com/shorts/vDVLX95Q7Ww 
 
-<img src="media/Hw2-project.jpg" alt="drawing" width="300"/>
+<img src="media/Hw2-project.jpg" alt="drawing" height="300"/>
 
 ## Homework 3
 
@@ -85,4 +85,4 @@ Below is a youtube link that shows the homework in action and there is also a pi
 
 https://www.youtube.com/watch?v=6XHYGthXycI
 
-<img src="media/Hw3-project.jpg" alt="drawing" width="300"/>
+<img src="media/Hw3-project.jpg" alt="drawing" height="300"/>
