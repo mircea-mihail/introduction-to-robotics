@@ -9,6 +9,13 @@
 #define FLOOR_1_INPUT 6
 #define FLOOR_2_INPUT 7
 
+#define A4 440
+#define Cs5 554
+#define E5 659
+#define ELEVATOR_IS_MOVING 329
+
+#define BUZZER 3
+
 #define DEBOUNCE_TIME 50 // ms
 #define TIME_BETWEEN_LED_BLINKS 200
 
@@ -28,6 +35,7 @@ bool g_inputState2 = LOW, g_previousInputState2 = LOW;
 bool g_previousCountedState2 = HIGH;
 
 unsigned short g_floor = 0;
+unsigned short g_nextFloor = -1;
 
 unsigned long g_momentOfBlink = 0;
 bool g_blinkState = HIGH;
@@ -43,6 +51,8 @@ void setup()
 	pinMode(FLOOR_1_LED, OUTPUT);
 	pinMode(FLOOR_2_LED, OUTPUT);
 	pinMode(FLOOR_CHANGE_LED, OUTPUT);
+	pinMode(BUZZER, OUTPUT);
+
 
 	pinMode(FLOOR_0_INPUT, INPUT_PULLUP);
 	pinMode(FLOOR_1_INPUT, INPUT_PULLUP);
@@ -50,7 +60,61 @@ void setup()
 
 	// the lift starts at floor 0
 	digitalWrite(FLOOR_0_LED, HIGH);
+	digitalWrite(FLOOR_CHANGE_LED, HIGH);
+
 }
+
+void playMelody()
+{
+	unsigned long currentTime;
+
+	tone(BUZZER, A4, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+
+	tone(BUZZER, Cs5, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+
+	tone(BUZZER, E5, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}}
+
+void playMelodyReverse()
+{
+	unsigned long currentTime;
+
+	tone(BUZZER, E5, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+
+	tone(BUZZER, Cs5, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+	
+	tone(BUZZER, A4, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+}
+
 
 void blinkFloorChangeLed()
 {
@@ -62,6 +126,24 @@ void blinkFloorChangeLed()
 	}	
 }	
 
+void checkForNextFloor()
+{
+	if(debouncedPressDetected(FLOOR_0_INPUT))
+	{
+		g_nextFloor = FLOOR_0_INPUT - FLOOR_0_INPUT;
+	}
+
+	if(debouncedPressDetected(FLOOR_1_INPUT))
+	{
+		g_nextFloor = FLOOR_1_INPUT - FLOOR_0_INPUT;
+	}
+
+	if(debouncedPressDetected(FLOOR_2_INPUT))
+	{
+		g_nextFloor = FLOOR_2_INPUT - FLOOR_0_INPUT;
+	}
+}
+
 void goToFloor(unsigned short p_newFloor)
 {
 	if(p_newFloor == g_floor)
@@ -72,18 +154,32 @@ void goToFloor(unsigned short p_newFloor)
 	int elevatorDirection;
 	elevatorDirection = (g_floor > p_newFloor) ? -1 : 1;
 
+	digitalWrite(FLOOR_CHANGE_LED, HIGH);
+
 	// generates every floor from the current floor to the new floor: 0 1 2 (from 0 to 2)
-	for(int i = g_floor; i != p_newFloor + elevatorDirection; i += elevatorDirection)
+	for(int i = g_floor; i != p_newFloor; i += elevatorDirection)
 	{
 		Serial.println(i);
 
 		digitalWrite(FLOOR_0_LED + i, HIGH);
 		unsigned long currentTimeOnFloor = millis();
-		while(millis() - currentTimeOnFloor < TIME_SPENT_ON_FLOOR)
+		
+		if(i == g_floor)
 		{
-			blinkFloorChangeLed();
+			digitalWrite(FLOOR_CHANGE_LED, HIGH);
+			playMelodyReverse();
+			Serial.print("staying on floor\n");
 		}
-
+		else
+		{
+			while(millis() - currentTimeOnFloor < TIME_SPENT_ON_FLOOR)
+			{	
+				blinkFloorChangeLed();
+				tone(BUZZER, ELEVATOR_IS_MOVING);
+				checkForNextFloor();
+			}
+		}
+		
 		if(i != p_newFloor)
 		{
 			digitalWrite(FLOOR_0_LED + i, LOW);
@@ -93,15 +189,27 @@ void goToFloor(unsigned short p_newFloor)
 		while(millis() - currentTimeOnFloor < TIME_SPENT_BETWEEN_FLOORS)
 		{
 			blinkFloorChangeLed();
+			tone(BUZZER, ELEVATOR_IS_MOVING);
+			checkForNextFloor();
 		}
 	}
-	g_floor = p_newFloor;
-	g_blinkState = HIGH;
 
+	digitalWrite(FLOOR_0_LED + p_newFloor, HIGH);
+	g_floor = p_newFloor;
+	
+	g_blinkState = HIGH;
 	digitalWrite(FLOOR_CHANGE_LED, g_blinkState);
 	
+	playMelody();
+
 	Serial.print("arrived at ");
 	Serial.println(g_floor);
+
+	if(g_nextFloor != -1)
+	{
+		goToFloor(g_nextFloor);
+		g_nextFloor = -1;
+	}
 }
 
 
@@ -111,15 +219,16 @@ void loop()
 	{
 		goToFloor(FLOOR_0_INPUT - FLOOR_0_INPUT);
 	}
+
 	if(debouncedPressDetected(FLOOR_1_INPUT))
 	{
 		goToFloor(FLOOR_1_INPUT - FLOOR_0_INPUT);
 	}
+
 	if(debouncedPressDetected(FLOOR_2_INPUT))
 	{
 		goToFloor(FLOOR_2_INPUT - FLOOR_0_INPUT);
 	}
-	
 }
 
 bool debouncedPressDetected(const int p_input)
