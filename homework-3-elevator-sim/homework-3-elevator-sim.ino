@@ -87,7 +87,8 @@ void playMelody()
 	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
 	{
 		checkForNextFloor();
-	}}
+	}
+}
 
 void playMelodyReverse()
 {
