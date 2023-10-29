@@ -1,29 +1,39 @@
+// HEADS UP! g_something is global p_something is parameter
+
 #define FLOOR_0_LED 10
 #define FLOOR_1_LED 11
 #define FLOOR_2_LED 12
+#define FLOOR_CHANGE_LED 13
 
 #define FLOOR_0_INPUT 5
 #define FLOOR_1_INPUT 6
 #define FLOOR_2_INPUT 7
 
-#define DEBOUNCE_TIME 50
+#define DEBOUNCE_TIME 50 // ms
+#define TIME_BETWEEN_LED_BLINKS 200
 
+#define TIME_SPENT_ON_FLOOR 1000
+#define TIME_SPENT_BETWEEN_FLOORS 2000
+ 
 unsigned long g_inputTime0 = 0, g_previousInputTime0 = 0;
 bool g_inputState0 = LOW, g_previousInputState0 = LOW;
 bool g_previousCountedState0 = HIGH;
-unsigned long g_presses0 = 0;
 
 unsigned long g_inputTime1 = 0, g_previousInputTime1 = 0;
 bool g_inputState1 = LOW, g_previousInputState1 = LOW;
 bool g_previousCountedState1 = HIGH;
-unsigned long g_presses1 = 0;
 
 unsigned long g_inputTime2 = 0, g_previousInputTime2 = 0;
 bool g_inputState2 = LOW, g_previousInputState2 = LOW;
 bool g_previousCountedState2 = HIGH;
-unsigned long g_presses2 = 0;
+
+unsigned short g_floor = 0;
+
+unsigned long g_momentOfBlink = 0;
+bool g_blinkState = HIGH;
 
 void testInputOutput();
+bool debouncedPressDetected(const int p_input);
 
 void setup()
 {
@@ -32,13 +42,87 @@ void setup()
 	pinMode(FLOOR_0_LED, OUTPUT);
 	pinMode(FLOOR_1_LED, OUTPUT);
 	pinMode(FLOOR_2_LED, OUTPUT);
+	pinMode(FLOOR_CHANGE_LED, OUTPUT);
 
 	pinMode(FLOOR_0_INPUT, INPUT_PULLUP);
 	pinMode(FLOOR_1_INPUT, INPUT_PULLUP);
 	pinMode(FLOOR_2_INPUT, INPUT_PULLUP);
+
+	// the lift starts at floor 0
+	digitalWrite(FLOOR_0_LED, HIGH);
 }
 
-void debounce(const int p_input)
+void blinkFloorChangeLed()
+{
+	if(millis() - g_momentOfBlink > TIME_BETWEEN_LED_BLINKS)
+	{
+		g_momentOfBlink = millis();
+		g_blinkState = !g_blinkState;
+		digitalWrite(FLOOR_CHANGE_LED, g_blinkState);
+	}	
+}	
+
+void goToFloor(unsigned short p_newFloor)
+{
+	if(p_newFloor == g_floor)
+	{
+		return;
+	}
+	// if the elevator is descendin, the direction is -1
+	int elevatorDirection;
+	elevatorDirection = (g_floor > p_newFloor) ? -1 : 1;
+
+	// generates every floor from the current floor to the new floor: 0 1 2 (from 0 to 2)
+	for(int i = g_floor; i != p_newFloor + elevatorDirection; i += elevatorDirection)
+	{
+		Serial.println(i);
+
+		digitalWrite(FLOOR_0_LED + i, HIGH);
+		unsigned long currentTimeOnFloor = millis();
+		while(millis() - currentTimeOnFloor < TIME_SPENT_ON_FLOOR)
+		{
+			blinkFloorChangeLed();
+		}
+
+		if(i != p_newFloor)
+		{
+			digitalWrite(FLOOR_0_LED + i, LOW);
+		}
+
+		unsigned long currentTimeBetweenFloors = millis();
+		while(millis() - currentTimeOnFloor < TIME_SPENT_BETWEEN_FLOORS)
+		{
+			blinkFloorChangeLed();
+		}
+	}
+	g_floor = p_newFloor;
+	g_blinkState = HIGH;
+
+	digitalWrite(FLOOR_CHANGE_LED, g_blinkState);
+	
+	Serial.print("arrived at ");
+	Serial.println(g_floor);
+}
+
+
+void loop()
+{
+	if(debouncedPressDetected(FLOOR_0_INPUT))
+	{
+		goToFloor(FLOOR_0_INPUT - FLOOR_0_INPUT);
+	}
+	if(debouncedPressDetected(FLOOR_1_INPUT))
+	{
+		goToFloor(FLOOR_1_INPUT - FLOOR_0_INPUT);
+	}
+	if(debouncedPressDetected(FLOOR_2_INPUT))
+	{
+		goToFloor(FLOOR_2_INPUT - FLOOR_0_INPUT);
+	}
+	
+}
+
+bool debouncedPressDetected(const int p_input)
 {
 	int auxLed;
 	unsigned long *time, *previousTime;
@@ -58,8 +142,6 @@ void debounce(const int p_input)
 			previousState = &g_previousInputState0;
 			previousCountedState = &g_previousCountedState0;
 
-			presses = &g_presses0;
-
 			break;
 
 		case(FLOOR_1_INPUT):
@@ -71,8 +153,6 @@ void debounce(const int p_input)
 			state = &g_inputState1;
 			previousState = &g_previousInputState1;
 			previousCountedState = &g_previousCountedState1;
-
-			presses = &g_presses1;
 
 			break;
 
@@ -86,17 +166,17 @@ void debounce(const int p_input)
 			previousState = &g_previousInputState2;
 			previousCountedState = &g_previousCountedState2;
 
-			presses = &g_presses2;
-
 			break;
 
 		default:
-			return;
+			return false;
 	}
+	// LED pin needs to be const int
 	const int led = auxLed; 
 
 	*time = millis();
-	*state = digitalRead(p_input);
+	// more intuitive to be 0 when not pressed and 1 when pressed
+	*state = !digitalRead(p_input);
 
 	// if the button has a constant state
 	if(*state == *previousState)
@@ -104,16 +184,13 @@ void debounce(const int p_input)
 		// if the constant state has been kept for a while
 		if(*time - *previousTime > DEBOUNCE_TIME && *previousCountedState != *state)
 		{
-			digitalWrite(led, *state);
 			*previousCountedState = *state;
 
+			//only count presses
 			if(*state == HIGH)
 			{
-				*presses = *presses + 1;
-				Serial.print("Times pressed input ");
-				Serial.print(p_input - FLOOR_0_INPUT);
-				Serial.print(": ");
-				Serial.println(*presses);
+				*previousState = *state;
+				return true;
 			}
 		}
 	}
@@ -123,15 +200,9 @@ void debounce(const int p_input)
 	}
 
 	*previousState = *state;
+	
+	return false;
 }
-
-void loop()
-{
-	debounce(FLOOR_0_INPUT);
-	debounce(FLOOR_1_INPUT);
-	debounce(FLOOR_2_INPUT);
-}
-
 
 void testInputOutput()
 {
