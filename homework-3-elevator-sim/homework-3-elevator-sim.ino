@@ -21,6 +21,7 @@
 
 #define TIME_SPENT_ON_FLOOR 1000
 #define TIME_SPENT_BETWEEN_FLOORS 2000
+
  
 unsigned long g_inputTime0 = 0, g_previousInputTime0 = 0;
 bool g_inputState0 = LOW, g_previousInputState0 = LOW;
@@ -40,8 +41,17 @@ unsigned short g_nextFloor = -1;
 unsigned long g_momentOfBlink = 0;
 bool g_blinkState = HIGH;
 
-void testInputOutput();
+
 bool debouncedPressDetected(const int p_input);
+
+void playMelody();
+void playMelodyReverse();
+
+void blinkFloorChangeLed();
+void checkForNextFloor();
+
+void goToFloor(unsigned short p_newFloor);
+
 
 void setup()
 {
@@ -61,158 +71,7 @@ void setup()
 	// the lift starts at floor 0
 	digitalWrite(FLOOR_0_LED, HIGH);
 	digitalWrite(FLOOR_CHANGE_LED, HIGH);
-
 }
-
-void playMelody()
-{
-	unsigned long currentTime;
-
-	tone(BUZZER, A4, TIME_SPENT_ON_FLOOR/3);
-	currentTime = millis();
-	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
-	{
-		checkForNextFloor();
-	}
-
-	tone(BUZZER, Cs5, TIME_SPENT_ON_FLOOR/3);
-	currentTime = millis();
-	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
-	{
-		checkForNextFloor();
-	}
-
-	tone(BUZZER, E5, TIME_SPENT_ON_FLOOR/3);
-	currentTime = millis();
-	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
-	{
-		checkForNextFloor();
-	}
-}
-
-void playMelodyReverse()
-{
-	unsigned long currentTime;
-
-	tone(BUZZER, E5, TIME_SPENT_ON_FLOOR/3);
-	currentTime = millis();
-	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
-	{
-		checkForNextFloor();
-	}
-
-	tone(BUZZER, Cs5, TIME_SPENT_ON_FLOOR/3);
-	currentTime = millis();
-	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
-	{
-		checkForNextFloor();
-	}
-	
-	tone(BUZZER, A4, TIME_SPENT_ON_FLOOR/3);
-	currentTime = millis();
-	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
-	{
-		checkForNextFloor();
-	}
-}
-
-
-void blinkFloorChangeLed()
-{
-	if(millis() - g_momentOfBlink > TIME_BETWEEN_LED_BLINKS)
-	{
-		g_momentOfBlink = millis();
-		g_blinkState = !g_blinkState;
-		digitalWrite(FLOOR_CHANGE_LED, g_blinkState);
-	}	
-}	
-
-void checkForNextFloor()
-{
-	if(debouncedPressDetected(FLOOR_0_INPUT))
-	{
-		g_nextFloor = FLOOR_0_INPUT - FLOOR_0_INPUT;
-	}
-
-	if(debouncedPressDetected(FLOOR_1_INPUT))
-	{
-		g_nextFloor = FLOOR_1_INPUT - FLOOR_0_INPUT;
-	}
-
-	if(debouncedPressDetected(FLOOR_2_INPUT))
-	{
-		g_nextFloor = FLOOR_2_INPUT - FLOOR_0_INPUT;
-	}
-}
-
-void goToFloor(unsigned short p_newFloor)
-{
-	if(p_newFloor == g_floor)
-	{
-		return;
-	}
-	// if the elevator is descendin, the direction is -1
-	int elevatorDirection;
-	elevatorDirection = (g_floor > p_newFloor) ? -1 : 1;
-
-	digitalWrite(FLOOR_CHANGE_LED, HIGH);
-
-	// generates every floor from the current floor to the new floor: 0 1 2 (from 0 to 2)
-	for(int i = g_floor; i != p_newFloor; i += elevatorDirection)
-	{
-		Serial.println(i);
-
-		digitalWrite(FLOOR_0_LED + i, HIGH);
-		unsigned long currentTimeOnFloor = millis();
-		
-		if(i == g_floor)
-		{
-			digitalWrite(FLOOR_CHANGE_LED, HIGH);
-			playMelodyReverse();
-			Serial.print("staying on floor\n");
-		}
-		else
-		{
-			while(millis() - currentTimeOnFloor < TIME_SPENT_ON_FLOOR)
-			{	
-				blinkFloorChangeLed();
-				tone(BUZZER, ELEVATOR_IS_MOVING);
-				checkForNextFloor();
-			}
-		}
-		
-		if(i != p_newFloor)
-		{
-			digitalWrite(FLOOR_0_LED + i, LOW);
-		}
-
-		unsigned long currentTimeBetweenFloors = millis();
-		while(millis() - currentTimeOnFloor < TIME_SPENT_BETWEEN_FLOORS)
-		{
-			blinkFloorChangeLed();
-			tone(BUZZER, ELEVATOR_IS_MOVING);
-			checkForNextFloor();
-		}
-	}
-
-	digitalWrite(FLOOR_0_LED + p_newFloor, HIGH);
-	g_floor = p_newFloor;
-	
-	g_blinkState = HIGH;
-	digitalWrite(FLOOR_CHANGE_LED, g_blinkState);
-	
-	playMelody();
-
-	Serial.print("arrived at ");
-	Serial.println(g_floor);
-
-	if(g_nextFloor != -1)
-	{
-		goToFloor(g_nextFloor);
-		g_nextFloor = -1;
-	}
-}
-
 
 void loop()
 {
@@ -314,31 +173,150 @@ bool debouncedPressDetected(const int p_input)
 	return false;
 }
 
-void testInputOutput()
+void goToFloor(unsigned short p_newFloor)
 {
-	bool floor0Val = digitalRead(FLOOR_0_INPUT);
-	bool floor1Val = digitalRead(FLOOR_1_INPUT);
-	bool floor2Val = digitalRead(FLOOR_2_INPUT);
+	if(p_newFloor == g_floor)
+	{
+		return;
+	}
+	// if the elevator is descendin, the direction is -1
+	int elevatorDirection;
+	elevatorDirection = (g_floor > p_newFloor) ? -1 : 1;
 
-	digitalWrite(FLOOR_0_LED, floor0Val);
-	digitalWrite(FLOOR_1_LED, floor1Val);
-	digitalWrite(FLOOR_2_LED, floor2Val);
+	digitalWrite(FLOOR_CHANGE_LED, HIGH);
 
-	Serial.print("floor 0: ");
-	Serial.println(floor0Val);
-	Serial.print("floor 1: ");
-	Serial.println(floor1Val);
-	Serial.print("floor 2: ");
-	Serial.println(floor2Val);
-	Serial.print("\n\n");
+	// generates every floor from the current floor to the new floor: 0 1 2 (from 0 to 2)
+	for(int i = g_floor; i != p_newFloor; i += elevatorDirection)
+	{
+		Serial.println(i);
+
+		digitalWrite(FLOOR_0_LED + i, HIGH);
+		unsigned long currentTimeOnFloor = millis();
+		
+		if(i == g_floor)
+		{
+			digitalWrite(FLOOR_CHANGE_LED, HIGH);
+			playMelodyReverse();
+			Serial.print("staying on floor\n");
+		}
+		else
+		{
+			while(millis() - currentTimeOnFloor < TIME_SPENT_ON_FLOOR)
+			{	
+				blinkFloorChangeLed();
+				tone(BUZZER, ELEVATOR_IS_MOVING);
+				checkForNextFloor();
+			}
+		}
+		
+		if(i != p_newFloor)
+		{
+			digitalWrite(FLOOR_0_LED + i, LOW);
+		}
+
+		unsigned long currentTimeBetweenFloors = millis();
+		while(millis() - currentTimeOnFloor < TIME_SPENT_BETWEEN_FLOORS)
+		{
+			blinkFloorChangeLed();
+			tone(BUZZER, ELEVATOR_IS_MOVING);
+			checkForNextFloor();
+		}
+	}
+
+	digitalWrite(FLOOR_0_LED + p_newFloor, HIGH);
+	g_floor = p_newFloor;
+	
+	g_blinkState = HIGH;
+	digitalWrite(FLOOR_CHANGE_LED, g_blinkState);
+	
+	playMelody();
+
+	Serial.print("arrived at ");
+	Serial.println(g_floor);
+
+	if(g_nextFloor != -1)
+	{
+		goToFloor(g_nextFloor);
+		g_nextFloor = -1;
+	}
 }
 
+void playMelody()
+{
+	unsigned long currentTime;
 
-// debug
-	// Serial.print("pin: "); Serial.print(led);
-	// Serial.print(", button: "); Serial.println(p_input);
-	// Serial.print("time: "); Serial.print(*time);
-	// Serial.print(", previous time: "); Serial.println(*previousTime);
-	// Serial.print("state: "); Serial.print(*state);
-	// Serial.print(", previous state: "); Serial.println(*previousState);
-	// Serial.println();
+	tone(BUZZER, A4, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+
+	tone(BUZZER, Cs5, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+
+	tone(BUZZER, E5, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+}
+
+void playMelodyReverse()
+{
+	unsigned long currentTime;
+
+	tone(BUZZER, E5, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+
+	tone(BUZZER, Cs5, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+	
+	tone(BUZZER, A4, TIME_SPENT_ON_FLOOR/3);
+	currentTime = millis();
+	while(millis() - currentTime < TIME_SPENT_ON_FLOOR/3)
+	{
+		checkForNextFloor();
+	}
+}
+
+void blinkFloorChangeLed()
+{
+	if(millis() - g_momentOfBlink > TIME_BETWEEN_LED_BLINKS)
+	{
+		g_momentOfBlink = millis();
+		g_blinkState = !g_blinkState;
+		digitalWrite(FLOOR_CHANGE_LED, g_blinkState);
+	}	
+}	
+
+void checkForNextFloor()
+{
+	if(debouncedPressDetected(FLOOR_0_INPUT))
+	{
+		g_nextFloor = FLOOR_0_INPUT - FLOOR_0_INPUT;
+	}
+
+	if(debouncedPressDetected(FLOOR_1_INPUT))
+	{
+		g_nextFloor = FLOOR_1_INPUT - FLOOR_0_INPUT;
+	}
+
+	if(debouncedPressDetected(FLOOR_2_INPUT))
+	{
+		g_nextFloor = FLOOR_2_INPUT - FLOOR_0_INPUT;
+	}
+}
