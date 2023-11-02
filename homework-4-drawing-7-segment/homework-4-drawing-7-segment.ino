@@ -22,7 +22,7 @@ enum sevenSegmentNodes {nodeIdxA, nodeIdxB, nodeIdxC, nodeIdxD,
 // What i do is think about each position as a node in a graph with each node having cirten connections
 typedef struct ledNode
 {
-    int pin;
+    const int pin;
     bool state;
     ledNode *left;
     ledNode *right;
@@ -30,7 +30,15 @@ typedef struct ledNode
     ledNode *down;
 };
 
-ledNode g_7segGraph[8];
+ledNode g_7segGraph[8] = {  PIN_A, 0, 0, 0, 0, 0, 
+                            PIN_B, 0, 0, 0, 0, 0,
+                            PIN_C, 0, 0, 0, 0, 0,
+                            PIN_D, 0, 0, 0, 0, 0,
+                            PIN_E, 0, 0, 0, 0, 0,
+                            PIN_F, 0, 0, 0, 0, 0,
+                            PIN_G, 0, 0, 0, 0, 0,
+                            PIN_DP, 0, 0, 0, 0, 0
+                         };
 ledNode *g_currentNode;
 
 unsigned long g_lastBlinktime = 0;
@@ -45,49 +53,42 @@ void buildNodes()
         g_7segGraph[nodeIdx].state = 0;
     }
     
-    g_7segGraph[nodeIdxA].pin = PIN_A;
+    // g_7segGraph[nodeIdxA].pin = PIN_A;
     g_7segGraph[nodeIdxA].up = &g_7segGraph[nodeIdxA];
     g_7segGraph[nodeIdxA].down = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxA].left = &g_7segGraph[nodeIdxF];
     g_7segGraph[nodeIdxA].right = &g_7segGraph[nodeIdxB];
 
-    g_7segGraph[nodeIdxB].pin = PIN_B;
     g_7segGraph[nodeIdxB].up = &g_7segGraph[nodeIdxA];
     g_7segGraph[nodeIdxB].down = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxB].left = &g_7segGraph[nodeIdxF];
     g_7segGraph[nodeIdxB].right = &g_7segGraph[nodeIdxB];
     
-    g_7segGraph[nodeIdxC].pin = PIN_C;
     g_7segGraph[nodeIdxC].up = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxC].down = &g_7segGraph[nodeIdxD];
     g_7segGraph[nodeIdxC].left = &g_7segGraph[nodeIdxE];
     g_7segGraph[nodeIdxC].right = &g_7segGraph[nodeIdxDP];
 
-    g_7segGraph[nodeIdxD].pin = PIN_D;
     g_7segGraph[nodeIdxD].up = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxD].down = &g_7segGraph[nodeIdxD];
     g_7segGraph[nodeIdxD].left = &g_7segGraph[nodeIdxE];
     g_7segGraph[nodeIdxD].right = &g_7segGraph[nodeIdxC];
 
-    g_7segGraph[nodeIdxE].pin = PIN_E;
     g_7segGraph[nodeIdxE].up = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxE].down = &g_7segGraph[nodeIdxD];
     g_7segGraph[nodeIdxE].left = &g_7segGraph[nodeIdxE];
     g_7segGraph[nodeIdxE].right = &g_7segGraph[nodeIdxC];
 
-    g_7segGraph[nodeIdxF].pin = PIN_F;
     g_7segGraph[nodeIdxF].up = &g_7segGraph[nodeIdxA];
     g_7segGraph[nodeIdxF].down = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxF].left = &g_7segGraph[nodeIdxF];
     g_7segGraph[nodeIdxF].right = &g_7segGraph[nodeIdxB];
 
-    g_7segGraph[nodeIdxG].pin = PIN_G;
     g_7segGraph[nodeIdxG].up = &g_7segGraph[nodeIdxA];
     g_7segGraph[nodeIdxG].down = &g_7segGraph[nodeIdxD];
     g_7segGraph[nodeIdxG].left = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxG].right = &g_7segGraph[nodeIdxG];
 
-    g_7segGraph[nodeIdxDP].pin = PIN_DP;
     g_7segGraph[nodeIdxDP].up = &g_7segGraph[nodeIdxDP];
     g_7segGraph[nodeIdxDP].down = &g_7segGraph[nodeIdxDP];
     g_7segGraph[nodeIdxDP].left = &g_7segGraph[nodeIdxC];
