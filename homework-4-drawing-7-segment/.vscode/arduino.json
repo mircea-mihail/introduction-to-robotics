@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:uno",
+    "programmer": "avrisp",
+    "port": "/dev/ttyACM0",
+    "sketch": "homework-4-drawing-7-segment.ino"
+}
