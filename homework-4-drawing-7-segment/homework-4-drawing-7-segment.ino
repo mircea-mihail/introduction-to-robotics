@@ -15,7 +15,11 @@
 
 #define BLINK_DURATION 500
 #define BEGINNING_OF_APP_TIME 0
-#define DURATION_OF_DEBOUNCE 200
+#define DURATION_OF_DEBOUNCE 50
+#define DURATION_FOR_RESET 1000
+
+#define RISING 0
+#define FALLING 1
 
 enum sevenSegmentNodes
 {
@@ -51,13 +55,15 @@ ledNode g_7segGraph[8] = {
                             PIN_DP, 0, 0, 0, 0, 0
                          };
 
-ledNode *g_currentNode;
+volatile ledNode *g_currentNode;
 
 unsigned long g_lastBlinktime = 0;
 bool g_blinkLedState = 0;
 
 bool g_hasMoved = false;
-unsigned long g_lastPressTime = 0;
+
+volatile unsigned long g_lastPressTime = 0;
+volatile bool g_fallingOrRising = 0;
 
 void buildNodes()
 {
@@ -128,7 +134,7 @@ void setup()
 
     g_lastBlinktime = millis();
 
-    attachInterrupt(digitalPinToInterrupt(JOYSTICK_SW), changeNodeState, FALLING);
+    attachInterrupt(digitalPinToInterrupt(JOYSTICK_SW), changeNodeState, CHANGE);
 
     Serial.begin(115200);
 }
@@ -216,6 +222,15 @@ void loop()
     moveToNextLed();
 }
 
+void resetNodeStates()
+{
+    for(int nodeIdx = nodeIdxA; nodeIdx <= nodeIdxDP; nodeIdx++)
+    {
+        g_7segGraph[nodeIdx].state = LOW;
+        digitalWrite(g_7segGraph[nodeIdx].pin, g_7segGraph[nodeIdx].state);
+    }
+}
+
 void changeNodeState()
 {
     if(millis() - g_lastPressTime < DURATION_OF_DEBOUNCE)
@@ -223,8 +238,30 @@ void changeNodeState()
         return;
     }
 
-    g_currentNode->state = !g_currentNode->state;
-    Serial.print("changed State\n");
+    if(g_fallingOrRising == FALLING)
+    {
+        Serial.print("falling\n");
+    }
+    else
+    {
+        Serial.print("rising\n");
+    }
+    if(millis() - g_lastPressTime > DURATION_FOR_RESET && g_fallingOrRising == FALLING)
+    {
+        resetNodeStates();
+        Serial.print("am dat reset\n");
+        g_fallingOrRising = !g_fallingOrRising;
+        return;
+    }
 
+    if(g_fallingOrRising == RISING)
+    {
+        g_currentNode->state = !g_currentNode->state;
+        Serial.print("changed State\n");
+    }
     g_lastPressTime = millis();
+    
+    g_fallingOrRising = !g_fallingOrRising;
+
+    Serial.print("\n");
 }
