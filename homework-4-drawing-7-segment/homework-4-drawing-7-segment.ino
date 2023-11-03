@@ -15,9 +15,19 @@
 
 #define BLINK_DURATION 500
 #define BEGINNING_OF_APP_TIME 0
+#define DURATION_OF_DEBOUNCE 200
 
-enum sevenSegmentNodes {nodeIdxA, nodeIdxB, nodeIdxC, nodeIdxD, 
-                        nodeIdxE, nodeIdxF, nodeIdxG, nodeIdxDP};
+enum sevenSegmentNodes
+{
+    nodeIdxA,
+    nodeIdxB,
+    nodeIdxC,
+    nodeIdxD,
+    nodeIdxE,
+    nodeIdxF,
+    nodeIdxG,
+    nodeIdxDP
+};
 
 // What i do is think about each position as a node in a graph with each node having cirten connections
 typedef struct ledNode
@@ -30,7 +40,8 @@ typedef struct ledNode
     ledNode *down;
 };
 
-ledNode g_7segGraph[8] = {  PIN_A, 0, 0, 0, 0, 0, 
+ledNode g_7segGraph[8] = { 
+                            PIN_A, 0, 0, 0, 0, 0,
                             PIN_B, 0, 0, 0, 0, 0,
                             PIN_C, 0, 0, 0, 0, 0,
                             PIN_D, 0, 0, 0, 0, 0,
@@ -39,20 +50,22 @@ ledNode g_7segGraph[8] = {  PIN_A, 0, 0, 0, 0, 0,
                             PIN_G, 0, 0, 0, 0, 0,
                             PIN_DP, 0, 0, 0, 0, 0
                          };
+
 ledNode *g_currentNode;
 
 unsigned long g_lastBlinktime = 0;
 bool g_blinkLedState = 0;
 
 bool g_hasMoved = false;
+unsigned long g_lastPressTime = 0;
 
 void buildNodes()
 {
-    for(int nodeIdx = nodeIdxA; nodeIdx < nodeIdxDP; nodeIdx++)
+    for (int nodeIdx = nodeIdxA; nodeIdx < nodeIdxDP; nodeIdx++)
     {
-        g_7segGraph[nodeIdx].state = 0;
+        g_7segGraph[nodeIdx].state = LOW;
     }
-    
+
     // g_7segGraph[nodeIdxA].pin = PIN_A;
     g_7segGraph[nodeIdxA].up = &g_7segGraph[nodeIdxA];
     g_7segGraph[nodeIdxA].down = &g_7segGraph[nodeIdxG];
@@ -63,7 +76,7 @@ void buildNodes()
     g_7segGraph[nodeIdxB].down = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxB].left = &g_7segGraph[nodeIdxF];
     g_7segGraph[nodeIdxB].right = &g_7segGraph[nodeIdxB];
-    
+
     g_7segGraph[nodeIdxC].up = &g_7segGraph[nodeIdxG];
     g_7segGraph[nodeIdxC].down = &g_7segGraph[nodeIdxD];
     g_7segGraph[nodeIdxC].left = &g_7segGraph[nodeIdxE];
@@ -109,21 +122,23 @@ void setup()
     pinMode(JOYSTICK_SW, INPUT_PULLUP);
     pinMode(JOYSTICK_X, INPUT);
     pinMode(JOYSTICK_Y, INPUT);
-    
+
     buildNodes();
-    g_currentNode = &g_7segGraph[nodeIdxDP]; 
+    g_currentNode = &g_7segGraph[nodeIdxDP];
 
     g_lastBlinktime = millis();
+
+    attachInterrupt(digitalPinToInterrupt(JOYSTICK_SW), changeNodeState, FALLING);
 
     Serial.begin(115200);
 }
 
 void flashCurrentLed()
 {
-    if((millis() - g_lastBlinktime) > BLINK_DURATION)
+    if ((millis() - g_lastBlinktime) > BLINK_DURATION)
     {
         g_lastBlinktime = millis();
-        digitalWrite(g_currentNode->pin, g_blinkLedState);   
+        digitalWrite(g_currentNode->pin, g_blinkLedState);
         g_blinkLedState = !g_blinkLedState;
     }
 }
@@ -133,60 +148,63 @@ void moveToNextLed()
     int oX = analogRead(JOYSTICK_X);
     int oY = analogRead(JOYSTICK_Y);
 
-    //return if no real joystick movement is detected
-    if(   oX > JOYSTICK_LOW_THRESHOLD && oX < JOYSTICK_HIGH_THRESHOLD 
-       && oY > JOYSTICK_LOW_THRESHOLD && oY < JOYSTICK_HIGH_THRESHOLD)
+    // return if no real joystick movement is detected
+    if (oX > JOYSTICK_LOW_THRESHOLD && oX < JOYSTICK_HIGH_THRESHOLD && oY > JOYSTICK_LOW_THRESHOLD && oY < JOYSTICK_HIGH_THRESHOLD)
     {
         g_hasMoved = false;
         return;
     }
-    
-    if(g_hasMoved)
+
+    if (g_hasMoved)
     {
         return;
     }
-    
-    //clean left
-    if(oX < JOYSTICK_LOW_THRESHOLD && oY < JOYSTICK_HIGH_THRESHOLD && oY > JOYSTICK_LOW_THRESHOLD)
+
+    // clean left
+    if (oX < JOYSTICK_LOW_THRESHOLD && oY < JOYSTICK_HIGH_THRESHOLD && oY > JOYSTICK_LOW_THRESHOLD)
     {
-        //for the moment leave the led closed
-        digitalWrite(g_currentNode->pin, LOW);   
+        // for the moment leave the led closed
+        digitalWrite(g_currentNode->pin, g_currentNode->state);
         g_lastBlinktime = BEGINNING_OF_APP_TIME;
-        g_blinkLedState = HIGH;
+
         g_currentNode = g_currentNode->left;
+        g_blinkLedState = !g_currentNode->state;
         g_hasMoved = true;
         return;
     }
-    
-    //clean right
-    if(oX > JOYSTICK_HIGH_THRESHOLD && oY < JOYSTICK_HIGH_THRESHOLD && oY > JOYSTICK_LOW_THRESHOLD)
+
+    // clean right
+    if (oX > JOYSTICK_HIGH_THRESHOLD && oY < JOYSTICK_HIGH_THRESHOLD && oY > JOYSTICK_LOW_THRESHOLD)
     {
-        digitalWrite(g_currentNode->pin, LOW);   
+        digitalWrite(g_currentNode->pin, g_currentNode->state);
         g_lastBlinktime = BEGINNING_OF_APP_TIME;
-        g_blinkLedState = HIGH;
+
         g_currentNode = g_currentNode->right;
+        g_blinkLedState = !g_currentNode->state;
         g_hasMoved = true;
         return;
     }
-    
-    //clean down
-    if(oY > JOYSTICK_HIGH_THRESHOLD && oX < JOYSTICK_HIGH_THRESHOLD && oX > JOYSTICK_LOW_THRESHOLD)
+
+    // clean down
+    if (oY > JOYSTICK_HIGH_THRESHOLD && oX < JOYSTICK_HIGH_THRESHOLD && oX > JOYSTICK_LOW_THRESHOLD)
     {
-        digitalWrite(g_currentNode->pin, LOW);   
+        digitalWrite(g_currentNode->pin, g_currentNode->state);
         g_lastBlinktime = BEGINNING_OF_APP_TIME;
-        g_blinkLedState = HIGH;
+
         g_currentNode = g_currentNode->down;
+        g_blinkLedState = !g_currentNode->state;
         g_hasMoved = true;
         return;
     }
-    
-    //clean up
-    if(oY < JOYSTICK_LOW_THRESHOLD && oX < JOYSTICK_HIGH_THRESHOLD && oX > JOYSTICK_LOW_THRESHOLD)
+
+    // clean up
+    if (oY < JOYSTICK_LOW_THRESHOLD && oX < JOYSTICK_HIGH_THRESHOLD && oX > JOYSTICK_LOW_THRESHOLD)
     {
-        digitalWrite(g_currentNode->pin, LOW);   
+        digitalWrite(g_currentNode->pin, g_currentNode->state);
         g_lastBlinktime = BEGINNING_OF_APP_TIME;
-        g_blinkLedState = HIGH;
+
         g_currentNode = g_currentNode->up;
+        g_blinkLedState = !g_currentNode->state;
         g_hasMoved = true;
         return;
     }
@@ -195,5 +213,18 @@ void moveToNextLed()
 void loop()
 {
     flashCurrentLed();
-    moveToNextLed();    
+    moveToNextLed();
+}
+
+void changeNodeState()
+{
+    if(millis() - g_lastPressTime < DURATION_OF_DEBOUNCE)
+    {
+        return;
+    }
+
+    g_currentNode->state = !g_currentNode->state;
+    Serial.print("changed State\n");
+
+    g_lastPressTime = millis();
 }
