@@ -135,7 +135,6 @@ void setup()
     g_currentNode = &g_7segGraph[nodeIdxDP];
 
     g_lastBlinktime = millis();
-
     attachInterrupt(digitalPinToInterrupt(JOYSTICK_SW), changeNodeState, CHANGE);
 
     Serial.begin(115200);
