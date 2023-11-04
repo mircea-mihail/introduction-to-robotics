@@ -13,10 +13,13 @@
 #define JOYSTICK_LOW_THRESHOLD 410
 #define JOYSTICK_HIGH_THRESHOLD 610
 
+#define MICROS_TO_MILLIS 1000U
+
 #define BLINK_DURATION 500
 #define BEGINNING_OF_APP_TIME 0
-#define DURATION_OF_DEBOUNCE 50
-#define DURATION_FOR_RESET 1000
+#define DURATION_OF_DEBOUNCE (50UL * MICROS_TO_MILLIS)
+// #define 
+#define DURATION_FOR_RESET (1000UL * MICROS_TO_MILLIS)
 
 #define RISING 0
 #define FALLING 1
@@ -233,34 +236,26 @@ void resetNodeStates()
 
 void changeNodeState()
 {
-    if(millis() - g_lastPressTime < DURATION_OF_DEBOUNCE)
+    if(micros() - g_lastPressTime < DURATION_OF_DEBOUNCE)
     {
         return;
     }
 
-    if(g_fallingOrRising == FALLING)
-    {
-        Serial.print("falling\n");
-    }
-    else
-    {
-        Serial.print("rising\n");
-    }
-    if(millis() - g_lastPressTime > DURATION_FOR_RESET && g_fallingOrRising == FALLING)
+    if(micros() - g_lastPressTime > DURATION_FOR_RESET && g_fallingOrRising == FALLING)
     {
         resetNodeStates();
-        Serial.print("am dat reset\n");
         g_fallingOrRising = !g_fallingOrRising;
+
+        g_lastPressTime = micros();    
         return;
     }
 
     if(g_fallingOrRising == RISING)
     {
         g_currentNode->state = !g_currentNode->state;
-        Serial.print("changed State\n");
     }
-    g_lastPressTime = millis();
-    
+
+    g_lastPressTime = micros();    
     g_fallingOrRising = !g_fallingOrRising;
 
     Serial.print("\n");
