@@ -5,11 +5,15 @@ This is a mandatory course taken in the 3rd year of my scholarship at the Facult
 
 Throughout this repo you can find homework-specific requirements, implementation details, code, image files and more.
 
+
 ## Homework 1
 
 Create this repo, doesn't get much easier than that.
 
 ## Homework 2
+
+<details>
+<summary> <B>Control RGB LED</B> </summary>
 
 ### Task 
 
@@ -41,7 +45,12 @@ https://www.youtube.com/shorts/vDVLX95Q7Ww
 
 <img src="media/Hw2-project.jpg" alt="drawing" height="300"/>
 
+</details>
+
 ## Homework 3
+
+<details>
+<summary> <B> Elevator Simulator </B></summary>
 
 ### Task 
 
@@ -86,3 +95,4 @@ Below is a youtube link that shows the homework in action and there is also a pi
 https://www.youtube.com/watch?v=6XHYGthXycI
 
 <img src="media/Hw3-project.jpg" alt="drawing" height="300"/>
+<details>
