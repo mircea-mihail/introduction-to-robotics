@@ -95,7 +95,7 @@ Below is a youtube link that shows the homework in action and there is also a pi
 https://www.youtube.com/watch?v=6XHYGthXycI
 
 <img src="media/Hw3-project.jpg" alt="drawing" height="300"/>
-<details>
+</details>
 
 ## Homework 4
 
@@ -137,4 +137,4 @@ https://www.youtube.com/watch?v=VlsCClYC-cU
 
 <img src="media/Hw4-project.jpg" alt="drawing" height="300"/>
 
-<details>
+</details>
