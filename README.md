@@ -96,3 +96,45 @@ https://www.youtube.com/watch?v=6XHYGthXycI
 
 <img src="media/Hw3-project.jpg" alt="drawing" height="300"/>
 <details>
+
+## Homework 4
+
+<details>
+<summary> <B> Draw On 7 Segment </B></summary>
+
+### Task 
+
+Use the joystick to control the position of the segment cursor and ”draw” on the display
+by pressing on the joystick button. The movement between segments should be natural. 
+The cursor is only allowed to jump from the current position to neighboring ones, 
+without passing through walls or jumping over neighbors.
+
+In order to make it more obvious what LED the cursor is on, what I did is color the LED instantly with
+the oposite color it already has (if it's black i make the blink start from red and vice versa)
+
+#### Behaviour
+
+The initial position should be on the DP (decimal point). The current cursor
+position always blinks (irrespective of the fact that the segment is on or
+off). Use the joystick to move from one position to neighboring ones. (see table for
+corresponding movement). Short pressing the button toggles the segment
+state from ON to OFF or from OFF to ON. Long pressing the button
+resets the entire display by turning all the segments OFF and moving the
+current position to the decimal point. Interrupts are required.
+
+### Hardware Implementation
+
+I used:
+* 8 330Ω Resistors for the segments
+* one 7 segment display
+* wires
+* an Arduino Uno
+* a Joystick
+
+Below is a youtube link that shows the homework in action and there is also a picture of the project.
+
+https://www.youtube.com/watch?v=6XHYGthXycI
+
+<img src="media/Hw3-project.jpg" alt="drawing" height="300"/>
+
+<details>
