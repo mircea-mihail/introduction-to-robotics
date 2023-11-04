@@ -19,7 +19,7 @@
 #define BEGINNING_OF_APP_TIME 0
 #define DURATION_OF_DEBOUNCE (50UL * MICROS_TO_MILLIS)
 // #define 
-#define DURATION_FOR_RESET (1000UL * MICROS_TO_MILLIS)
+#define DURATION_FOR_RESET (500UL * MICROS_TO_MILLIS)
 
 #define RISING 0
 #define FALLING 1
@@ -245,6 +245,7 @@ void changeNodeState()
     {
         resetNodeStates();
         g_fallingOrRising = !g_fallingOrRising;
+        g_currentNode = &g_7segGraph[nodeIdxDP];
 
         g_lastPressTime = micros();    
         return;
