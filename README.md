@@ -133,8 +133,8 @@ I used:
 
 Below is a youtube link that shows the homework in action and there is also a picture of the project.
 
-https://www.youtube.com/watch?v=6XHYGthXycI
+https://www.youtube.com/watch?v=VlsCClYC-cU
 
-<img src="media/Hw3-project.jpg" alt="drawing" height="300"/>
+<img src="media/Hw4-project.jpg" alt="drawing" height="300"/>
 
 <details>
