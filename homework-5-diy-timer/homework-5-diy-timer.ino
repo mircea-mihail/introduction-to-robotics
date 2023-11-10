@@ -8,6 +8,11 @@
 #define D3_DISPLAY_PIN 6
 #define D4_DISPLAY_PIN 7
 
+#define START_STOP_PIN 3
+#define RESET_PIN 9
+#define LAP_PIN 2
+
+#define DP_BYTE_MASK B00000001
 // Store the digits in an array for easy access
 int displayDigits[] = { D1_DISPLAY_PIN, D2_DISPLAY_PIN, D3_DISPLAY_PIN, D4_DISPLAY_PIN };
 
@@ -39,11 +44,29 @@ byte byteEncodings[NUMBER_OF_ENCODINGS] = {
 unsigned long g_lastIncrementMoment = 0;
 unsigned long g_numberToDisplay = 0;       // The number being displayed
 
+//if current display is 2, also display a dot
+#define getByteForDisplay(currentDisplay, digitToDisplay) ((currentDisplay == 2) ? \
+                                                            (byteEncodings[digitToDisplay] | DP_BYTE_MASK) : \
+                                                            (byteEncodings[digitToDisplay]))
+// for button presses:
+#define MILLIS_TO_MICROS 1000U
+#define DEBOUNCE_MICROS (50UL * MILLIS_TO_MICROS)
+#define DURATION_FOR_CYCLE (500UL * MILLIS_TO_MICROS)
+
+unsigned long g_lastPressTime = 0;
+bool g_timerIsRunning = false;
+unsigned short g_fallingOrRising = RISING;
+
+
 void setup() 
 {
     pinMode(LATCH_PIN, OUTPUT);
     pinMode(CLOCK_PIN, OUTPUT);
     pinMode(DATA_PIN, OUTPUT);
+
+    pinMode(START_STOP_PIN, INPUT_PULLUP);
+    pinMode(RESET_PIN, INPUT_PULLUP);
+    pinMode(LAP_PIN, INPUT_PULLUP);
 
     //power off and init displays
     for (int i = 0; i < NUMBER_OF_DISPLAYS; i++) 
@@ -51,13 +74,15 @@ void setup()
         pinMode(displayDigits[i], OUTPUT);
         digitalWrite(displayDigits[i], HIGH);
     }
+    attachInterrupt(digitalPinToInterrupt(START_STOP_PIN), startStopDebounce, RISING);
+    attachInterrupt(digitalPinToInterrupt(LAP_PIN), startStopDebounce, CHANGE);
 
     Serial.begin(115200);
 }
 
 void loop() 
 {
-    if (millis() - g_lastIncrementMoment > DELAY_MILLIS) 
+    if (millis() - g_lastIncrementMoment > DELAY_MILLIS && g_timerIsRunning) 
     {
         g_numberToDisplay++;
         
@@ -66,28 +91,30 @@ void loop()
         g_lastIncrementMoment = millis();
     }
     displayNumber(g_numberToDisplay);
+    resetIfNecessary();
 }
 
-void writeReg(int digit) {
-    // Prepare to shift data by setting the latch pin low
+void resetIfNecessary()
+{
+    
+}
+
+void writeReg(int digit) 
+{
     digitalWrite(LATCH_PIN, LOW);
 
-    // Shift out the byte representing the current digit to the shift register
     shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, digit);
 
-    // Latch the data onto the output pins by setting the latch pin high
     digitalWrite(LATCH_PIN, HIGH);
 }
 
 void activateDisplay(int displayNumber)
 {
-    // Turn off all digit control pins to avoid ghosting
     for (int i = 0; i < NUMBER_OF_DISPLAYS; i++)
     {
         digitalWrite(displayDigits[i], HIGH);
     }
 
-    // Turn on the current digit control pin
     digitalWrite(displayDigits[displayNumber], LOW);
 }
 
@@ -95,13 +122,16 @@ void displayNumber(int p_currentNumber)
 {
     int currentDisplay = 3;
     int digitToDisplay = 0;
+    byte byteToWrite;
     // loop through the displays
-    while (p_currentNumber != 0) 
+    while (currentDisplay >= 0) 
     {
         digitToDisplay = p_currentNumber % 10;
         activateDisplay(currentDisplay);
 
-        writeReg(byteEncodings[digitToDisplay]);
+        byteToWrite = getByteForDisplay(currentDisplay, digitToDisplay);
+        
+        writeReg(byteToWrite);
         // delay(100);
         currentDisplay--;
         p_currentNumber /= 10;
@@ -109,4 +139,62 @@ void displayNumber(int p_currentNumber)
         //prevent ghosting
         writeReg(B00000000);
     }
+}
+
+void startStopDebounce()
+{
+    if(micros() - g_lastPressTime < DEBOUNCE_MICROS)
+    {
+        return;
+    }
+
+    if(!g_timerIsRunning)
+    {
+        Serial.print("started the timer\n");
+        g_timerIsRunning = true;
+    }
+    else if(g_timerIsRunning)
+    {
+        Serial.print("stopped the timer\n");
+        g_timerIsRunning = false;
+    }
+
+    g_lastPressTime = micros();    
+}
+
+
+void lapDebounce()
+{
+    if(micros() - g_lastPressTime < DEBOUNCE_MICROS)
+    {
+        return;
+    }
+
+    // if(micros() - g_lastPressTime > DURATION_FOR_RESET)
+    // {
+    //     //enable variable to cycle through 
+    // }
+    if(g_fallingOrRising == FALLING)
+    {
+        //disable cycle possibility
+    }
+
+    if(g_fallingOrRising == RISING)
+    {
+        //start a timer to enable cycle through laps 
+
+        if(!g_timerIsRunning)
+        {
+            // cycle through lap
+        }
+        else if(g_timerIsRunning)
+        {
+            //save lap round robin
+        }
+    }
+
+    g_lastPressTime = micros();    
+
+    //if falling make rising and reverse 
+    g_fallingOrRising = (g_fallingOrRising == RISING ? FALLING : RISING);
 }
