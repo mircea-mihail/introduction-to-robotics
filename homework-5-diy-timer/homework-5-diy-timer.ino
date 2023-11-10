@@ -42,7 +42,13 @@ byte byteEncodings[NUMBER_OF_ENCODINGS] = {
 
 #define DELAY_MILLIS 100
 unsigned long g_lastIncrementMoment = 0;
-unsigned long g_numberToDisplay = 0;       // The number being displayed
+volatile unsigned long g_counterInMs = 0;       
+volatile unsigned long g_numberToDisplay = 0;   
+volatile unsigned long g_numberAtLastLap = 0;
+
+#define NUMBER_OF_LAPS_SAVED 4
+volatile short g_lapIterator = 0;
+volatile unsigned long g_lapsSaved[4] = {0, 0, 0, 0};
 
 //if current display is 2, also display a dot
 #define getByteForDisplay(currentDisplay, digitToDisplay) ((currentDisplay == 2) ? \
@@ -53,10 +59,23 @@ unsigned long g_numberToDisplay = 0;       // The number being displayed
 #define DEBOUNCE_MICROS (50UL * MILLIS_TO_MICROS)
 #define DURATION_FOR_CYCLE (500UL * MILLIS_TO_MICROS)
 
-unsigned long g_lastPressTime = 0;
-bool g_timerIsRunning = false;
-unsigned short g_fallingOrRising = RISING;
+volatile unsigned long g_lastPressTime = 0;
+volatile bool g_timerIsRunning = false;
+volatile unsigned short g_fallingOrRising = RISING;
 
+//for cycling on hold
+#define TIME_TO_HOLD_FOR_CYCLE 500UL * MILLIS_TO_MICROS
+volatile unsigned long g_lastCycleTime = 0;
+volatile bool g_shouldCycle = false;
+
+//for reset button debounce
+byte g_resetBtnState = LOW;
+byte g_lastCountedResetBtnState = LOW;
+unsigned long g_previousResetBtnTime = 0;
+
+//for lapping
+#define getPreviousIterator() (g_lapIterator != 0 ? (g_lapIterator - 1) : (NUMBER_OF_LAPS_SAVED - 1))
+#define getNextIterator() ((g_lapIterator + 1) % NUMBER_OF_LAPS_SAVED)
 
 void setup() 
 {
@@ -75,49 +94,106 @@ void setup()
         digitalWrite(displayDigits[i], HIGH);
     }
     attachInterrupt(digitalPinToInterrupt(START_STOP_PIN), startStopDebounce, RISING);
-    attachInterrupt(digitalPinToInterrupt(LAP_PIN), startStopDebounce, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(LAP_PIN), lapDebounce, CHANGE);
 
     Serial.begin(115200);
 }
 
 void loop() 
 {
-    if (millis() - g_lastIncrementMoment > DELAY_MILLIS && g_timerIsRunning) 
+    if(g_timerIsRunning)
     {
-        g_numberToDisplay++;
-        
-        // Wrap around after 9999
-        g_numberToDisplay %= 10000;  
-        g_lastIncrementMoment = millis();
+        if (millis() - g_lastIncrementMoment > DELAY_MILLIS) 
+        {
+            g_counterInMs++;
+            
+            // Wrap around after 9999
+            g_counterInMs %= 10000;  
+            g_lastIncrementMoment = millis();
+        }
+
+        displayNumber(g_counterInMs);
     }
-    displayNumber(g_numberToDisplay);
-    resetIfNecessary();
+    else
+    {
+        //can only reset when timer not running
+        resetIfNecessary();
+        
+        displayNumber(g_numberToDisplay);
+    
+        cycleIfNecessary();
+    }
 }
 
+
+////////////////////////////////////////////// GENERAL UTILITY /////////////////////
+
+void cycleIfNecessary()
+{
+    if(g_shouldCycle)
+    {
+        if(micros() - g_lastCycleTime > TIME_TO_HOLD_FOR_CYCLE)
+        {
+            cycleThroughLaps();
+            g_lastCycleTime = micros();
+        }
+    }
+}
+
+// resets laps or counter if appropriate
 void resetIfNecessary()
 {
-    
-}
-
-void writeReg(int digit) 
-{
-    digitalWrite(LATCH_PIN, LOW);
-
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, digit);
-
-    digitalWrite(LATCH_PIN, HIGH);
-}
-
-void activateDisplay(int displayNumber)
-{
-    for (int i = 0; i < NUMBER_OF_DISPLAYS; i++)
+    if(resetDebounce())
     {
-        digitalWrite(displayDigits[i], HIGH);
-    }
+        if(g_counterInMs != 0)
+        {
+            g_counterInMs = 0;
+            g_numberAtLastLap = 0;
+            g_numberToDisplay = g_counterInMs;
+        }
+        // don't reset laps if they have not even been viewed
+        else if(g_numberToDisplay != 0)
+        {
+            for(int lapsLeft = 0; lapsLeft < NUMBER_OF_LAPS_SAVED; lapsLeft++)
+            {
+                g_lapsSaved[g_lapIterator] = 0;
+                g_lapIterator = getNextIterator();
+            }
+            g_numberToDisplay = g_lapsSaved[g_lapIterator];
 
-    digitalWrite(displayDigits[displayNumber], LOW);
+        }
+    }
 }
 
+// cycle through laps but also show the counter
+// don't show empty laps unless there are only empty laps    
+void cycleThroughLaps()
+{
+    if(g_lapsSaved[g_lapIterator] != 0)
+    {
+        g_numberToDisplay = g_lapsSaved[g_lapIterator];
+        g_lapIterator = getNextIterator();
+    }
+    else
+    {
+        for(int i = 0; i < NUMBER_OF_LAPS_SAVED; i++)
+        {
+            if(g_lapsSaved[g_lapIterator] != 0)
+            {
+                g_numberToDisplay = g_lapsSaved[g_lapIterator];
+                g_lapIterator = getNextIterator();
+                break;
+            }
+            g_lapIterator = getNextIterator();
+
+        }
+    }
+}
+
+
+////////////////////////////////////////////// DISPLAY RELATED /////////////////////
+
+//display any number on the LCD
 void displayNumber(int p_currentNumber) 
 {
     int currentDisplay = 3;
@@ -141,6 +217,61 @@ void displayNumber(int p_currentNumber)
     }
 }
 
+//write a register to shifter
+void writeReg(int digit) 
+{
+    digitalWrite(LATCH_PIN, LOW);
+
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, digit);
+
+    digitalWrite(LATCH_PIN, HIGH);
+}
+
+//only activate one display at a time at the 7 seg 4 display module
+void activateDisplay(int displayNumber)
+{
+    for (int i = 0; i < NUMBER_OF_DISPLAYS; i++)
+    {
+        digitalWrite(displayDigits[i], HIGH);
+    }
+
+    digitalWrite(displayDigits[displayNumber], LOW);
+}
+
+
+////////////////////////////////////////////// BUTTONS /////////////////////
+
+//returns true if a valid reset button press happened
+bool resetDebounce()
+{
+	unsigned long time = millis();
+    byte previousState = g_resetBtnState;
+	g_resetBtnState = !digitalRead(RESET_PIN);
+
+	// if the button has a constant state
+	if(g_resetBtnState == previousState)
+	{
+		// if the constant state has been kept for a while
+		if(time - g_previousResetBtnTime > (DEBOUNCE_MICROS / MILLIS_TO_MICROS) && g_lastCountedResetBtnState != g_resetBtnState)
+		{
+			g_lastCountedResetBtnState = g_resetBtnState;
+
+			if(g_resetBtnState == HIGH)
+			{
+				previousState = g_resetBtnState;
+				return true;
+			}
+		}
+	}
+	else
+	{
+		g_previousResetBtnTime = time;
+	}
+
+	return false;
+}
+
+// know when to start and stop the counter 
 void startStopDebounce()
 {
     if(micros() - g_lastPressTime < DEBOUNCE_MICROS)
@@ -150,19 +281,18 @@ void startStopDebounce()
 
     if(!g_timerIsRunning)
     {
-        Serial.print("started the timer\n");
         g_timerIsRunning = true;
     }
     else if(g_timerIsRunning)
     {
-        Serial.print("stopped the timer\n");
         g_timerIsRunning = false;
+        g_numberToDisplay = g_counterInMs;
     }
 
     g_lastPressTime = micros();    
 }
 
-
+// deal with all the lap stuff -> save, cycle and hold cycle
 void lapDebounce()
 {
     if(micros() - g_lastPressTime < DEBOUNCE_MICROS)
@@ -176,20 +306,25 @@ void lapDebounce()
     // }
     if(g_fallingOrRising == FALLING)
     {
+        g_shouldCycle = false;
         //disable cycle possibility
     }
 
     if(g_fallingOrRising == RISING)
     {
-        //start a timer to enable cycle through laps 
+        g_shouldCycle = true;
+        g_lastCycleTime = micros();
 
-        if(!g_timerIsRunning)
+        if(!g_timerIsRunning && g_counterInMs == 0)
         {
-            // cycle through lap
+            cycleThroughLaps();
         }
         else if(g_timerIsRunning)
         {
-            //save lap round robin
+            // store laps
+            g_lapsSaved[g_lapIterator] = g_counterInMs - g_numberAtLastLap;
+            g_numberAtLastLap = g_counterInMs;
+            g_lapIterator = getNextIterator();
         }
     }
 
