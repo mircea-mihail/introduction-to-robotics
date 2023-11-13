@@ -56,7 +56,7 @@ volatile unsigned long g_lapsSaved[4] = {0, 0, 0, 0};
                                                             (byteEncodings[digitToDisplay]))
 // for button presses:
 #define MILLIS_TO_MICROS 1000U
-#define DEBOUNCE_MICROS (50UL * MILLIS_TO_MICROS)
+#define DEBOUNCE_MICROS (40UL * MILLIS_TO_MICROS)
 #define DURATION_FOR_CYCLE (500UL * MILLIS_TO_MICROS)
 
 volatile unsigned long g_lastPressTime = 0;
@@ -103,6 +103,8 @@ void loop()
 {
     if(g_timerIsRunning)
     {
+        g_shouldCycle = false;
+    
         if (millis() - g_lastIncrementMoment > DELAY_MILLIS) 
         {
             g_counterInMs++;
@@ -115,6 +117,7 @@ void loop()
         displayNumber(g_counterInMs);
     }
     else
+    if(g_timerIsRunning == 0)
     {
         //can only reset when timer not running
         resetIfNecessary();
@@ -299,6 +302,7 @@ void lapDebounce()
     {
         return;
     }
+    g_lastPressTime = micros();    
 
     // if(micros() - g_lastPressTime > DURATION_FOR_RESET)
     // {
@@ -327,9 +331,7 @@ void lapDebounce()
             g_lapIterator = getNextIterator();
         }
     }
-
-    g_lastPressTime = micros();    
-
+    
     //if falling make rising and reverse 
     g_fallingOrRising = (g_fallingOrRising == RISING ? FALLING : RISING);
 }
