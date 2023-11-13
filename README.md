@@ -138,3 +138,56 @@ https://www.youtube.com/watch?v=VlsCClYC-cU
 <img src="media/Hw4-project.jpg" alt="drawing" height="300"/>
 
 </details>
+
+## Homework 5
+
+<details>
+<summary> <B> Basic Timer With Laps </B></summary>
+
+### Task 
+
+Using the 4-digit 7-segment display and 3 buttons, you should implement a
+stopwatch timer that counts in 10ths of a second and has a save lap functionality
+(similar to most basic stopwatch functions on most phones).
+
+#### Behaviour
+
+1. The beginning state of the stopwatch is ”000.0”. 
+When pressing the Start button, the timer should start.
+
+2. While the timer is running, laps should be stored in memory, 
+(up to 4 laps). pressing the lap button for the 5th time 
+should override the 1st saved one. If you press the reset
+button while timer is running, nothing happens. If you press the pause
+button, the timer stops.
+
+3. In Pause Mode, the lap button doesn’t work anymore. Pressing
+the reset button resets you to 000.0.
+
+4. After reset you can press the lap button to cycle through the
+lap times. Each time you press the button, it takes you to the
+next saved lap. Pressing it continuously should cycle you through it
+continuously. Pressing the reset button while in this state resets all
+your flags and takes the timer back to ”000.0”.
+
+5. My extra input: I only display the saved laps. If the user only saves 
+three laps, I don't display the 4th "empty" one as 000.0. Instead i cycle to 
+the first lap. I also mate it impossible to reset the laps without viewing them first
+to prevent accidental data loss.
+### Hardware Implementation
+
+I used:
+* 8 330Ω Resistors for the segments
+* one 4 digit 7 segment display
+* wires
+* an Arduino Uno
+* 3 buttons
+* a shift register
+
+Below is a youtube link that shows the homework in action and there is also a picture of the project.
+
+https://www.youtube.com/watch?v=ulKlsE1wnI8
+
+<img src="media/Hw5-project.jpg" alt="drawing" height="300"/>
+
+</details>
