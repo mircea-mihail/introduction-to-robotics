@@ -1,6 +1,7 @@
 //todo
 // test memory erase
 // change threshold values ( make them in cm and lumen or smth )
+// different sample rate for each sensor?
 
 #include "resetData.h"
 #include "sensorSettings.h"
@@ -13,6 +14,9 @@
 #define CONTROL_RGB 4
 #define COMING_BACK_TO_MAIN 12
 
+// sensor defines
+#define LIGHT_DETECTOR_PIN A0
+
 // main menu vars
 int g_mainMenu = SELECTED;
 bool g_isOutsideTheMainMenu = false;
@@ -22,22 +26,41 @@ int g_resetDataMenu = NOT_SELECTED;
 
 // sensor menu related vars
 int g_sensorMenu = NOT_SELECTED;
-int g_sensorSamplingRate = 1;
+int g_sensorSamplingRate = 1 * MILLIS_TO_SECONDS;
 int g_proximityThresholdValue = 500;
 int g_brightnessThresholdValue = 500;
 
 // system status
 int g_systemStatus = NOT_SELECTED;
 
+// sensor values
+int g_lastBrightnessReading = 0;
+unsigned long g_lastBrightnessTime = 0;
 
 void setup()
 {
     Serial.begin(115200);
+    pinMode(LIGHT_DETECTOR_PIN, INPUT);
     printMainMenu();
+}
+
+void readSensorValues()
+{
+    // brightness sensor
+    if(millis() - g_lastBrightnessTime > g_sensorSamplingRate)
+    {
+        g_lastBrightnessReading = analogRead(LIGHT_DETECTOR_PIN);
+        // Serial.print(g_lastBrightnessReading);
+        // Serial.print("\n");
+        g_lastBrightnessTime = millis();
+    }
+
+    //  ultrasonic sensor
 }
 
 void loop()
 {
+    readSensorValues();
     if(Serial.available() > NO_SERIAL_DATA || g_mainMenu != SELECTED)
     {   
         if(g_mainMenu == SELECTED)
@@ -103,7 +126,7 @@ void printSystemStatus()
 void printSensorVariables()
 {
     Serial.print("\nThe sampling rate is ");
-    Serial.print(g_sensorSamplingRate);
+    Serial.print(g_sensorSamplingRate / MILLIS_TO_SECONDS);
     Serial.print(" s\n");
 
     Serial.print("The proximity sensor threshold is ");

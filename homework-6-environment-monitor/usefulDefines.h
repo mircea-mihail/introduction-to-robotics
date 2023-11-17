@@ -14,4 +14,7 @@
 #define NO_SERIAL_DATA 0
 #define EEPROM_LOG_STORAGE 11
 
+// sensor related
+#define MILLIS_TO_SECONDS 1000UL
+
 #endif

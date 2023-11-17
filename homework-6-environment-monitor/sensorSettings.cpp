@@ -19,9 +19,9 @@ void pickSamplingInterval()
 
     if(inputSampleRate >= MIN_SAMPLE_RATE && inputSampleRate <= MAX_SAMPLE_RATE)
     {
-        g_sensorSamplingRate = inputSampleRate;
+        g_sensorSamplingRate = inputSampleRate * MILLIS_TO_SECONDS;
         Serial.print("updated the sampling value - ");
-        Serial.println(g_sensorSamplingRate);
+        Serial.println(g_sensorSamplingRate / MILLIS_TO_SECONDS);
     }
     else
     {
