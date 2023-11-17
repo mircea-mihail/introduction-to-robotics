@@ -1,6 +1,7 @@
 //todo
 // test memory erase
 // change threshold values ( make them in cm and lumen or smth )
+// change threshold prompt to fit 
 // different sample rate for each sensor?
 
 #include "resetData.h"
@@ -16,6 +17,10 @@
 
 // sensor defines
 #define LIGHT_DETECTOR_PIN A0
+#define ULTRASONIC_TRIG_WAIT_US 2
+#define ULTRASONIC_HIGH_TRIG_DURATION_US 2
+#define SPEED_OF_LIGHT_CM_PER_US 0.0343
+#define ULTRASONIC_TRAVELS_TWO_WAYS 2
 
 // main menu vars
 int g_mainMenu = SELECTED;
@@ -37,10 +42,19 @@ int g_systemStatus = NOT_SELECTED;
 int g_lastBrightnessReading = 0;
 unsigned long g_lastBrightnessTime = 0;
 
+float g_lastProximityReading = 0;
+unsigned long g_lastProximityTime = 0;
+
+int g_distanceToProximityInCm = 0;
+
 void setup()
 {
     Serial.begin(115200);
     pinMode(LIGHT_DETECTOR_PIN, INPUT);
+
+    pinMode(ULTRASONIC_ECHO, INPUT);
+    pinMode(ULTRASONIC_TRIG, OUTPUT);
+    
     printMainMenu();
 }
 
@@ -56,6 +70,22 @@ void readSensorValues()
     }
 
     //  ultrasonic sensor
+    if(millis() - g_lastProximityTime > g_sensorSamplingRate)
+    {
+        digitalWrite(ULTRASONIC_TRIG, LOW);
+        delayMicroseconds(ULTRASONIC_TRIG_WAIT_US);
+
+        digitalWrite(ULTRASONIC_TRIG, HIGH);
+        delayMicroseconds(ULTRASONIC_HIGH_TRIG_DURATION_US);
+        digitalWrite(ULTRASONIC_TRIG, LOW);
+
+        long travelDuration = pulseIn(ULTRASONIC_ECHO, HIGH);
+        g_distanceToProximityInCm = travelDuration * SPEED_OF_LIGHT_CM_PER_US/ULTRASONIC_TRAVELS_TWO_WAYS;
+
+        Serial.print(g_distanceToProximityInCm);
+        Serial.print("\n");
+        g_lastProximityTime = millis();
+    }
 }
 
 void loop()

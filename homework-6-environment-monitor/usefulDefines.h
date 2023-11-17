@@ -7,14 +7,17 @@
 
 // don't want to wear out the most used memory (0)
 #define ULTRASONIC_ADDRESS 740
-#define BRIGHTNESS_ADDRESS ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE // 10 logs and an average
+#define EEPROM_LOG_STORAGE (11 * sizeof(int))
+#define BRIGHTNESS_ADDRESS (ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE)// 10 logs and an average
+
 #define COMING_BACK_TO_MAIN 12
 
 // for input
 #define NO_SERIAL_DATA 0
-#define EEPROM_LOG_STORAGE 11
 
 // sensor related
 #define MILLIS_TO_SECONDS 1000UL
+#define ULTRASONIC_TRIG 11
+#define ULTRASONIC_ECHO 10
 
 #endif
