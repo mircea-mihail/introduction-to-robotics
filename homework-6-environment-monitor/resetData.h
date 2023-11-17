@@ -10,6 +10,8 @@
 #define DELETE_BRIGHTNESS_DATA 2
 #define RETURN_FROM_DELETE_OPTIONS 3
 
+#define RESET_VALUE 0
+
 extern int g_resetDataMenu;
 extern int g_mainMenu;
 

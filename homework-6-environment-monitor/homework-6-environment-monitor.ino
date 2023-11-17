@@ -3,6 +3,7 @@
 // change threshold values ( make them in cm and lumen or smth )
 // change threshold prompt to fit 
 // different sample rate for each sensor?
+// while pana raspunde fix so sensor data can be read
 
 #include "resetData.h"
 #include "sensorSettings.h"
@@ -31,7 +32,7 @@ int g_resetDataMenu = NOT_SELECTED;
 
 // sensor menu related vars
 int g_sensorMenu = NOT_SELECTED;
-int g_sensorSamplingRate = 1 * MILLIS_TO_SECONDS;
+int g_sensorSamplingRate = 10 * MILLIS_TO_SECONDS;
 int g_proximityThresholdValue = 500;
 int g_brightnessThresholdValue = 500;
 
@@ -41,11 +42,14 @@ int g_systemStatus = NOT_SELECTED;
 // sensor values
 int g_lastBrightnessReading = 0;
 unsigned long g_lastBrightnessTime = 0;
+int g_lastBrightnessWriteAddr = BRIGHTNESS_ADDRESS;
 
-float g_lastProximityReading = 0;
+int g_lastProximityReading = 0;
 unsigned long g_lastProximityTime = 0;
+int g_lastProximityWriteAddr = ULTRASONIC_ADDRESS;
 
-int g_distanceToProximityInCm = 0;
+
+
 
 void setup()
 {
@@ -58,6 +62,29 @@ void setup()
     printMainMenu();
 }
 
+void checkMemory()
+{
+      // check memory
+        Serial.print("brightness values: \n");
+        for(int i = BRIGHTNESS_ADDRESS ; i < BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE; i += sizeof(int))
+        {
+            int brightnessValue;
+            EEPROM.get(i, brightnessValue);
+            Serial.print(brightnessValue);
+            Serial.print(' ');
+        }
+
+        Serial.print("\n\nproximity values: \n");
+        for(int i = ULTRASONIC_ADDRESS ; i < ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE; i += sizeof(int))
+        {
+            int ultrasonicValue;
+            EEPROM.get(i, ultrasonicValue);
+            Serial.print(ultrasonicValue);
+            Serial.print(' ');
+        }
+        Serial.print("\n");
+}
+
 void readSensorValues()
 {
     // brightness sensor
@@ -67,6 +94,26 @@ void readSensorValues()
         // Serial.print(g_lastBrightnessReading);
         // Serial.print("\n");
         g_lastBrightnessTime = millis();
+        
+        //write to memory
+        EEPROM.put(g_lastBrightnessWriteAddr, g_lastBrightnessReading);
+        g_lastBrightnessWriteAddr += sizeof(int);
+
+        // last int is for an average
+        if(g_lastBrightnessWriteAddr >= BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE - sizeof(int))
+        {
+            g_lastBrightnessWriteAddr = BRIGHTNESS_ADDRESS;
+        }
+
+        // do average
+        int brightnessAverage = 0;
+        for(int i = BRIGHTNESS_ADDRESS ; i < BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE - sizeof(int); i += sizeof(int))
+        {
+            int brightnessValue;
+            EEPROM.get(i, brightnessValue);
+            brightnessAverage += brightnessValue / STORED_DATA_SIZE;
+        }
+        EEPROM.put(BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE - sizeof(int), brightnessAverage);
     }
 
     //  ultrasonic sensor
@@ -80,13 +127,33 @@ void readSensorValues()
         digitalWrite(ULTRASONIC_TRIG, LOW);
 
         long travelDuration = pulseIn(ULTRASONIC_ECHO, HIGH);
-        g_distanceToProximityInCm = travelDuration * SPEED_OF_LIGHT_CM_PER_US/ULTRASONIC_TRAVELS_TWO_WAYS;
+        g_lastProximityReading = travelDuration * SPEED_OF_LIGHT_CM_PER_US/ULTRASONIC_TRAVELS_TWO_WAYS;
 
-        Serial.print(g_distanceToProximityInCm);
-        Serial.print("\n");
         g_lastProximityTime = millis();
+
+        // write to memory
+        EEPROM.put(g_lastProximityWriteAddr, g_lastProximityReading);
+        g_lastProximityWriteAddr += sizeof(int);
+
+        // last int is for an average
+        if(g_lastProximityWriteAddr >= ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE - sizeof(int))
+        {
+            g_lastProximityWriteAddr = ULTRASONIC_ADDRESS;
+        }
+
+        // do average
+        int ultrasonicAverage = 0;
+        for(int i = ULTRASONIC_ADDRESS ; i < ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE - sizeof(int); i += sizeof(int))
+        {
+            int ultrasonicValue;
+            EEPROM.get(i, ultrasonicValue);
+            ultrasonicAverage += ultrasonicValue / STORED_DATA_SIZE;
+        }
+        EEPROM.put(ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE - sizeof(int), ultrasonicAverage);
     }
 }
+
+unsigned long checkMemoryTime = 0;
 
 void loop()
 {
@@ -100,6 +167,14 @@ void loop()
         
         enterMainMenu();
     }
+
+    if(millis() - checkMemoryTime > 10000)
+    {
+        checkMemoryTime = millis();
+        checkMemory();
+    }
+
+
 }
 
 void enterMainMenu()

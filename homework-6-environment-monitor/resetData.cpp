@@ -24,9 +24,9 @@ void deleteUltrasonicData()
     Serial.print("\nAre you sure you want to delete the data for the proximity sensor?\nType 'y' for yes, 'n' for no\n");
     if(areYouSure())
     {
-        for (int i = ULTRASONIC_ADDRESS; i < ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE; i++)
+        for (int i = ULTRASONIC_ADDRESS; i < ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE; i+= sizeof(int))
         {
-            EEPROM.put(i, (int)0);
+            EEPROM.put(i, (int)RESET_VALUE);
         }
         Serial.print("Proximity sensor data has succesfully been deleted\n");
     }
@@ -44,7 +44,7 @@ void deleteBrightnessData()
     {
         for (int i = BRIGHTNESS_ADDRESS; i < BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE; i += sizeof(int))
         {
-            EEPROM.put(i, (int)0);
+            EEPROM.put(i, (int)RESET_VALUE);
         }
         Serial.print("Brightness sensor data has succesfully been deleted\n");
     }
