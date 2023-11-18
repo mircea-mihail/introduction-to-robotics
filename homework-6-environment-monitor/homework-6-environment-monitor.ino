@@ -49,6 +49,9 @@ int g_lastProximityWriteAddr = ULTRASONIC_ADDRESS;
 
 unsigned long g_lastSensorReadTime = 0;
 
+// rgb menu
+byte g_rgbMenu = NOT_SELECTED;
+
 void setup()
 {
     Serial.begin(115200);
@@ -197,8 +200,9 @@ void enterMainMenu()
             goToSystemStatus();
             break;
 
-        // case CONTROL_RGB:
-        //     break;
+        case CONTROL_RGB:
+            goToRgbMenu();
+            break;
 
         case COMING_BACK_TO_MAIN:
             printMainMenu();
