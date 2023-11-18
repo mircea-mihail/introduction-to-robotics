@@ -7,7 +7,6 @@
 #include "usefulDefines.h"
 #include "systemStatus.h"
 
-
 // main menu
 #define SENSOR_SETTINGS 1
 #define RESET_DATA 2
@@ -22,6 +21,13 @@
 #define SPEED_OF_LIGHT_CM_PER_US 0.0343
 #define ULTRASONIC_TRAVELS_TWO_WAYS 2
 
+//rgb
+#define RED_LED_PIN 6
+#define GREEN_LED_PIN 5
+#define BLUE_LED_PIN 4
+
+#define LED_ON 30
+#define LED_OFF 0
 // main menu vars
 int g_mainMenu = SELECTED;
 bool g_isOutsideTheMainMenu = false;
@@ -31,7 +37,7 @@ int g_resetDataMenu = NOT_SELECTED;
 
 // sensor menu related vars
 int g_sensorMenu = NOT_SELECTED;
-int g_sensorSamplingRate = 10 * MILLIS_TO_SECONDS;
+int g_sensorSamplingRate = 100 * MILLIS_TO_SECONDS;
 int g_proximityThresholdValue = 500;
 int g_brightnessThresholdValue = 500;
 
@@ -49,6 +55,8 @@ int g_lastProximityWriteAddr = ULTRASONIC_ADDRESS;
 
 unsigned long g_lastSensorReadTime = 0;
 
+// rgb
+int g_rgbAutomatic = true;
 
 void setup()
 {
@@ -58,6 +66,10 @@ void setup()
     pinMode(ULTRASONIC_ECHO, INPUT);
     pinMode(ULTRASONIC_TRIG, OUTPUT);
     
+    pinMode(RED_LED_PIN, OUTPUT);
+    pinMode(GREEN_LED_PIN, OUTPUT);
+    pinMode(BLUE_LED_PIN, OUTPUT);
+
     printMainMenu();
 }
 
@@ -152,11 +164,27 @@ void readSensorValues()
     }
 }
 
+void setRgbLight()
+{
+    if(g_rgbAutomatic)
+    {
+        if(g_lastBrightnessReading < g_brightnessThresholdValue && g_lastProximityReading < g_proximityThresholdValue)
+        {
+            analogWrite(RED_LED_PIN, LED_OFF); 
+            analogWrite(GREEN_LED_PIN, LED_ON); 
+            analogWrite(BLUE_LED_PIN, LED_OFF);
+        } 
+    }
+}
+
 unsigned long checkMemoryTime = 0;
 
 void loop()
 {
     readSensorValues();
+
+    setRgbLight();
+
     if(Serial.available() > NO_SERIAL_DATA || g_mainMenu != SELECTED)
     {   
         if(g_mainMenu == SELECTED)
