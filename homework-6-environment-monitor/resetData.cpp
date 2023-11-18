@@ -1,5 +1,8 @@
 #include "resetData.h"
 
+bool g_hasVisitedUltrasonic = false;
+bool g_hasVisitedBrightness = false;
+
 void printResetDataOptions()
 {
     Serial.print("\nRESET DATA OPTIONS\n");
@@ -9,7 +12,6 @@ void printResetDataOptions()
 
 bool areYouSure()
 {
-    while(Serial.available() == NO_SERIAL_DATA);
     int isSure = Serial.read();
 
     if(isSure == 'y')
@@ -21,38 +23,56 @@ bool areYouSure()
 
 void deleteUltrasonicData()
 {
-    Serial.print("\nAre you sure you want to delete the data for the proximity sensor?\nType 'y' for yes, 'n' for no\n");
-    if(areYouSure())
+    if(!g_hasVisitedUltrasonic)
     {
-        for (int i = ULTRASONIC_ADDRESS; i < ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE; i+= sizeof(int))
+        Serial.print("\nAre you sure you want to delete the data for the proximity sensor?\nType 'y' for yes, 'n' for no\n");
+        g_hasVisitedUltrasonic = true;
+    }
+    if(Serial.available() > NO_SERIAL_DATA)
+    {
+        if(areYouSure())
         {
-            EEPROM.put(i, (int)RESET_VALUE);
+            for (int i = ULTRASONIC_ADDRESS; i < ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE; i+= sizeof(int))
+            {
+                EEPROM.put(i, (int)RESET_VALUE);
+            }
+            Serial.print("Proximity sensor data has succesfully been deleted\n");
         }
-        Serial.print("Proximity sensor data has succesfully been deleted\n");
+        else
+        {
+            Serial.print("No data has been erased\n");
+        }
+        printResetDataOptions();
+        g_hasVisitedUltrasonic = false;
+        g_resetDataMenu = SELECTED;
     }
-    else
-    {
-        Serial.print("No data has been erased\n");
-    }
-    printResetDataOptions();
 }
 
 void deleteBrightnessData()
 {
-    Serial.print("\nAre you sure you want to delete the data for the brightness sensor?\nType 'y' for yes, 'n' for no\n");
-    if(areYouSure())
+    if(!g_hasVisitedBrightness)
     {
-        for (int i = BRIGHTNESS_ADDRESS; i < BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE; i += sizeof(int))
+        Serial.print("\nAre you sure you want to delete the data for the brightness sensor?\nType 'y' for yes, 'n' for no\n");
+        g_hasVisitedBrightness = true;
+    }
+    if(Serial.available() > NO_SERIAL_DATA)
+    {
+        if(areYouSure())
         {
-            EEPROM.put(i, (int)RESET_VALUE);
+            for (int i = BRIGHTNESS_ADDRESS; i < BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE; i += sizeof(int))
+            {
+                EEPROM.put(i, (int)RESET_VALUE);
+            }
+            Serial.print("Brightness sensor data has succesfully been deleted\n");
         }
-        Serial.print("Brightness sensor data has succesfully been deleted\n");
+        else
+        {
+            Serial.print("No data has been erased\n");
+        }
+        printResetDataOptions();
+        g_hasVisitedBrightness = false;
+        g_resetDataMenu = SELECTED;
     }
-    else
-    {
-        Serial.print("No data has been erased\n");
-    }
-    printResetDataOptions();
 }
 
 void goToResetData()
@@ -63,9 +83,12 @@ void goToResetData()
         g_resetDataMenu = SELECTED;
     }
 
-    if(Serial.available() > NO_SERIAL_DATA)
+    if(Serial.available() > NO_SERIAL_DATA || g_resetDataMenu != SELECTED)
     {
-        g_resetDataMenu = Serial.parseInt();
+        if(g_resetDataMenu == SELECTED)
+        {
+            g_resetDataMenu = Serial.parseInt();
+        }
 
         switch (g_resetDataMenu)
         {
