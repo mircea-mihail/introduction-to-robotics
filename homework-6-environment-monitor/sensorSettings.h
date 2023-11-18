@@ -16,8 +16,8 @@
 #define BRIGHTNESS_THRESHOLD 3
 #define RETURN_FROM_SENSOR_SETTINGS 4
 
-extern int g_mainMenu;
-extern int g_sensorMenu;
+extern byte g_mainMenu;
+extern byte g_sensorMenu;
 
 //for sensors
 extern int g_sensorSamplingRate;

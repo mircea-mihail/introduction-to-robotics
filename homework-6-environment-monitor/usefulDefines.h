@@ -21,4 +21,12 @@
 #define ULTRASONIC_TRIG 11
 #define ULTRASONIC_ECHO 10
 
+//rgb
+#define RED_LED_PIN 6
+#define GREEN_LED_PIN 5
+#define BLUE_LED_PIN 3
+
+#define LED_ON 30
+#define LED_OFF 0
+
 #endif

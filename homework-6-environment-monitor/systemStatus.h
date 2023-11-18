@@ -8,8 +8,8 @@
 #define PRINT_SENSOR_SETTINGS 2
 #define GO_BACK 3
 
-extern int g_systemStatus;
-extern int g_mainMenu;
+extern byte g_systemStatus;
+extern byte g_mainMenu;
 
 extern int g_proximityThresholdValue;
 extern int g_brightnessThresholdValue;

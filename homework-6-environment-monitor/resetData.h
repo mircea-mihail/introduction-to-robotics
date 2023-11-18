@@ -12,8 +12,8 @@
 
 #define RESET_VALUE 0
 
-extern int g_resetDataMenu;
-extern int g_mainMenu;
+extern byte g_resetDataMenu;
+extern byte g_mainMenu;
 
 // just prints the reset data menu
 extern void printResetDataOptions();
