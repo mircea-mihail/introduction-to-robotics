@@ -27,6 +27,8 @@ void pickSamplingInterval()
         if(inputSampleRate >= MIN_SAMPLE_RATE && inputSampleRate <= MAX_SAMPLE_RATE)
         {
             g_sensorSamplingRate = inputSampleRate * MILLIS_TO_SECONDS;
+            EEPROM.update(SAMPLING_INTERVAL_ADDRESS, inputSampleRate);
+
             Serial.print(F("updated the sampling value - "));
             Serial.println(g_sensorSamplingRate / MILLIS_TO_SECONDS);
         }
@@ -57,6 +59,8 @@ void pickProximityThreshold()
         if(proximityTreshold >= MIN_ANALOG_IN && proximityTreshold <= MAX_ANALOG_IN)
         {
             g_proximityThresholdValue = proximityTreshold;
+            EEPROM.put(ULTRASONIC_THRESHOLD_ADDRESS, g_proximityThresholdValue);
+
             Serial.print(F("updated the proximity value - "));
             Serial.println(g_proximityThresholdValue);
         }
@@ -87,6 +91,8 @@ void pickBrightnessThreshold()
         if(brightnessTreshold >= MIN_ANALOG_IN && brightnessTreshold <= MAX_ANALOG_IN)
         {
             g_brightnessThresholdValue = brightnessTreshold;
+            EEPROM.put(BRIGHTNESS_THRESHOLD_ADDRESS, g_brightnessThresholdValue);
+
             Serial.print(F("updated the brightness value - "));
             Serial.println(g_brightnessThresholdValue);
         }

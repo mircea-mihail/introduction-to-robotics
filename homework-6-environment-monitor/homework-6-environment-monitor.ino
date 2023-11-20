@@ -52,9 +52,31 @@ unsigned long g_lastSensorReadTime = 0;
 // rgb menu
 byte g_rgbMenu = NOT_SELECTED;
 
+bool g_rgbAutomatic = true;
+
 int g_defaultRedColor = 255;
 int g_defaultBlueColor = 100;
 int g_defaultGreenColor = 10;
+
+void getSystemSettingsFromMemory()
+{
+    EEPROM.get(SAMPLING_INTERVAL_ADDRESS, g_sensorSamplingRate);
+    if(g_sensorSamplingRate < MIN_SAMPLE_RATE || g_sensorSamplingRate > MAX_SAMPLE_RATE)
+    {
+        g_sensorSamplingRate = MAX_SAMPLE_RATE;
+    }
+
+    g_sensorSamplingRate *= MILLIS_TO_SECONDS; 
+
+    EEPROM.get(ULTRASONIC_ADDRESS, g_proximityThresholdValue);
+    EEPROM.get(BRIGHTNESS_ADDRESS, g_brightnessThresholdValue);
+    
+    g_rgbAutomatic = EEPROM.read(AUTO_LED_ADDRESS);
+    
+    g_defaultRedColor = EEPROM.read(DEFAULT_RED_COLOR_ADDRESS);
+    g_defaultGreenColor = EEPROM.read(DEFAULT_GREEN_COLOR_ADDRESS);
+    g_defaultBlueColor = EEPROM.read(DEFAULT_BLUE_COLOR_ADDRESS);
+}
 
 void setup()
 {
@@ -67,6 +89,8 @@ void setup()
     pinMode(RED_LED_PIN, OUTPUT);
     pinMode(GREEN_LED_PIN, OUTPUT);
     pinMode(BLUE_LED_PIN, OUTPUT);
+
+    getSystemSettingsFromMemory();
 
     printMainMenu();
 }
@@ -91,7 +115,24 @@ void checkMemory()
         Serial.print(ultrasonicValue);
         Serial.print(' ');
     }
-    Serial.print("\n");
+    Serial.print("\n\nsample rate ultrasonic and brightness: ");
+
+    int auxVar;
+    for(int i = 0; i < 3; i ++)
+    {
+        EEPROM.get(SAMPLING_INTERVAL_ADDRESS + i, auxVar);
+        Serial.print(auxVar);
+        Serial.print( " ");
+    }
+
+    Serial.println();
+    Serial.print("auto, red, green, blue: ");
+    for(int i = 0; i < 4; i++)
+    {
+        Serial.print(EEPROM.read(AUTO_LED_ADDRESS + i));
+        Serial.print(" ");
+    }
+    Serial.println("\n\n");
 }
 
 void readSensorValues()

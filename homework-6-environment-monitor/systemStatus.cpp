@@ -41,13 +41,23 @@ void printSensorReadings()
 
     if(millis() - g_lastSensorReadTime >= g_sensorSamplingRate)
     {
+        int logAverage;
         g_lastSensorReadTime = millis();
         
         Serial.print(F("Current Brightness: "));
-        Serial.println(g_lastBrightnessReading);
+        Serial.print(g_lastBrightnessReading);
+        Serial.print(" and log average: ");
+        EEPROM.get(BRIGHTNESS_AVERAGE_ADDRESS, logAverage);
+        Serial.print(logAverage);
+        Serial.println();
 
         Serial.print(F("Current Distance: "));
-        Serial.println(g_lastProximityReading);
+        Serial.print(g_lastProximityReading);
+        Serial.print(" and log average: ");
+        EEPROM.get(ULTRASONIC_AVERAGE_ADDRESS, logAverage);
+        Serial.print(logAverage);
+
+        Serial.println();
         Serial.println();
     }
 }

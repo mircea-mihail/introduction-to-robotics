@@ -1,7 +1,7 @@
 #include "rgbControls.h"
 
 // rgb
-bool g_rgbAutomatic = true;
+extern bool g_rgbAutomatic;
 
 extern int g_defaultRedColor;
 extern int g_defaultBlueColor;
@@ -68,6 +68,7 @@ void toggleRgbControl()
         g_rgbAutomatic = true;
         Serial.print(F("on\n"));
     }
+    EEPROM.update(AUTO_LED_ADDRESS, g_rgbAutomatic);
     
     g_rgbMenu = SELECTED;
     printRgbMenu();
@@ -89,7 +90,11 @@ void setRgbValues()
         // strcpy(auxString, serialColorInput.c_str());
 
         sscanf(serialColorInput.c_str(), "%d %d %d", &g_defaultRedColor, &g_defaultGreenColor, &g_defaultBlueColor);
-        
+
+        EEPROM.update(DEFAULT_RED_COLOR_ADDRESS, g_defaultRedColor);
+        EEPROM.update(DEFAULT_GREEN_COLOR_ADDRESS, g_defaultGreenColor);
+        EEPROM.update(DEFAULT_BLUE_COLOR_ADDRESS, g_defaultBlueColor);
+
         g_hasVisitedManualSensorVals = false;
         g_rgbMenu = SELECTED;
         printRgbMenu();

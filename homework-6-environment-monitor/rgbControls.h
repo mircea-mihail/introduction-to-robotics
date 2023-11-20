@@ -3,6 +3,7 @@
 
 #include "usefulDefines.h"
 #include "Arduino.h"
+#include <EEPROM.h>
 
 #define MANUAL_RGB_CONTROL 1
 #define TOGGLE_AUTOMATIC_RGB 2

@@ -1,15 +1,33 @@
 #ifndef USEFUL_DEFINES_H
 #define USEFUL_DEFINES_H
 
+#define MIN_SAMPLE_RATE 1
+#define MAX_SAMPLE_RATE 10
+
 // for all menus
 #define NOT_SELECTED 10
 #define SELECTED 11
 
-// don't want to wear out the most used memory (0)
+// memory
+
+// data read by sensors
 #define STORED_DATA_SIZE 10
 #define ULTRASONIC_ADDRESS 740
 #define EEPROM_LOG_STORAGE (11 * sizeof(int))
+#define ULTRASONIC_AVERAGE_ADDRESS (ULTRASONIC_ADDRESS + 10 * sizeof(int))
 #define BRIGHTNESS_ADDRESS (ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE)// 10 logs and an average
+#define BRIGHTNESS_AVERAGE_ADDRESS (BRIGHTNESS_ADDRESS + 10 * sizeof(int))
+//application variables:
+#define SAMPLING_INTERVAL_ADDRESS (BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE)
+#define ULTRASONIC_THRESHOLD_ADDRESS (SAMPLING_INTERVAL_ADDRESS + sizeof(int))
+#define BRIGHTNESS_THRESHOLD_ADDRESS (ULTRASONIC_THRESHOLD_ADDRESS + sizeof(int))
+
+#define AUTO_LED_ADDRESS (BRIGHTNESS_THRESHOLD_ADDRESS + sizeof(int))
+
+#define DEFAULT_RED_COLOR_ADDRESS (AUTO_LED_ADDRESS + 1) // RGB vals are 1 byte
+#define DEFAULT_GREEN_COLOR_ADDRESS (DEFAULT_RED_COLOR_ADDRESS + 1) // RGB vals are 1 byte
+#define DEFAULT_BLUE_COLOR_ADDRESS (DEFAULT_GREEN_COLOR_ADDRESS + 1) // RGB vals are 1 byte
+
 
 #define COMING_BACK_TO_MAIN 12
 

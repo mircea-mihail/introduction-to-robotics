@@ -2,10 +2,8 @@
 #define SENSOR_SETTINGS_H
 
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "usefulDefines.h"
-
-#define MIN_SAMPLE_RATE 1
-#define MAX_SAMPLE_RATE 10
 
 #define MIN_ANALOG_IN 0
 #define MAX_ANALOG_IN 1023

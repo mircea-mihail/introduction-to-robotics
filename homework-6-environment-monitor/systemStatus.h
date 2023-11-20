@@ -3,6 +3,7 @@
 
 #include "usefulDefines.h"
 #include "Arduino.h"
+#include <EEPROM.h>
 
 #define GET_SENSOR_READINGS 1
 #define PRINT_SENSOR_SETTINGS 2
