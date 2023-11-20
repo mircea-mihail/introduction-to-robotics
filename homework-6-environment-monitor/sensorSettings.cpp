@@ -6,16 +6,16 @@ bool g_hasVisitedBrightnessThreshold = false;
 
 void printSensorSettings()
 {
-    Serial.print("\nSENSOR SETTINGS:\n");
-    Serial.print("1 - Set sensors' sampling rate\n2 - set threshold value for ultrasonic sensor alert\n");
-    Serial.print("3 - Set threshold value for brightness alert\n4 - Go back to main menu\n");
+    Serial.print(F("\nSENSOR SETTINGS:\n"));
+    Serial.print(F("1 - Set sensors' sampling rate\n2 - set threshold value for ultrasonic sensor alert\n"));
+    Serial.print(F("3 - Set threshold value for brightness alert\n4 - Go back to main menu\n"));
 }
 
 void pickSamplingInterval()
 {
     if(!g_hasVisitedSamplingInterval)
     {
-        Serial.print("Choose a value in ms between 1 and 10\n");
+        Serial.print(F("Choose a value in ms between 1 and 10\n"));
         g_hasVisitedSamplingInterval = true;
     }
 
@@ -27,13 +27,13 @@ void pickSamplingInterval()
         if(inputSampleRate >= MIN_SAMPLE_RATE && inputSampleRate <= MAX_SAMPLE_RATE)
         {
             g_sensorSamplingRate = inputSampleRate * MILLIS_TO_SECONDS;
-            Serial.print("updated the sampling value - ");
+            Serial.print(F("updated the sampling value - "));
             Serial.println(g_sensorSamplingRate / MILLIS_TO_SECONDS);
         }
         else
         {
             Serial.print(inputSampleRate);
-            Serial.print(" - value not in range\n");
+            Serial.print(F(" - value not in range\n"));
         }
 
         printSensorSettings();
@@ -46,7 +46,7 @@ void pickProximityThreshold()
 {
     if(!g_hasVisitedProximityThreshold)
     {
-        Serial.print("Pick a minimum allowed distance between 1 and 1023\n");
+        Serial.print(F("Pick a minimum allowed distance between 1 and 1023\n"));
         g_hasVisitedProximityThreshold = true;
     }
 
@@ -57,13 +57,13 @@ void pickProximityThreshold()
         if(proximityTreshold >= MIN_ANALOG_IN && proximityTreshold <= MAX_ANALOG_IN)
         {
             g_proximityThresholdValue = proximityTreshold;
-            Serial.print("updated the proximity value - ");
+            Serial.print(F("updated the proximity value - "));
             Serial.println(g_proximityThresholdValue);
         }
         else
         {
             Serial.print(proximityTreshold);
-            Serial.print(" - value not in range\n");
+            Serial.print(F(" - value not in range\n"));
         }
 
         printSensorSettings();
@@ -76,7 +76,7 @@ void pickBrightnessThreshold()
 {
     if(!g_hasVisitedBrightnessThreshold)
     {
-        Serial.print("Pick a minimum allowed brightness between 1 and 1023\n");
+        Serial.print(F("Pick a minimum allowed brightness between 1 and 1023\n"));
         g_hasVisitedBrightnessThreshold = true;
     }
 
@@ -87,13 +87,13 @@ void pickBrightnessThreshold()
         if(brightnessTreshold >= MIN_ANALOG_IN && brightnessTreshold <= MAX_ANALOG_IN)
         {
             g_brightnessThresholdValue = brightnessTreshold;
-            Serial.print("updated the brightness value - ");
+            Serial.print(F("updated the brightness value - "));
             Serial.println(g_brightnessThresholdValue);
         }
         else
         {
             Serial.print(brightnessTreshold);
-            Serial.print(" - value not in range\n");
+            Serial.print(F(" - value not in range\n"));
         }
 
         printSensorSettings();

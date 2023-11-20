@@ -2,24 +2,24 @@
 
 void printSystemStatus()
 {
-    Serial.print("\nSYSTEM STATUS: \n");
-    Serial.print("1 - Get current sensor readings (press q to quit this state)\n2 - Print sensor settings\n");
-    Serial.print("3 - Go back\n");
+    Serial.print(F("\nSYSTEM STATUS: \n"));
+    Serial.print(F("1 - Get current sensor readings (press q to quit this state)\n2 - Print sensor settings\n"));
+    Serial.print(F("3 - Go back\n"));
 }
 
 void printSensorVariables()
 {
-    Serial.print("\nThe sampling rate is ");
+    Serial.print(F("\nThe sampling rate is "));
     Serial.print(g_sensorSamplingRate / MILLIS_TO_SECONDS);
     Serial.print(" s\n");
 
-    Serial.print("The proximity sensor threshold is ");
+    Serial.print(F("The proximity sensor threshold is "));
     Serial.print(g_proximityThresholdValue);
-    Serial.print(" cm\n");
+    Serial.print(F(" cm\n"));
 
-    Serial.print("The brightness sensor threshold is ");
+    Serial.print(F("The brightness sensor threshold is "));
     Serial.print(g_brightnessThresholdValue);
-    Serial.print(" out of 1023\n");
+    Serial.print(F(" out of 1023\n"));
 
     printSystemStatus();
 }
@@ -33,7 +33,7 @@ void printSensorReadings()
         {
             // stops the bypass of system status
             g_systemStatus = SELECTED;
-            Serial.print("Stopping sensor readings...\n");
+            Serial.print(F("Stopping sensor readings...\n"));
             printSystemStatus();
             return;
         }
@@ -43,10 +43,10 @@ void printSensorReadings()
     {
         g_lastSensorReadTime = millis();
         
-        Serial.print("Current Brightness: ");
+        Serial.print(F("Current Brightness: "));
         Serial.println(g_lastBrightnessReading);
 
-        Serial.print("Current Distance: ");
+        Serial.print(F("Current Distance: "));
         Serial.println(g_lastProximityReading);
         Serial.println();
     }

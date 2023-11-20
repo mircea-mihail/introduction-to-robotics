@@ -5,9 +5,9 @@ bool g_hasVisitedBrightness = false;
 
 void printResetDataOptions()
 {
-    Serial.print("\nRESET DATA OPTIONS\n");
-    Serial.print("1 - Reset data for proximity sensor\n2 - Reset data for brightness sensor\n");
-    Serial.print("3 - Go back to main menu\n");
+    Serial.print(F("\nRESET DATA OPTIONS\n"));
+    Serial.print(F("1 - Reset data for proximity sensor\n2 - Reset data for brightness sensor\n"));
+    Serial.print(F("3 - Go back to main menu\n"));
 }
 
 bool areYouSure()
@@ -25,7 +25,7 @@ void deleteUltrasonicData()
 {
     if(!g_hasVisitedUltrasonic)
     {
-        Serial.print("\nAre you sure you want to delete the data for the proximity sensor?\nType 'y' for yes, 'n' for no\n");
+        Serial.print(F("\nAre you sure you want to delete the data for the proximity sensor?\nType 'y' for yes, 'n' for no\n"));
         g_hasVisitedUltrasonic = true;
     }
     if(Serial.available() > NO_SERIAL_DATA)
@@ -36,7 +36,7 @@ void deleteUltrasonicData()
             {
                 EEPROM.put(i, (int)RESET_VALUE);
             }
-            Serial.print("Proximity sensor data has succesfully been deleted\n");
+            Serial.print(F("Proximity sensor data has succesfully been deleted\n"));
         }
         else
         {
@@ -52,7 +52,7 @@ void deleteBrightnessData()
 {
     if(!g_hasVisitedBrightness)
     {
-        Serial.print("\nAre you sure you want to delete the data for the brightness sensor?\nType 'y' for yes, 'n' for no\n");
+        Serial.print(F("\nAre you sure you want to delete the data for the brightness sensor?\nType 'y' for yes, 'n' for no\n"));
         g_hasVisitedBrightness = true;
     }
     if(Serial.available() > NO_SERIAL_DATA)
@@ -63,11 +63,11 @@ void deleteBrightnessData()
             {
                 EEPROM.put(i, (int)RESET_VALUE);
             }
-            Serial.print("Brightness sensor data has succesfully been deleted\n");
+            Serial.print(F("Brightness sensor data has succesfully been deleted\n"));
         }
         else
         {
-            Serial.print("No data has been erased\n");
+            Serial.print(F("No data has been erased\n"));
         }
         printResetDataOptions();
         g_hasVisitedBrightness = false;

@@ -43,7 +43,7 @@ int g_lastBrightnessReading = 0;
 unsigned long g_lastBrightnessTime = 0;
 int g_lastBrightnessWriteAddr = BRIGHTNESS_ADDRESS;
 
-int g_lastProximityReading = 0;
+int g_lastProximityReading = 1023;
 unsigned long g_lastProximityTime = 0;
 int g_lastProximityWriteAddr = ULTRASONIC_ADDRESS;
 
@@ -219,7 +219,7 @@ void enterMainMenu()
 
 void printMainMenu()
 {
-    Serial.print("\nMAIN MENU: \n");
-    Serial.print("1 - Tweak sensor settings\n2 - Reset logged data\n");
-    Serial.print("3 - Check system status\n4 - Control the RGB LED\n");
+    Serial.print(F("\nMAIN MENU: \n"));
+    Serial.print(F("1 - Tweak sensor settings\n2 - Reset logged data\n"));
+    Serial.print(F("3 - Check system status\n4 - Control the RGB LED\n"));
 }

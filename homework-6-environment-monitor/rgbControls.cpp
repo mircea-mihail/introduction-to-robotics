@@ -1,7 +1,7 @@
 #include "rgbControls.h"
 
 // rgb
-int g_rgbAutomatic = true;
+bool g_rgbAutomatic = true;
 
 void setRgbLight()
 {
@@ -37,10 +37,10 @@ void setRgbLight()
 
 void printRgbMenu()
 {
-    Serial.print("\nRBG MENU: \n");
-    Serial.print("1 - Manual RGB control\n2 - Toggle automatic RGB (now");
+    Serial.print(F("\nRBG MENU: \n"));
+    Serial.print(F("1 - Manual RGB control\n2 - Toggle automatic RGB (now"));
     Serial.print(g_rgbAutomatic == true ? "on)\n" : "off)\n");
-    Serial.print("3 - Check system status\n4 - Control the RGB LED\n");
+    Serial.print(F("3 - Check system status\n4 - Control the RGB LED\n"));
 }
 
 void toggleRgbControl()
@@ -50,7 +50,7 @@ void toggleRgbControl()
 
 void setRgbValues()
 {
-    
+    // if()
 }
 
 void goToRgbMenu()
