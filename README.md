@@ -191,3 +191,87 @@ https://www.youtube.com/watch?v=ulKlsE1wnI8
 <img src="media/Hw5-project.jpg" alt="drawing" height="300"/>
 
 </details>
+
+## Homework 6
+
+<details>
+<summary> <B> Environment monitor </B></summary>
+
+### Writer's notes
+
+This homework is partially at fault for some of my early male pattern baldness. A lot of code to write, 
+borderline useless final product, no inspiration in sight to programme it. 800 lines of the most boaring repetitive code. I'm glad this one's done. Probably the worst homework this cours had to offer.
+
+### Task 
+
+Develop a ”Smart Environment Monitor and Logger” using Arduino. This system will utilize various sensors to gather environmental data, log this data into EEPROM, and provide both visual 
+feedback via an RGB LED and user interaction through a Serial Menu. The project focuses on integrating sensor readings,
+memory management, Serial Communication and the general objective of building a menu.
+
+#### Menu Structure
+
+1. Sensor Settings 
+  * Sensors Sampling Interval. Here you should be prompted for
+a value between 1 and 10 seconds. Use this value as a sampling rate
+for the sensors. You can read a separate value for each or have the
+same for both.
+  * Ultrasonic Alert Threshold. Here you should be prompted
+for a threshold value for the ultrasonic sensor. You can decide if that
+is the min or max value (you can signal that something is too close).
+When sensor value exceeds the threshold value, an alert should be
+given. This can be in the form of a message. If the LED is set to
+Automatic Mode (see section 4.2), it should also turn red if any of
+the sensors are outside the value.
+  * LDR Alert Threshold. Here you should be prompted for a
+threshold value for the LDR sensor. You can decide if that is the
+min or max value (for example, it could signal that night is coming).
+When sensor value exceeds the threshold value, an alert should be
+given. This can be in the form of a message. If the LED is set to
+Automatic Mode (see section 4.2), it should also turn red if any of
+the sensors are outside the value.
+  * Back // Return to main menu
+
+2. Reset Logger Data. Should print a message, promting if you to
+confirm to delete all data. Something like ”are you sure?”, followed by
+the submenu with YES or NO. You can reset both sensor data at the same
+time, or you can do it individually. Your choice. I did it individually.
+  * Yes.
+  * No.
+
+3. System Status // Check current status and health
+  * Current Sensor Readings. Continuously print sensor readings
+at the set sampling rate, from all sensors. Make sure you have a way
+to exit this (such as pressing a specific key) and inform the user of
+this method through a message.
+  * Current Sensor Settings. Displays the sampling rate and
+threshold value for all sensors.
+  * Back. Return to Main menu.
+
+4. RGB LED Control // Go to submenu
+  * Manual Color Control. Set the RGB colors manually. You
+decide how to input them, either by making an option for each chan-
+nel, or by putting a string etc. If you expect a specific format, make
+sure to inform the user.
+  * LED: Toggle Automatic ON/OFF. If automatic mode is
+ON, then the led color should be GREEN when all sensors value do
+not exceed threshold values (aka no alert) and RED when there is an
+alert (aka ANY sensor value exceeds the threshold). When automatic
+mode is OFF, then the LED should use the last saved RGB values.
+  * Back // Return to main men
+
+### Hardware Implementation
+
+I used:
+* 3 330Ω Resistors for the segments
+* one ultrasonic sensor
+* one photoresistor
+* an Arduino Uno
+* an RGB LED
+
+Below is a youtube link that shows the homework in action and there is also a picture of the project.
+
+https://www.youtube.com/watch?v=ulKlsE1wnI8
+
+<img src="media/Hw6-project.jpg" alt="drawing" height="300"/>
+
+</details>
