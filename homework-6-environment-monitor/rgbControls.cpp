@@ -3,6 +3,12 @@
 // rgb
 bool g_rgbAutomatic = true;
 
+extern int g_defaultRedColor;
+extern int g_defaultBlueColor;
+extern int g_defaultGreenColor;
+
+bool g_hasVisitedManualSensorVals = false;
+
 void setRgbLight()
 {
     if(g_rgbAutomatic)
@@ -33,24 +39,61 @@ void setRgbLight()
             analogWrite(BLUE_LED_PIN, LED_ON);
         } 
     }
+    else
+    {
+        analogWrite(RED_LED_PIN, g_defaultRedColor); 
+        analogWrite(GREEN_LED_PIN, g_defaultGreenColor); 
+        analogWrite(BLUE_LED_PIN, g_defaultBlueColor);
+    }
 }
 
 void printRgbMenu()
 {
     Serial.print(F("\nRBG MENU: \n"));
-    Serial.print(F("1 - Manual RGB control\n2 - Toggle automatic RGB (now"));
+    Serial.print(F("1 - Manual RGB control\n2 - Toggle automatic RGB (now "));
     Serial.print(g_rgbAutomatic == true ? "on)\n" : "off)\n");
-    Serial.print(F("3 - Check system status\n4 - Control the RGB LED\n"));
+    Serial.print(F("3 - Go back to main menu\n"));
 }
 
 void toggleRgbControl()
 {
-
-}
+    Serial.print(F("Automatic RGB control has been turned "));
+    if(g_rgbAutomatic == true)
+    {
+        g_rgbAutomatic = false;
+        Serial.print(F("off\n"));
+    }
+    else
+    {
+        g_rgbAutomatic = true;
+        Serial.print(F("on\n"));
+    }
+    
+    g_rgbMenu = SELECTED;
+    printRgbMenu();
+}   
 
 void setRgbValues()
 {
-    // if()
+    if(!g_hasVisitedManualSensorVals)
+    {
+        Serial.print(F("Input values for the red green and blue between 0 and 255"));
+        Serial.print(F("\nFor example: 255 14 0 (red 255, blue 14, green 0)\n"));
+        g_hasVisitedManualSensorVals = true;
+    }
+
+    if(Serial.available())
+    {
+        String serialColorInput = Serial.readString();
+        // char * auxString = new char[serialColorInput.length() + 1];
+        // strcpy(auxString, serialColorInput.c_str());
+
+        sscanf(serialColorInput.c_str(), "%d %d %d", &g_defaultRedColor, &g_defaultGreenColor, &g_defaultBlueColor);
+        
+        g_hasVisitedManualSensorVals = false;
+        g_rgbMenu = SELECTED;
+        printRgbMenu();
+    }
 }
 
 void goToRgbMenu()

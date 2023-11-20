@@ -52,6 +52,10 @@ unsigned long g_lastSensorReadTime = 0;
 // rgb menu
 byte g_rgbMenu = NOT_SELECTED;
 
+int g_defaultRedColor = 255;
+int g_defaultBlueColor = 100;
+int g_defaultGreenColor = 10;
+
 void setup()
 {
     Serial.begin(115200);
