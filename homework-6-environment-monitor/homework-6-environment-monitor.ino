@@ -68,8 +68,8 @@ void getSystemSettingsFromMemory()
 
     g_sensorSamplingRate *= MILLIS_TO_SECONDS; 
 
-    EEPROM.get(ULTRASONIC_ADDRESS, g_proximityThresholdValue);
-    EEPROM.get(BRIGHTNESS_ADDRESS, g_brightnessThresholdValue);
+    EEPROM.get(ULTRASONIC_THRESHOLD_ADDRESS, g_proximityThresholdValue);
+    EEPROM.get(BRIGHTNESS_THRESHOLD_ADDRESS, g_brightnessThresholdValue);
     
     g_rgbAutomatic = EEPROM.read(AUTO_LED_ADDRESS);
     
@@ -93,46 +93,6 @@ void setup()
     getSystemSettingsFromMemory();
 
     printMainMenu();
-}
-
-void checkMemory()
-{
-    // check memory
-    Serial.print("brightness values: \n");
-    for(int i = BRIGHTNESS_ADDRESS ; i < BRIGHTNESS_ADDRESS + EEPROM_LOG_STORAGE; i += sizeof(int))
-    {
-        int brightnessValue;
-        EEPROM.get(i, brightnessValue);
-        Serial.print(brightnessValue);
-        Serial.print(' ');
-    }
-
-    Serial.print("\n\nproximity values: \n");
-    for(int i = ULTRASONIC_ADDRESS ; i < ULTRASONIC_ADDRESS + EEPROM_LOG_STORAGE; i += sizeof(int))
-    {
-        int ultrasonicValue;
-        EEPROM.get(i, ultrasonicValue);
-        Serial.print(ultrasonicValue);
-        Serial.print(' ');
-    }
-    Serial.print("\n\nsample rate ultrasonic and brightness: ");
-
-    int auxVar;
-    for(int i = 0; i < 3; i ++)
-    {
-        EEPROM.get(SAMPLING_INTERVAL_ADDRESS + i, auxVar);
-        Serial.print(auxVar);
-        Serial.print( " ");
-    }
-
-    Serial.println();
-    Serial.print("auto, red, green, blue: ");
-    for(int i = 0; i < 4; i++)
-    {
-        Serial.print(EEPROM.read(AUTO_LED_ADDRESS + i));
-        Serial.print(" ");
-    }
-    Serial.println("\n\n");
 }
 
 void readSensorValues()
@@ -221,12 +181,6 @@ void loop()
         
         enterMainMenu();
     }
-
-    // if(millis() - checkMemoryTime > 10000)
-    // {
-    //     checkMemoryTime = millis();
-    //     checkMemory();
-    // }
 }
 
 void enterMainMenu()
