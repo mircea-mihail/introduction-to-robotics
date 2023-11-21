@@ -270,7 +270,7 @@ I used:
 
 Below is a youtube link that shows the homework in action and there is also a picture of the project.
 
-https://www.youtube.com/watch?v=ulKlsE1wnI8
+https://www.youtube.com/watch?v=DZubaUXpZoM
 
 <img src="media/Hw6-project.jpg" alt="drawing" height="300"/>
 
