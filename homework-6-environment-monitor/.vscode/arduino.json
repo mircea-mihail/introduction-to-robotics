@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "homework-6-environment-monitor.ino",
+    "programmer": "avrisp",
+    "port": "/dev/ttyACM0"
+}
