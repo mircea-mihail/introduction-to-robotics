@@ -35,11 +35,11 @@ inline int absolute(int a)
 // display related
 #define PLAYER_BLINK_INTERVAL 200
 #define BULLET_BLINK_INTERVAL 50
-#define BULLET_MOVE_INTERVAL 100
+#define BULLET_MOVE_INTERVAL 300
 
 // matrix occupation related
 #define MAP_NUMBER_OF_ORIENTATIONS 4
-#define MAP_BULLET_RANGE 3
+#define MAP_BULLET_RANGE 2
 #define MAP_BULLET_FLY_TIME 100
 
 #define MAP_EMPTY 0
@@ -51,10 +51,15 @@ inline int absolute(int a)
 #define MAP_BULLET_MIN_VAL 12
 #define MAP_BULLET_MIN_POSSIBLE_VAL (MAP_BULLET_MIN_VAL - MAP_NUMBER_OF_ORIENTATIONS) 
 
-#define MAP_BULLET_LEFT (MAP_BULLET_MIN_VAL * MAP_BULLET_RANGE)
-#define MAP_BULLET_RIGHT (MAP_BULLET_MIN_VAL * MAP_BULLET_RANGE + 1)
-#define MAP_BULLET_UP (MAP_BULLET_MIN_VAL * MAP_BULLET_RANGE + 2)
-#define MAP_BULLET_DOWN (MAP_BULLET_MIN_VAL * MAP_BULLET_RANGE + 3)
+#define MAP_BULLET_LEFT (MAP_BULLET_MIN_VAL + MAP_NUMBER_OF_ORIENTATIONS * MAP_BULLET_RANGE)
+#define MAP_BULLET_RIGHT (MAP_BULLET_MIN_VAL + MAP_NUMBER_OF_ORIENTATIONS * MAP_BULLET_RANGE + 1)
+#define MAP_BULLET_UP (MAP_BULLET_MIN_VAL + MAP_NUMBER_OF_ORIENTATIONS * MAP_BULLET_RANGE + 2)
+#define MAP_BULLET_DOWN (MAP_BULLET_MIN_VAL + MAP_NUMBER_OF_ORIENTATIONS * MAP_BULLET_RANGE + 3)
+
+#define MAP_ABS_BULLET_LEFT 0
+#define MAP_ABS_BULLET_RIGHT  1
+#define MAP_ABS_BULLET_UP  2
+#define MAP_ABS_BULLET_DOWN  3
 
 class gameMap
 {   
@@ -78,7 +83,7 @@ private:
         {0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, MAP_BULLET_LEFT, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0}  
     };
 
@@ -94,6 +99,57 @@ private:
                     {
                         matrix[row][col] -= MAP_NUMBER_OF_ORIENTATIONS;
                         //move bullet to next cell
+                        int newRow, newCol;
+                        switch (matrix[row][col] % MAP_NUMBER_OF_ORIENTATIONS)
+                        {
+                            case(MAP_ABS_BULLET_LEFT): 
+                                newRow = row;
+                                newCol = col - 1;
+                                if(newCol < 0)
+                                {
+                                    newCol = MATRIX_SIZE;
+                                }
+                                matrix[newRow][newCol] = matrix[row][col];
+                                matrix[row][col] = MAP_EMPTY;
+                                
+                                break;
+                                
+                            case(MAP_ABS_BULLET_RIGHT): 
+                                newRow = row;
+                                newCol = col + 1;
+                                if(newCol >= MATRIX_SIZE)
+                                {
+                                    newCol = 0;
+                                }
+                                matrix[newRow][newCol] = matrix[row][col];
+                                matrix[row][col] = MAP_EMPTY;
+                                break;
+
+                            case(MAP_ABS_BULLET_UP): 
+                                newRow = row  - 1;
+                                newCol = col;
+                                if(newRow < 0)
+                                {
+                                    newRow = MATRIX_SIZE;
+                                }
+                                matrix[newRow][newCol] = matrix[row][col];
+                                matrix[row][col] = MAP_EMPTY;
+                                break;
+
+                            case(MAP_ABS_BULLET_DOWN): 
+                                newRow = row + 1;
+                                newCol = col;
+                                if(newRow >= MATRIX_SIZE)
+                                {
+                                    newRow = 0;
+                                }
+                                matrix[newRow][newCol] = matrix[row][col];
+                                matrix[row][col] = MAP_EMPTY;
+                                break;
+                            
+                            default:
+                                break;
+                        }
                     }
                     else
                     {
