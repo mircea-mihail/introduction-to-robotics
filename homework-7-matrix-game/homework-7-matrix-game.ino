@@ -32,22 +32,44 @@ inline int absolute(int a)
 #define MATRIX_ADDRESS 0
 #define MATRIX_SIZE 8
 
+// display related
+#define PLAYER_BLINK_INTERVAL 200
+#define BULLET_BLINK_INTERVAL 50
+#define BULLET_MOVE_INTERVAL 100
+
 // matrix occupation related
+#define MAP_NUMBER_OF_ORIENTATIONS 4
+#define MAP_BULLET_RANGE 3
+#define MAP_BULLET_FLY_TIME 100
+
 #define MAP_EMPTY 0
-#define MAP_PLAYER 15
+#define MAP_WALL 1
+#define MAP_PLAYER 2
+#define MAP_POWER_UP 3
 
-#define MAP_BULLET_LEFT 16
-#define MAP_BULLET_RIGHT 17
-#define MAP_BULLET_UP 18
-#define MAP_BULLET_DOWN 19
+// bullets can reach 8 at minimum with min val 12
+#define MAP_BULLET_MIN_VAL 12
+#define MAP_BULLET_MIN_POSSIBLE_VAL (MAP_BULLET_MIN_VAL - MAP_NUMBER_OF_ORIENTATIONS) 
 
-#define MAP_WALL 20
+#define MAP_BULLET_LEFT (MAP_BULLET_MIN_VAL * MAP_BULLET_RANGE)
+#define MAP_BULLET_RIGHT (MAP_BULLET_MIN_VAL * MAP_BULLET_RANGE + 1)
+#define MAP_BULLET_UP (MAP_BULLET_MIN_VAL * MAP_BULLET_RANGE + 2)
+#define MAP_BULLET_DOWN (MAP_BULLET_MIN_VAL * MAP_BULLET_RANGE + 3)
 
 class gameMap
 {   
 private:
     LedControl p_ledControl = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, DRIVER_INDEX);
     byte p_matrixBrightness = 1;
+    
+    unsigned long m_lastPlayerBlink = 0;
+    unsigned long m_lastBulletBlink = 0;
+    
+    bool m_blinkPlayer = false;
+    bool m_blinkBullet = false;
+
+    unsigned long m_lastBulletMove = 0;
+    bool m_areBulletsOnMap = false;
 
     byte matrix[MATRIX_SIZE][MATRIX_SIZE] = {
         {0, 0, 0, 0, 0, 0, 0, 0},
@@ -56,9 +78,72 @@ private:
         {0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, MAP_BULLET_LEFT, 0},
         {0, 0, 0, 0, 0, 0, 0, 0}  
     };
+
+    void moveBullets()
+    {
+        for(int row = 0; row < MATRIX_SIZE; row ++)
+        {
+            for(int col = 0; col < MATRIX_SIZE; col ++)
+            {
+                if(matrix[row][col] >= MAP_BULLET_MIN_POSSIBLE_VAL)
+                {                    
+                    if(matrix[row][col] >= MAP_BULLET_MIN_VAL)
+                    {
+                        matrix[row][col] -= MAP_NUMBER_OF_ORIENTATIONS;
+                        //move bullet to next cell
+                    }
+                    else
+                    {
+                        matrix[row][col] = MAP_EMPTY;
+                    }
+                }    
+            }
+        }
+        
+    }
+
+    void displayElement(int p_row, int p_col)
+    {
+        switch(matrix[p_row][p_col])
+        {
+            case(MAP_PLAYER):
+                p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, m_blinkPlayer);
+
+                if(millis() - m_lastPlayerBlink > PLAYER_BLINK_INTERVAL)
+                {
+                    m_lastPlayerBlink = millis();
+                    m_blinkPlayer = !m_blinkPlayer;
+                }
+                break;
+
+            case(MAP_WALL):
+                p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, HIGH);
+
+
+            case(MAP_EMPTY):
+                p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, LOW);
+                break;
+
+            default:
+                break;
+        }
+        
+        if(matrix[p_row][p_col] >= MAP_BULLET_MIN_POSSIBLE_VAL)
+        {
+            p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, m_blinkBullet);
+
+            if(millis() - m_lastBulletBlink > BULLET_BLINK_INTERVAL)
+            {
+                m_lastBulletBlink = millis();
+                m_blinkBullet = !m_blinkBullet;
+            }
+
+            m_areBulletsOnMap = true;
+        }
+    }
 
 public:
     void initMatrix()
@@ -66,7 +151,6 @@ public:
         p_ledControl.shutdown(MATRIX_ADDRESS, false); // turn off power saving, enables display
         p_ledControl.setIntensity(MATRIX_ADDRESS, p_matrixBrightness); // sets brightness (0~15 possible values)
         p_ledControl.clearDisplay(MATRIX_ADDRESS); // Clear the matrix display
-
     }
 
     void setPositionValue(int p_xPos, int p_yPos, int p_newValue)
@@ -76,11 +160,19 @@ public:
 
     void updateDisplay() 
     {
+        // if there's no bullets on map there's no point in checking the whole matrix again
+        if(m_areBulletsOnMap && (millis() - m_lastBulletMove > BULLET_MOVE_INTERVAL))
+        {
+            m_lastBulletMove = millis();
+            moveBullets();
+        }
+        m_areBulletsOnMap = false;
+
         for (int row = 0; row < MATRIX_SIZE; row++) 
         {
             for (int col = 0; col < MATRIX_SIZE; col++) 
             {
-                p_ledControl.setLed(MATRIX_ADDRESS, row, col, matrix[row][col]);  // set each led individually
+                displayElement(row, col);
             }
         }
     }
