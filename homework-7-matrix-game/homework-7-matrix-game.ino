@@ -29,43 +29,33 @@ inline int absolute(int a)
 }
 
 //////////////////////////////////////////////// matrix related
+
+// display
+#define BULLET_BLINK_INTERVAL 50
+#define PLAYER_BLINK_INTERVAL 200
+
+// utility
 #define MATRIX_ADDRESS 0
 #define MATRIX_SIZE 8
-
-// display related
-#define PLAYER_BLINK_INTERVAL 200
-#define BULLET_BLINK_INTERVAL 50
-#define BULLET_MOVE_INTERVAL 300
+#define MATRIX_MIDDLE (MATRIX_SIZE / 2)
 
 // matrix occupation related
 #define MAP_NUMBER_OF_ORIENTATIONS 4
-#define MAP_BULLET_RANGE 2
-#define MAP_BULLET_FLY_TIME 100
+#define MAP_BULLET_RANGE 1
 
 #define MAP_EMPTY 0
 #define MAP_WALL 1
 #define MAP_PLAYER 2
 #define MAP_POWER_UP 3
+#define MAP_BULLET 3
 
 // bullets can reach 8 at minimum with min val 12
-#define MAP_BULLET_MIN_VAL 12
-#define MAP_BULLET_MIN_POSSIBLE_VAL (MAP_BULLET_MIN_VAL - MAP_NUMBER_OF_ORIENTATIONS) 
-
-#define MAP_BULLET_LEFT (MAP_BULLET_MIN_VAL + MAP_NUMBER_OF_ORIENTATIONS * MAP_BULLET_RANGE)
-#define MAP_BULLET_RIGHT (MAP_BULLET_MIN_VAL + MAP_NUMBER_OF_ORIENTATIONS * MAP_BULLET_RANGE + 1)
-#define MAP_BULLET_UP (MAP_BULLET_MIN_VAL + MAP_NUMBER_OF_ORIENTATIONS * MAP_BULLET_RANGE + 2)
-#define MAP_BULLET_DOWN (MAP_BULLET_MIN_VAL + MAP_NUMBER_OF_ORIENTATIONS * MAP_BULLET_RANGE + 3)
-
-#define MAP_ABS_BULLET_LEFT 0
-#define MAP_ABS_BULLET_RIGHT  1
-#define MAP_ABS_BULLET_UP  2
-#define MAP_ABS_BULLET_DOWN  3
 
 class gameMap
 {   
 private:
     LedControl p_ledControl = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, DRIVER_INDEX);
-    byte p_matrixBrightness = 1;
+    byte p_matrixBrightness = 15;
     
     unsigned long m_lastPlayerBlink = 0;
     unsigned long m_lastBulletBlink = 0;
@@ -74,7 +64,6 @@ private:
     bool m_blinkBullet = false;
 
     unsigned long m_lastBulletMove = 0;
-    bool m_areBulletsOnMap = false;
 
     byte matrix[MATRIX_SIZE][MATRIX_SIZE] = {
         {0, 0, 0, 0, 0, 0, 0, 0},
@@ -87,79 +76,6 @@ private:
         {0, 0, 0, 0, 0, 0, 0, 0}  
     };
 
-    void moveBullets()
-    {
-        for(int row = 0; row < MATRIX_SIZE; row ++)
-        {
-            for(int col = 0; col < MATRIX_SIZE; col ++)
-            {
-                if(matrix[row][col] >= MAP_BULLET_MIN_POSSIBLE_VAL)
-                {                    
-                    if(matrix[row][col] >= MAP_BULLET_MIN_VAL)
-                    {
-                        matrix[row][col] -= MAP_NUMBER_OF_ORIENTATIONS;
-                        //move bullet to next cell
-                        int newRow, newCol;
-                        switch (matrix[row][col] % MAP_NUMBER_OF_ORIENTATIONS)
-                        {
-                            case(MAP_ABS_BULLET_LEFT): 
-                                newRow = row;
-                                newCol = col - 1;
-                                if(newCol < 0)
-                                {
-                                    newCol = MATRIX_SIZE;
-                                }
-                                matrix[newRow][newCol] = matrix[row][col];
-                                matrix[row][col] = MAP_EMPTY;
-                                
-                                break;
-                                
-                            case(MAP_ABS_BULLET_RIGHT): 
-                                newRow = row;
-                                newCol = col + 1;
-                                if(newCol >= MATRIX_SIZE)
-                                {
-                                    newCol = 0;
-                                }
-                                matrix[newRow][newCol] = matrix[row][col];
-                                matrix[row][col] = MAP_EMPTY;
-                                break;
-
-                            case(MAP_ABS_BULLET_UP): 
-                                newRow = row  - 1;
-                                newCol = col;
-                                if(newRow < 0)
-                                {
-                                    newRow = MATRIX_SIZE;
-                                }
-                                matrix[newRow][newCol] = matrix[row][col];
-                                matrix[row][col] = MAP_EMPTY;
-                                break;
-
-                            case(MAP_ABS_BULLET_DOWN): 
-                                newRow = row + 1;
-                                newCol = col;
-                                if(newRow >= MATRIX_SIZE)
-                                {
-                                    newRow = 0;
-                                }
-                                matrix[newRow][newCol] = matrix[row][col];
-                                matrix[row][col] = MAP_EMPTY;
-                                break;
-                            
-                            default:
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        matrix[row][col] = MAP_EMPTY;
-                    }
-                }    
-            }
-        }
-        
-    }
 
     void displayElement(int p_row, int p_col)
     {
@@ -183,21 +99,19 @@ private:
                 p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, LOW);
                 break;
 
+            case(MAP_BULLET):
+                p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, m_blinkBullet);
+
+                if(millis() - m_lastBulletBlink > BULLET_BLINK_INTERVAL)
+                {
+                    m_lastBulletBlink = millis();
+                    m_blinkBullet = !m_blinkBullet;
+                }
+
+                break;
+
             default:
                 break;
-        }
-        
-        if(matrix[p_row][p_col] >= MAP_BULLET_MIN_POSSIBLE_VAL)
-        {
-            p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, m_blinkBullet);
-
-            if(millis() - m_lastBulletBlink > BULLET_BLINK_INTERVAL)
-            {
-                m_lastBulletBlink = millis();
-                m_blinkBullet = !m_blinkBullet;
-            }
-
-            m_areBulletsOnMap = true;
         }
     }
 
@@ -216,14 +130,6 @@ public:
 
     void updateDisplay() 
     {
-        // if there's no bullets on map there's no point in checking the whole matrix again
-        if(m_areBulletsOnMap && (millis() - m_lastBulletMove > BULLET_MOVE_INTERVAL))
-        {
-            m_lastBulletMove = millis();
-            moveBullets();
-        }
-        m_areBulletsOnMap = false;
-
         for (int row = 0; row < MATRIX_SIZE; row++) 
         {
             for (int col = 0; col < MATRIX_SIZE; col++) 
@@ -237,19 +143,22 @@ public:
 
 gameMap g_map;
 
-//////////////////////////////////////////////// player related
-#define PLAYER_MOVEMENT_MILLIS 200
 
-class player
+//////////////////////////////////////////////// matrix entity related
+#define BULLET_MOVE_INTERVAL 300
+#define MAP_BULLET_FLY_TIME 100
+
+class matrixEntity
 {
-private:
+protected: 
     int m_xPos = 0;
     int m_yPos = 0;
 
     int m_xNextPos = 0;
     int m_yNextPos = 0;
 
-    unsigned long long m_lastMoved = 0; // Tracks the last time the LED moved
+public:
+    virtual void updatePosition() = 0;
 
     void initialPositionUpdate(int &p_xPos, int &p_yPos, int p_xCommand, int p_yCommand)
     {
@@ -291,20 +200,119 @@ private:
         }
     }  
 
-    void pickAnAxes(int &p_xPos, int &p_yPos, int p_xLastPos, int p_yLastPos, int p_xCommand, int p_yCommand)
+    void pickAnAxes(int &p_xNextPos, int &p_yNextPos, int p_xPos, int p_yPos, int p_xCommand, int p_yCommand)
     {
-        if(p_xPos != p_xLastPos && p_yPos != p_yLastPos)
+        if(p_xNextPos != p_xPos && p_yNextPos != p_yPos)
         {
-            if(absolute(p_xCommand - JS_DEFAULT_VALUE) > absolute(p_yLastPos - JS_DEFAULT_VALUE))
+            if(absolute(p_xCommand - JS_DEFAULT_VALUE) > absolute(p_yPos - JS_DEFAULT_VALUE))
             {
-                p_yPos = p_yLastPos;
+                p_yNextPos = p_yPos;
             }
             else
             {
-                p_xPos = p_xLastPos;
+                p_xNextPos = p_xPos;
             }
         }
     }
+
+    void moveEntityOnMatrix(int p_entityType)
+    {
+
+        g_map.setPositionValue(m_xNextPos, m_yNextPos, p_entityType);
+
+        // set old position to zero 
+        if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
+        {
+            g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
+            m_xPos = m_xNextPos;
+            m_yPos = m_yNextPos;
+        }
+    }
+};
+
+////////////////////////////////////////// bullet
+#define DEFAULT_RANGE 3
+
+#define DIRECTION_UP 0
+#define DIRECTION_DOWN 1
+#define DIRECTION_LEFT 2 
+#define DIRECTION_RIGHT 3
+
+class bullet : public matrixEntity
+{
+private:
+    byte m_direction;
+    int m_rangeLeft;
+
+public:
+    bullet(int p_xPos, int p_yPos, byte p_direction, int p_rangeLeft = DEFAULT_RANGE) : m_direction(p_direction)
+    {
+        m_xPos = p_xPos;
+        m_yPos = p_yPos;
+        g_map.setPositionValue(m_xPos, m_yPos, MAP_BULLET); 
+        m_rangeLeft = p_rangeLeft;
+    }
+
+    void updatePosition() override
+    {
+        m_xNextPos = m_xPos;
+        m_yNextPos = m_yPos;
+
+        switch(m_direction)
+        {
+            case(DIRECTION_UP):
+                m_yNextPos -= 1;
+                break;
+            
+            case(DIRECTION_DOWN):
+                m_yNextPos += 1;
+                break;
+
+            case(DIRECTION_LEFT):
+                m_xNextPos -= 1;
+                break;
+
+            case(DIRECTION_RIGHT):
+                m_xNextPos += 1;
+                break;
+
+            default:
+                return;
+                break;
+        }
+
+        dealWithOutOfBounds(m_xNextPos, m_yNextPos);
+        
+        moveEntityOnMatrix(MAP_BULLET);
+
+        m_rangeLeft --;
+        Serial.print("bullet range left: ");
+        Serial.println(m_rangeLeft);
+        Serial.print("new xy positions: ");
+        Serial.print(m_xPos);
+        Serial.print(" ");
+        Serial.println(m_yPos);
+        Serial.println();
+    }
+
+    bool hasRange()
+    {
+        if(m_rangeLeft > 0)
+        {
+            return true;
+        }
+        return false;
+
+    }
+};
+
+//////////////////////////////////////////////// player related
+#define PLAYER_MOVEMENT_MILLIS 200
+
+class player : public matrixEntity
+{
+private:
+    unsigned long long m_lastMoved = 0; // Tracks the last time the LED moved
 
     void storeMovement(int p_xCommand, int p_yCommand)
     {
@@ -325,12 +333,14 @@ private:
     }
 
 public:
-    void initPosition()
+    player(int p_xPos, int p_yPos)
     {
+        m_xPos = p_xPos;
+        m_yPos = p_yPos;
         g_map.setPositionValue(m_xPos, m_yPos, MAP_PLAYER); 
     }
-
-    void updatePositions() 
+    
+    void updatePosition() override 
     {
         int xCommand = analogRead(JS_X_PIN);
         int yCommand = analogRead(JS_Y_PIN);
@@ -343,15 +353,7 @@ public:
             {
                 dealWithOutOfBounds(m_xNextPos, m_yNextPos);
 
-                g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_PLAYER);
-
-                // set old position to zero 
-                if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
-                {
-                    g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
-                    m_xPos = m_xNextPos;
-                    m_yPos = m_yNextPos;
-                }
+                moveEntityOnMatrix(MAP_PLAYER);
 
                 m_lastMoved = millis();
             }
@@ -359,8 +361,106 @@ public:
     }
 };
 
-player g_player1;
+player g_player1(MATRIX_MIDDLE, MATRIX_MIDDLE);
 
+// bulletArray()
+
+#define BULLET_TICK_RATE 500
+
+struct bulletNode
+{
+    bullet *m_bullet;
+    bulletNode *m_nextBulletNode;
+    bulletNode *m_prevBulletNode;
+
+    bulletNode(bullet *p_newBullet, bulletNode *p_nextBulletNode, bulletNode *p_prevBulletNode)
+    {
+        m_bullet = p_newBullet;
+        m_nextBulletNode = p_nextBulletNode;
+        p_prevBulletNode = m_prevBulletNode;
+    }
+
+    ~bulletNode()
+    {
+        delete m_bullet;
+    }
+};
+
+class bulletList
+{
+    bulletNode *m_firstBulletNode;
+    bulletNode *m_lastBulletNode;
+
+    unsigned long m_lastBulletUpdate = 0;
+
+public:
+    void deleteBulletNode(bulletNode *p_bulletNode)
+    {
+        // if this is the only bullet, delete it and make the first bullet null
+        if(p_bulletNode->m_prevBulletNode == NULL && p_bulletNode->m_nextBulletNode == NULL)
+        {
+            m_firstBulletNode = NULL;
+            m_lastBulletNode = NULL;
+        }
+        else if(p_bulletNode->m_prevBulletNode == NULL)
+        {
+            m_firstBulletNode = p_bulletNode->m_nextBulletNode;
+            p_bulletNode->m_nextBulletNode->m_prevBulletNode = NULL;
+        }
+        else if(p_bulletNode->m_nextBulletNode == NULL)
+        {
+            m_lastBulletNode = p_bulletNode->m_prevBulletNode;
+            p_bulletNode->m_prevBulletNode->m_nextBulletNode = NULL;
+        }
+        else
+        {
+            p_bulletNode->m_prevBulletNode->m_nextBulletNode = p_bulletNode->m_nextBulletNode;
+            p_bulletNode->m_nextBulletNode->m_prevBulletNode = p_bulletNode->m_prevBulletNode;
+        }
+
+        delete p_bulletNode;
+    }    
+
+    void addBulletNode(bullet *p_newBullet)
+    {
+        if(m_lastBulletNode == NULL)
+        {
+            m_lastBulletNode = new bulletNode(p_newBullet, NULL, NULL);
+            m_firstBulletNode = m_lastBulletNode;
+        }
+        else
+        {
+            m_lastBulletNode->m_nextBulletNode = new bulletNode(p_newBullet, NULL, m_lastBulletNode);
+            m_lastBulletNode = m_lastBulletNode->m_nextBulletNode;
+        }
+    }
+
+    void updateBullets()
+    {
+        if(millis() - m_lastBulletUpdate > BULLET_TICK_RATE)
+        {
+            bulletNode *currentNode = m_firstBulletNode;
+            while(currentNode != NULL)
+            {
+                currentNode->m_bullet->updatePosition();
+                if(!currentNode->m_bullet->hasRange())
+                {
+                    bulletNode *nodeToDelete = currentNode; 
+                    currentNode = currentNode->m_nextBulletNode;
+                    deleteBulletNode(nodeToDelete);
+
+                }
+                else
+                {
+                    currentNode = currentNode->m_nextBulletNode;
+                }
+            }
+            m_lastBulletUpdate = millis();
+        }
+    }
+};
+
+bulletList g_bulletList;
 
 void setup()
 {
@@ -374,13 +474,13 @@ void setup()
     Serial.begin(115200);
     
     g_map.initMatrix();
-    g_player1.initPosition();
+    g_bulletList.addBulletNode(new bullet(3, 3, DIRECTION_RIGHT));
+    g_bulletList.addBulletNode(new bullet(3, 2, DIRECTION_LEFT));
+
 }
 
 void loop() {
-
-    g_player1.updatePositions();
-    
+    g_bulletList.updateBullets();
+    g_player1.updatePosition();
     g_map.updateDisplay();
-
 } 
