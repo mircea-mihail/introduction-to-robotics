@@ -55,7 +55,7 @@ class gameMap
 {   
 private:
     LedControl p_ledControl = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, DRIVER_INDEX);
-    byte p_matrixBrightness = 15;
+    byte p_matrixBrightness = 1;
     
     unsigned long m_lastPlayerBlink = 0;
     unsigned long m_lastBulletBlink = 0;
@@ -286,13 +286,6 @@ public:
         moveEntityOnMatrix(MAP_BULLET);
 
         m_rangeLeft --;
-        Serial.print("bullet range left: ");
-        Serial.println(m_rangeLeft);
-        Serial.print("new xy positions: ");
-        Serial.print(m_xPos);
-        Serial.print(" ");
-        Serial.println(m_yPos);
-        Serial.println();
     }
 
     bool hasRange()
@@ -303,6 +296,11 @@ public:
         }
         return false;
 
+    }
+
+    ~bullet()
+    {
+        g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
     }
 };
 
@@ -377,12 +375,14 @@ struct bulletNode
     {
         m_bullet = p_newBullet;
         m_nextBulletNode = p_nextBulletNode;
-        p_prevBulletNode = m_prevBulletNode;
+        m_prevBulletNode = p_prevBulletNode;
+        Serial.print("node constructor\n");
     }
 
     ~bulletNode()
     {
         delete m_bullet;
+        Serial.print("node destructor\n");
     }
 };
 
@@ -442,7 +442,6 @@ public:
             bulletNode *currentNode = m_firstBulletNode;
             while(currentNode != NULL)
             {
-                currentNode->m_bullet->updatePosition();
                 if(!currentNode->m_bullet->hasRange())
                 {
                     bulletNode *nodeToDelete = currentNode; 
@@ -452,6 +451,7 @@ public:
                 }
                 else
                 {
+                    currentNode->m_bullet->updatePosition();
                     currentNode = currentNode->m_nextBulletNode;
                 }
             }
@@ -461,6 +461,13 @@ public:
 };
 
 bulletList g_bulletList;
+
+/////////////////////////////// overall game related
+#define IN_GAME 0
+#define IN_MENU 1
+#define IN_ANIMATION 2
+
+byte g_gameState;
 
 void setup()
 {
@@ -474,13 +481,15 @@ void setup()
     Serial.begin(115200);
     
     g_map.initMatrix();
-    g_bulletList.addBulletNode(new bullet(3, 3, DIRECTION_RIGHT));
-    g_bulletList.addBulletNode(new bullet(3, 2, DIRECTION_LEFT));
 
+    g_gameState = IN_GAME;
 }
 
 void loop() {
-    g_bulletList.updateBullets();
-    g_player1.updatePosition();
-    g_map.updateDisplay();
+    if(g_gameState == IN_GAME)
+    {
+        g_bulletList.updateBullets();
+        g_player1.updatePosition();
+        g_map.updateDisplay();
+    }
 } 
