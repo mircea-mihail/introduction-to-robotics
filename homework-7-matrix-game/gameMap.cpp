@@ -109,3 +109,18 @@ void gameMap::generateMap()
         }
     }
 }
+
+bool gameMap::checkWinningCondition()
+{
+    for(int row = 0; row < MATRIX_SIZE; row++)
+    {
+        for(int col = 0; col < MATRIX_SIZE; col++)
+        {
+            if(matrix[row][col] != MAP_BULLET && matrix[row][col] != MAP_PLAYER && matrix[row][col] != MAP_EMPTY)
+            {
+                return false;
+            }
+        }       
+    }
+    return true;
+}

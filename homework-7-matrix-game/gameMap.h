@@ -56,6 +56,8 @@ public:
     bool isMapElement(const byte p_mapElement, int p_xPos, int p_yPos);
 
     void generateMap();
+
+    bool checkWinningCondition();
 };
 
 #endif

@@ -8,6 +8,8 @@
 #define IN_GAME 0
 #define IN_MENU 1
 #define IN_ANIMATION 2
+#define LOST 3
+#define WON 4
 
 gameMap g_map;
 player g_player1(MATRIX_MIDDLE, MATRIX_MIDDLE);
@@ -37,8 +39,18 @@ void loop() {
             g_player1.updatePosition();
             g_player1.shoot();
             g_map.updateDisplay();
+
+            if(g_map.checkWinningCondition())
+            {
+                g_gameState = WON;
+            }
+
             break;
-        
+
+        case WON:
+            g_gameState = IN_GAME;
+            break;
+
         default:
             break;
     }
