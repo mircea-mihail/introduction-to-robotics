@@ -2,11 +2,31 @@
 #define PLAYER_H
 
 #include "matrixEntity.h"
+#include "bulletList.h"
 
-#define PLAYER_MOVEMENT_MILLIS 200
+// player pins
+#define JS_X_PIN A0
+#define JS_Y_PIN A1
+#define BUTTON_PIN 6
+
+// button
+#define DEBOUNCE_TIME 50
+
+extern bulletList g_bulletList;
+
+struct button
+{
+    int m_prevState = LOW;
+    int m_prevCountedState = LOW;
+    unsigned long m_prevTime = 0;
+};
 
 class player : public matrixEntity
 {
+    byte m_direction;
+    button m_btn;
+    unsigned long m_lastShot = 0;
+
 private:
     unsigned long long m_lastMoved = 0; // Tracks the last time the LED moved
 
@@ -14,10 +34,20 @@ private:
     
     bool joystickDetected(int p_xCommand, int p_yCommand);
 
+    void setDirection(int p_xNextPos, int p_yNextPos, int p_xPos, int p_yPos);
+
+    bool pulledTrigger();
+
+    void getBulletPlacement(int &p_xPos, int &p_yPos);
+
 public:
     player(int p_xPos, int p_yPos);
 
-    void updatePosition() override ;
+    void setupJoystickAndButton();
+
+    void updatePosition() override;
+
+    void shoot();
 };
 
 #endif

@@ -1,11 +1,5 @@
 #include "matrixEntity.h"
 
-void matrixEntity::setupHardware()
-{
-    pinMode(JS_X_PIN, INPUT);
-    pinMode(JS_Y_PIN, INPUT);
-}
-
 void matrixEntity::initialPositionUpdate(int &p_xPos, int &p_yPos, int p_xCommand, int p_yCommand)
 {
     if(p_xCommand < MIN_JS_THRESHOLD)
@@ -58,19 +52,5 @@ void matrixEntity::pickAnAxes(int &p_xNextPos, int &p_yNextPos, int p_xPos, int 
         {
             p_xNextPos = p_xPos;
         }
-    }
-}
-
-void matrixEntity::moveEntityOnMatrix(int p_entityType)
-{
-
-    g_map.setPositionValue(m_xNextPos, m_yNextPos, p_entityType);
-
-    // set old position to zero 
-    if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
-    {
-        g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
-        m_xPos = m_xNextPos;
-        m_yPos = m_yNextPos;
     }
 }

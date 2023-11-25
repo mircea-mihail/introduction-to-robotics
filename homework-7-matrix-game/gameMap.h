@@ -10,10 +10,6 @@
 #define LOAD_PIN 10
 #define DRIVER_INDEX 1
 
-// display
-#define BULLET_BLINK_INTERVAL 50
-#define PLAYER_BLINK_INTERVAL 200
-
 class gameMap
 {   
 private:

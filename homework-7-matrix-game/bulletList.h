@@ -3,8 +3,6 @@
 
 #include "bullet.h"
 
-#define BULLET_TICK_RATE 500
-
 struct bulletNode
 {
     bullet *m_bullet;

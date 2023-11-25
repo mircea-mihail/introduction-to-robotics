@@ -16,19 +16,19 @@ void bullet::updatePosition()
     switch(m_direction)
     {
         case(DIRECTION_UP):
-            m_yNextPos -= 1;
+            m_xNextPos -= 1;
             break;
         
         case(DIRECTION_DOWN):
-            m_yNextPos += 1;
+            m_xNextPos += 1;
             break;
 
         case(DIRECTION_LEFT):
-            m_xNextPos -= 1;
+            m_yNextPos -= 1;
             break;
 
         case(DIRECTION_RIGHT):
-            m_xNextPos += 1;
+            m_yNextPos += 1;
             break;
 
         default:
@@ -38,7 +38,15 @@ void bullet::updatePosition()
 
     dealWithOutOfBounds(m_xNextPos, m_yNextPos);
     
-    moveEntityOnMatrix(MAP_BULLET);
+    g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_BULLET);
+
+    // set old position to zero 
+    if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
+    {
+        g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
+        m_xPos = m_xNextPos;
+        m_yPos = m_yNextPos;
+    }
 
     m_rangeLeft --;
 }
