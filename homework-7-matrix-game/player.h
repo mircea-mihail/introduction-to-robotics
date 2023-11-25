@@ -5,11 +5,6 @@
 #include "bulletList.h"
 #include "gameMap.h"
 
-// player pins
-#define JS_X_PIN A0
-#define JS_Y_PIN A1
-#define BUTTON_PIN 6
-
 // button
 #define DEBOUNCE_TIME 50
 

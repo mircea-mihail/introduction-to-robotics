@@ -8,6 +8,11 @@
 
 // generallys useful defines
 
+// player pins
+#define JS_X_PIN A0
+#define JS_Y_PIN A1
+#define BUTTON_PIN 6
+
 // matrix occupation related
 #define MAP_NUMBER_OF_ORIENTATIONS 4
 #define MAP_BULLET_RANGE 1
@@ -26,7 +31,7 @@
 
 // bullet defines
 #define BULLET_TICK_RATE 150
-#define SHOOTING_COOLDOWN (BULLET_TICK_RATE * 2)
+#define SHOOTING_COOLDOWN (BULLET_TICK_RATE )
 
 #define DEFAULT_RANGE 2
 

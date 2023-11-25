@@ -84,3 +84,28 @@ bool gameMap::isMapElement(const byte p_mapElement, int p_xPos, int p_yPos)
     }
     return false;
 }
+
+void gameMap::generateMap()
+{
+    // randomly generate walls
+    for(int row = 0; row < MATRIX_SIZE; row++)
+    {
+        for(int col = 0; col < MATRIX_SIZE; col++)
+        {
+            long chance = random(0, GRANULARITY_OF_CHANCE);
+            if(chance < CHANCE_OF_WALL)
+            {
+                matrix[row][col] = MAP_WALL; 
+            }
+        }       
+    }
+    // clear area around player
+
+    for(int row = MATRIX_MIDDLE - 1; row <= MATRIX_MIDDLE + 1; row++)
+    {
+        for(int col = MATRIX_MIDDLE - 1; col <= MATRIX_MIDDLE + 1; col++)
+        {
+            matrix[row][col] = MAP_EMPTY; 
+        }
+    }
+}

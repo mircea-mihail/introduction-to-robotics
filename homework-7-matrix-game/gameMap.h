@@ -10,6 +10,10 @@
 #define LOAD_PIN 10
 #define DRIVER_INDEX 1
 
+// matrix generation
+#define GRANULARITY_OF_CHANCE 10
+#define CHANCE_OF_WALL 6 // 60%
+
 class gameMap
 {   
 private:
@@ -25,14 +29,14 @@ private:
     unsigned long m_lastBulletMove = 0;
 
     byte matrix[MATRIX_SIZE][MATRIX_SIZE] = {
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, MAP_WALL, MAP_WALL, MAP_WALL, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0}  
+        {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY},
+        {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY},
+        {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY},
+        {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY},
+        {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY},
+        {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY},
+        {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY},
+        {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY}
     };
 
 
@@ -50,6 +54,8 @@ public:
     bool isWithinBounds(int p_xPos, int p_yPos);
 
     bool isMapElement(const byte p_mapElement, int p_xPos, int p_yPos);
+
+    void generateMap();
 };
 
 #endif
