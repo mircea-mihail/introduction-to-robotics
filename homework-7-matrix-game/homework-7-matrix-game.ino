@@ -17,9 +17,14 @@ bulletList g_bulletList;
 
 byte g_gameState;
 
+// frame display
+bool g_finishedAnimiation = false;
+unsigned long g_timeForLastFrame = 0;
+unsigned long g_timeForBulletUpdate = 0;
+
+
 void setup()
 {
-    randomSeed(analogRead(BUTTON_PIN));
     Serial.begin(115200);
 
     g_player1.setupJoystickAndButton();
@@ -27,7 +32,7 @@ void setup()
     gameMap::setupHardware();
     g_map.initMatrix();
     g_map.generateMap();
-
+    
     g_gameState = IN_GAME;
 }
 
@@ -42,13 +47,42 @@ void loop() {
 
             if(g_map.checkWinningCondition())
             {
-                g_gameState = WON;
+                if(g_timeForBulletUpdate == DEFAULT_TIME_VAL)
+                {
+                    g_timeForBulletUpdate = millis();
+                }
+                if(millis() - g_timeForBulletUpdate > FRAME_DISPLAY_TIME)
+                {
+                    g_gameState = WON;
+                    g_timeForBulletUpdate = DEFAULT_TIME_VAL;
+                }
             }
 
             break;
 
         case WON:
-            g_gameState = IN_GAME;
+            if(g_map.printWinningMatrix())
+            {
+                if(g_timeForLastFrame == DEFAULT_TIME_VAL)
+                {
+                    g_timeForLastFrame = millis();
+                }
+                g_finishedAnimiation = true;
+            }
+            
+            if(millis() - g_timeForLastFrame > FRAME_DISPLAY_TIME && g_finishedAnimiation)
+            {
+                g_timeForLastFrame = DEFAULT_TIME_VAL;
+                g_finishedAnimiation = false;
+
+                g_gameState = IN_GAME;     
+                g_map.refreshAnimationValues();               
+                g_map.generateMap();
+
+                g_player1.goToDefaultPosition();
+            }
+
+            g_map.updateDisplay();
             break;
 
         default:

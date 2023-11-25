@@ -45,6 +45,8 @@ public:
     void updatePosition() override;
 
     void shoot();
+
+    void goToDefaultPosition();
 };
 
 #endif

@@ -87,6 +87,7 @@ bool gameMap::isMapElement(const byte p_mapElement, int p_xPos, int p_yPos)
 
 void gameMap::generateMap()
 {
+    randomSeed(analogRead(BUTTON_PIN));
     // randomly generate walls
     for(int row = 0; row < MATRIX_SIZE; row++)
     {
@@ -123,4 +124,54 @@ bool gameMap::checkWinningCondition()
         }       
     }
     return true;
+}
+
+void gameMap::printWinningMatrixFrame(byte p_frameToPrint)
+{
+    for(int row = 0; row < REAL_MATRIX_SIZE; row++)
+    {
+        for(int col = 0; col < REAL_MATRIX_SIZE; col++)
+        {   
+            matrix[row][col] = getColValFromByte(m_winningMatrixVector[p_frameToPrint][row]);
+        }
+    }
+}
+
+bool gameMap::printWinningMatrix()
+{
+    if(millis() - m_lastFrameTime > FRAME_DISPLAY_TIME)
+    {
+        Serial.print("printing a frame\n");
+        m_lastFrameTime = millis();
+        printWinningMatrixFrame(m_currentFrameIndex);
+
+        m_currentFrameIndex += 1;
+
+        if(m_currentFrameIndex == WINNING_FRAME_NUMBER)
+        {
+            m_currentFrameIndex = 0;
+            return true;  
+        }
+    }
+    return false;
+}
+
+void gameMap::refreshAnimationValues()
+{
+    m_currentFrameIndex = 0;
+
+}
+
+// for debug
+void gameMap::printEmptyMatrix()
+{
+    for(int row = 0; row < REAL_MATRIX_SIZE; row++)
+    {
+        for(int col = 0; col < REAL_MATRIX_SIZE; col++)
+        {   
+            matrix[row][col] = MAP_EMPTY;
+        }
+    }
+
+    matrix[0][0] = MAP_WALL;
 }

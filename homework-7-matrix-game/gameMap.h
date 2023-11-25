@@ -14,6 +14,10 @@
 #define GRANULARITY_OF_CHANCE 10
 #define CHANCE_OF_WALL 6 // 60%
 
+// matrix animations
+#define FRAME_DISPLAY_TIME 500
+#define WINNING_FRAME_NUMBER 4
+
 class gameMap
 {   
 private:
@@ -25,6 +29,10 @@ private:
     
     bool m_blinkPlayer = false;
     bool m_blinkBullet = false;
+
+    // for matrix display
+    unsigned long m_lastFrameTime = 0;
+    byte m_currentFrameIndex = 0;
 
     unsigned long m_lastBulletMove = 0;
 
@@ -39,6 +47,48 @@ private:
         {MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY, MAP_EMPTY}
     };
 
+    byte m_winningMatrixVector[MATRIX_SIZE][MATRIX_SIZE] = {
+        {
+            0b00011000,
+            0b00011000,
+            0b11111111,
+            0b10011001,
+            0b10011001,
+            0b00111100,
+            0b00100100,
+            0b00100100
+        },
+        {
+            0b00011000,
+            0b00011000,
+            0b11111111,
+            0b00011000,
+            0b00011000,
+            0b00111100,
+            0b00100100,
+            0b00100100
+        },
+        {
+            0b10011001,
+            0b10011001,
+            0b11111111,
+            0b00011000,
+            0b00011000,
+            0b00111100,
+            0b00100100,
+            0b00100100
+        },
+        {
+            0b10011001,
+            0b10011001,
+            0b11111111,
+            0b00011000,
+            0b00011000,
+            0b00111100,
+            0b00100100,
+            0b00100100
+        }
+    };
 
     void displayElement(int p_row, int p_col);
 
@@ -58,6 +108,15 @@ public:
     void generateMap();
 
     bool checkWinningCondition();
+
+    void printWinningMatrixFrame(byte p_frameToPrint);
+    
+    bool printWinningMatrix();
+
+    void refreshAnimationValues();
+
+    // for debug
+    void printEmptyMatrix();
 };
 
 #endif

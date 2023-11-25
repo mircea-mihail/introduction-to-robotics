@@ -160,3 +160,9 @@ void player::shoot()
         m_lastShot = millis();        
     }
 }
+
+void player::goToDefaultPosition()
+{
+    m_xPos = MATRIX_MIDDLE;
+    m_yPos = MATRIX_MIDDLE;
+}

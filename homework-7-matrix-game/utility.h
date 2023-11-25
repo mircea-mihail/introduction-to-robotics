@@ -4,9 +4,17 @@
 // utility
 #define MATRIX_ADDRESS 0
 #define MATRIX_SIZE 8
+#define REAL_MATRIX_SIZE 8
 #define MATRIX_MIDDLE (MATRIX_SIZE / 2)
 
 // generallys useful defines
+
+// game states
+#define IN_GAME 0
+#define IN_MENU 1
+#define IN_ANIMATION 2
+#define LOST 3
+#define WON 4
 
 // player pins
 #define JS_X_PIN A0
@@ -41,7 +49,12 @@
 #define PLAYER_MOVEMENT_MILLIS 400
 #define PLAYER_BLINK_INTERVAL 200
 
+// animation defines
+#define DEFAULT_TIME_VAL 0
+
 #define reverseDirection(direction) (direction = (direction + (MAP_NUMBER_OF_ORIENTATIONS/2)) % MAP_NUMBER_OF_ORIENTATIONS) 
+
+#define getColValFromByte(byteValue) ((byteValue >> col) & 1)
 
 inline int absolute(int a) 
 {
