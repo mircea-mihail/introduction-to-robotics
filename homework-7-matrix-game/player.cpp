@@ -24,11 +24,20 @@ void player::setDirection(int p_xNextPos, int p_yNextPos, int p_xPos, int p_yPos
     if(p_xNextPos != p_xPos && p_yNextPos == p_yPos)
     {
         m_direction = ((p_xNextPos - p_xPos > 0) ? DIRECTION_DOWN : DIRECTION_UP);
+        if(absolute(p_xNextPos - p_xPos) > 1)
+        {
+            reverseDirection(m_direction);
+        }    
     }
     
     if(p_xNextPos == p_xPos && p_yNextPos != p_yPos)
     {
         m_direction = ((p_yNextPos - p_yPos > 0) ? DIRECTION_RIGHT : DIRECTION_LEFT);
+        
+        if(absolute(p_yNextPos - p_yPos) > 1)
+        {
+            reverseDirection(m_direction);
+        }    
     }
 }
 

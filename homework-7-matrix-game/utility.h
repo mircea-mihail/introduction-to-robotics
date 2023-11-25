@@ -20,8 +20,8 @@
 
 // facing direction of player/bullet/other things
 #define DIRECTION_UP 0
-#define DIRECTION_DOWN 1
-#define DIRECTION_LEFT 2 
+#define DIRECTION_LEFT 1 
+#define DIRECTION_DOWN 2
 #define DIRECTION_RIGHT 3
 
 // bullet defines
@@ -36,6 +36,7 @@
 #define PLAYER_MOVEMENT_MILLIS 400
 #define PLAYER_BLINK_INTERVAL 200
 
+#define reverseDirection(direction) (direction = (direction + (MAP_NUMBER_OF_ORIENTATIONS/2)) % MAP_NUMBER_OF_ORIENTATIONS) 
 
 inline int absolute(int a) 
 {
