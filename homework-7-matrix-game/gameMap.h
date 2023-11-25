@@ -31,7 +31,7 @@ private:
         {0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, MAP_WALL, MAP_WALL, MAP_WALL, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0}  
     };
 
@@ -48,6 +48,8 @@ public:
     void updateDisplay();
 
     bool isWithinBounds(int p_xPos, int p_yPos);
+
+    bool isMapElement(const byte p_mapElement, int p_xPos, int p_yPos);
 };
 
 #endif

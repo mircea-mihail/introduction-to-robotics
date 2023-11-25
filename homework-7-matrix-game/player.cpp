@@ -120,16 +120,18 @@ void player::updatePosition()
             dealWithOutOfBounds(m_xNextPos, m_yNextPos);
             setDirection(m_xNextPos, m_yNextPos, m_xPos, m_yPos);
 
-            g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_PLAYER);
-
-            // set old position to zero 
-            if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
+            if(!g_map.isMapElement(MAP_WALL, m_xNextPos, m_yNextPos))
             {
-                g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
-                m_xPos = m_xNextPos;
-                m_yPos = m_yNextPos;
-            }
+                g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_PLAYER);
 
+                // set old position to zero 
+                if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
+                {
+                    g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
+                    m_xPos = m_xNextPos;
+                    m_yPos = m_yNextPos;
+                }
+            }
             m_lastMoved = millis();
         }
     }

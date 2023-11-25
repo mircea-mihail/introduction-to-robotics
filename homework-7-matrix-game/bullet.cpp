@@ -4,8 +4,10 @@ bullet::bullet(int p_xPos, int p_yPos, byte p_direction, int p_rangeLeft = DEFAU
 {
     m_xPos = p_xPos;
     m_yPos = p_yPos;
-    g_map.setPositionValue(m_xPos, m_yPos, MAP_BULLET); 
     m_rangeLeft = p_rangeLeft;
+    
+    interactWithMapElement(m_xPos, m_yPos);
+    g_map.setPositionValue(m_xPos, m_yPos, MAP_BULLET); 
 }
 
 void bullet::updatePosition()
@@ -40,6 +42,7 @@ void bullet::updatePosition()
     
     if(g_map.isWithinBounds(m_xNextPos, m_yNextPos))
     {
+        interactWithMapElement(m_xNextPos, m_yNextPos);
         g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_BULLET);
 
         // set old position to zero 
@@ -57,6 +60,14 @@ void bullet::updatePosition()
         m_rangeLeft = -1;
     }
         
+}
+
+void bullet::interactWithMapElement(int p_xPos, int p_yPos)
+{
+    if(g_map.isMapElement(MAP_WALL, p_xPos, p_yPos))
+    {
+        m_rangeLeft = -1;
+    }
 }
 
 bool bullet::hasRange()

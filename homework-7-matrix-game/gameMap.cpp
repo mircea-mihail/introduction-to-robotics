@@ -16,7 +16,7 @@ void gameMap::displayElement(int p_row, int p_col)
 
         case(MAP_WALL):
             p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, HIGH);
-
+            break;
 
         case(MAP_EMPTY):
             p_ledControl.setLed(MATRIX_ADDRESS, p_row, p_col, LOW);
@@ -30,7 +30,6 @@ void gameMap::displayElement(int p_row, int p_col)
                 m_lastBulletBlink = millis();
                 m_blinkBullet = !m_blinkBullet;
             }
-
             break;
 
         default:
@@ -71,6 +70,15 @@ void gameMap::updateDisplay()
 bool gameMap::isWithinBounds(int p_xPos, int p_yPos)
 {
     if(p_xPos >= 0 && p_xPos < MATRIX_SIZE && p_yPos >= 0 && p_yPos < MATRIX_SIZE)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool gameMap::isMapElement(const byte p_mapElement, int p_xPos, int p_yPos)
+{
+    if(matrix[p_xPos][p_yPos] == p_mapElement)
     {
         return true;
     }

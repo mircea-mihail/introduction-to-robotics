@@ -19,6 +19,8 @@ public:
 
     bool hasRange();
 
+    void interactWithMapElement(int p_xPos, int p_yPos);
+
     ~bullet();
 };
 
