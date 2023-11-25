@@ -46,6 +46,8 @@ public:
     void setPositionValue(int p_xPos, int p_yPos, int p_newValue);
     
     void updateDisplay();
+
+    bool isWithinBounds(int p_xPos, int p_yPos);
 };
 
 #endif

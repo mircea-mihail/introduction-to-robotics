@@ -67,3 +67,12 @@ void gameMap::updateDisplay()
         }
     }
 }
+
+bool gameMap::isWithinBounds(int p_xPos, int p_yPos)
+{
+    if(p_xPos >= 0 && p_xPos < MATRIX_SIZE && p_yPos >= 0 && p_yPos < MATRIX_SIZE)
+    {
+        return true;
+    }
+    return false;
+}

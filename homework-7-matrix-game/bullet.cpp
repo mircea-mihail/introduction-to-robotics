@@ -38,17 +38,25 @@ void bullet::updatePosition()
 
     dealWithOutOfBounds(m_xNextPos, m_yNextPos);
     
-    g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_BULLET);
-
-    // set old position to zero 
-    if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
+    if(g_map.isWithinBounds(m_xNextPos, m_yNextPos))
     {
-        g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
-        m_xPos = m_xNextPos;
-        m_yPos = m_yNextPos;
-    }
+        g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_BULLET);
 
-    m_rangeLeft --;
+        // set old position to zero 
+        if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
+        {
+            g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
+            m_xPos = m_xNextPos;
+            m_yPos = m_yNextPos;
+        }
+
+        m_rangeLeft --;
+    }
+    else
+    {
+        m_rangeLeft = -1;
+    }
+        
 }
 
 bool bullet::hasRange()

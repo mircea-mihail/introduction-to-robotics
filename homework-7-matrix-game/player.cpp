@@ -142,8 +142,10 @@ void player::shoot()
         int xPos = m_xPos, yPos = m_yPos;
 
         getBulletPlacement(xPos, yPos);
+        dealWithOutOfBounds(xPos, yPos);
+        
         g_bulletList.addBulletNode(new bullet(xPos, yPos, m_direction));
 
-        m_lastShot = millis();
+        m_lastShot = millis();        
     }
 }

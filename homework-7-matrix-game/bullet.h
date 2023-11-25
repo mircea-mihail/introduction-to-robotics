@@ -2,6 +2,9 @@
 #define BULLET_H
 
 #include "matrixEntity.h"
+#include "gameMap.h"
+
+extern gameMap g_map;
 
 class bullet : public matrixEntity
 {

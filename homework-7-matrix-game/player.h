@@ -3,6 +3,7 @@
 
 #include "matrixEntity.h"
 #include "bulletList.h"
+#include "gameMap.h"
 
 // player pins
 #define JS_X_PIN A0
@@ -13,6 +14,7 @@
 #define DEBOUNCE_TIME 50
 
 extern bulletList g_bulletList;
+extern gameMap g_map;
 
 struct button
 {

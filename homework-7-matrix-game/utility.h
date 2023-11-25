@@ -26,16 +26,15 @@
 
 // bullet defines
 #define BULLET_TICK_RATE 150
-#define SHOOTING_COOLDOWN 100
+#define SHOOTING_COOLDOWN (BULLET_TICK_RATE * 2)
 
 #define DEFAULT_RANGE 2
 
-#define BULLET_BLINK_INTERVAL 50
+#define BULLET_BLINK_INTERVAL 10
 
 // player defines 
-#define PLAYER_MOVEMENT_MILLIS 300
-#define PLAYER_BLINK_INTERVAL 150
-
+#define PLAYER_MOVEMENT_MILLIS 400
+#define PLAYER_BLINK_INTERVAL 200
 
 
 inline int absolute(int a) 
