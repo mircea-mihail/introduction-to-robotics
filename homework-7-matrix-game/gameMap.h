@@ -16,8 +16,10 @@
 #define CHANCE_OF_WALL 6 // 60%
 
 // matrix animations
-#define FRAME_DISPLAY_TIME 300
+#define WINNING_FRAME_DISPLAY_TIME 300
 #define WINNING_FRAME_NUMBER 5
+#define GAME_START_FRAME_DISPLAY_TIME 500
+#define GAME_START_FRAME_NUMBER 6
 
 class gameMap
 {   
@@ -59,7 +61,7 @@ private:
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
     };
 
-    byte m_winningMatrixVector[MATRIX_SIZE][MATRIX_SIZE] = {
+    const byte m_winningMatrixVector[WINNING_FRAME_NUMBER][REAL_MATRIX_SIZE] = {
         {
             0b00011000,
             0b00011000,
@@ -112,6 +114,70 @@ private:
         }
     };
 
+    const byte m_gameStartMatrixVector[GAME_START_FRAME_NUMBER][REAL_MATRIX_SIZE] = 
+    {
+        {
+            0b00011000,
+            0b01111110,
+            0b00011000,
+            0b00010011,
+            0b01111110,
+            0b01011000,
+            0b00011000,
+            0b00100100
+        },
+        {
+            0b11100111,
+            0b10000001,
+            0b11100111,
+            0b11101100,
+            0b10000001,
+            0b10100111,
+            0b11100111,
+            0b11011011
+        }, 
+        {
+            0b00011000,
+            0b01111110,
+            0b00011000,
+            0b00010011,
+            0b01111110,
+            0b01011000,
+            0b00011000,
+            0b00100100
+        },
+        {
+            0b11100111,
+            0b10000001,
+            0b11100111,
+            0b11101100,
+            0b10000001,
+            0b10100111,
+            0b11100111,
+            0b11011011
+        },
+        {
+            0b00011000,
+            0b01111110,
+            0b00011000,
+            0b00010011,
+            0b01111110,
+            0b01011000,
+            0b00011000,
+            0b00100100
+        },
+        {
+            0b11100111,
+            0b10000001,
+            0b11100111,
+            0b11101100,
+            0b10000001,
+            0b10100111,
+            0b11100111,
+            0b11011011
+        }
+    };
+
     void displayElement(int realRow, int realCol, int p_row, int p_col);
 
 public:
@@ -131,9 +197,11 @@ public:
 
     bool checkWinningCondition();
 
-    void printWinningMatrixFrame(byte p_frameToPrint);
+    void printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE], byte p_frameToPrint);
     
-    bool printWinningMatrix();
+    bool printWinningMatrixAnimation();
+
+    bool printStartGameMatrixAnimation();
 
     void refreshAnimationValues();
 

@@ -178,27 +178,46 @@ bool gameMap::checkWinningCondition()
     return true;
 }
 
-void gameMap::printWinningMatrixFrame(byte p_frameToPrint)
+void gameMap::printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE],  byte p_frameToPrint)
 {
     for(int row = 0; row < REAL_MATRIX_SIZE; row++)
     {
         for(int col = 0; col < REAL_MATRIX_SIZE; col++)
         {   
-            matrix[row][col] = getColValFromByte(m_winningMatrixVector[p_frameToPrint][row]);
+            matrix[row][col] = getColValFromByte(p_matrixVector[p_frameToPrint][row]);
         }
     }
 }
 
-bool gameMap::printWinningMatrix()
+bool gameMap::printWinningMatrixAnimation()
 {
-    if(millis() - m_lastFrameTime > FRAME_DISPLAY_TIME)
+    if(millis() - m_lastFrameTime > WINNING_FRAME_DISPLAY_TIME)
     {
         m_lastFrameTime = millis();
-        printWinningMatrixFrame(m_currentFrameIndex);
+        printMatrixFrame(m_winningMatrixVector, m_currentFrameIndex);
 
         m_currentFrameIndex += 1;
 
         if(m_currentFrameIndex == WINNING_FRAME_NUMBER)
+        {
+            m_currentFrameIndex = 0;
+            return true;  
+        }
+    }
+    return false;
+}
+
+
+bool gameMap::printStartGameMatrixAnimation()
+{
+    if(millis() - m_lastFrameTime > GAME_START_FRAME_DISPLAY_TIME)
+    {
+        m_lastFrameTime = millis();
+        printMatrixFrame(m_gameStartMatrixVector, m_currentFrameIndex);
+
+        m_currentFrameIndex += 1;
+
+        if(m_currentFrameIndex == GAME_START_FRAME_NUMBER)
         {
             m_currentFrameIndex = 0;
             return true;  
