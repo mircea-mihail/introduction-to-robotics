@@ -40,10 +40,8 @@
 
 // bullet defines
 #define BULLET_TICK_RATE 150
-#define SHOOTING_COOLDOWN (BULLET_TICK_RATE )
-
+#define SHOOTING_COOLDOWN (BULLET_TICK_RATE)
 #define DEFAULT_RANGE 2
-
 #define BULLET_BLINK_INTERVAL 10
 
 // player defines 

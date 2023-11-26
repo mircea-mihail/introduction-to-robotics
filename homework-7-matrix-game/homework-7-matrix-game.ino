@@ -15,6 +15,7 @@
 gameMap g_map;
 player g_player1(MATRIX_MIDDLE, MATRIX_MIDDLE);
 bulletList g_bulletList;
+score g_score;
 
 byte g_gameState;
 
@@ -33,9 +34,15 @@ void setup()
     gameMap::setupHardware();
     g_map.initMatrix();
     g_map.generateMap();
-    // g_map.printEmptyMatrix();
+    g_score.printHighScores();
+    g_score.startCounting();
 
     g_gameState = IN_GAME;
+
+    g_map.printEmptyMatrix();
+    // g_score.clearScores();
+
+
 }
 
 void loop() {
@@ -61,6 +68,7 @@ void loop() {
                 {
                     g_gameState = WON;
                     g_timeForBulletUpdate = DEFAULT_TIME_VAL;
+                    g_score.getTheScore();
                 }
             }
 
@@ -84,9 +92,14 @@ void loop() {
                 g_gameState = IN_GAME;     
                 g_map.refreshAnimationValues();               
                 g_map.generateMap();
+                g_score.startCounting();
+
                 // g_map.printEmptyMatrix();
 
                 g_player1.goToDefaultPosition();
+
+                g_map.printEmptyMatrix();
+
             }
 
             g_map.printOnRealMatrix();
