@@ -92,8 +92,8 @@ void loop() {
                 g_map.refreshAnimationValues();               
                 g_map.generateMap();
                 g_score.startCounting();
-
-
+                
+                g_player1.resetPowerUps();
                 g_player1.goToDefaultPosition();
                 // g_map.printEmptyMatrix();
 

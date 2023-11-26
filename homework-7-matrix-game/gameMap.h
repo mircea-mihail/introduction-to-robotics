@@ -27,9 +27,11 @@ private:
     
     unsigned long m_lastPlayerBlink = 0;
     unsigned long m_lastBulletBlink = 0;
+    unsigned long m_lastPowerUpBlink = 0;
     
     bool m_blinkPlayer = false;
     bool m_blinkBullet = false;
+    bool m_blinkPowerUp = false;
 
     // for matrix display
     unsigned long m_lastFrameTime = 0;

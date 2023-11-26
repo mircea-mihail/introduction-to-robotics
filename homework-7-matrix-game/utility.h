@@ -29,8 +29,8 @@
 #define MAP_EMPTY 0
 #define MAP_WALL 1
 #define MAP_PLAYER 2
-#define MAP_POWER_UP 3
 #define MAP_BULLET 3
+#define MAP_POWER_UP 4
 
 // facing direction of player/bullet/other things
 #define DIRECTION_UP 0
@@ -42,11 +42,15 @@
 #define BULLET_TICK_RATE 200
 #define SHOOTING_COOLDOWN (BULLET_TICK_RATE)
 #define DEFAULT_RANGE 2
-#define BULLET_BLINK_INTERVAL 10
+#define BULLET_BLINK_INTERVAL 30
 
 // player defines 
 #define PLAYER_MOVEMENT_MILLIS 400
 #define PLAYER_BLINK_INTERVAL 200
+
+// power up defines
+#define POWER_UP_BLINK_INTERVAL 500
+
 
 // animation defines
 #define DEFAULT_TIME_VAL 0

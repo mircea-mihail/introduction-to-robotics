@@ -22,7 +22,7 @@ void gameMap::displayElement(int realRow, int realCol, int p_row, int p_col)
             p_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, LOW);
             break;
 
-        case(MAP_BULLET):
+        case MAP_BULLET:
             p_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, m_blinkBullet);
 
             if(millis() - m_lastBulletBlink > BULLET_BLINK_INTERVAL)
@@ -31,6 +31,17 @@ void gameMap::displayElement(int realRow, int realCol, int p_row, int p_col)
                 m_blinkBullet = !m_blinkBullet;
             }
             break;
+
+        case MAP_POWER_UP:
+            p_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, m_blinkPowerUp);
+
+            if(millis() - m_lastPowerUpBlink > POWER_UP_BLINK_INTERVAL)
+            {
+                m_lastPowerUpBlink = millis();
+                m_blinkPowerUp = !m_blinkPowerUp;
+            }
+            break;
+
 
         default:
             break;
@@ -130,8 +141,8 @@ void gameMap::generateMap()
             }
         }       
     }
-    // clear area around player
 
+    // clear area around player
     for(int row = MATRIX_MIDDLE - 1; row <= MATRIX_MIDDLE + 1; row++)
     {
         for(int col = MATRIX_MIDDLE - 1; col <= MATRIX_MIDDLE + 1; col++)
@@ -139,6 +150,17 @@ void gameMap::generateMap()
             matrix[row][col] = MAP_EMPTY; 
         }
     }
+
+    // plant power up
+    int powerUpXPos = random(0, MATRIX_SIZE);
+    int powerUpYPos = random(0, MATRIX_SIZE);
+
+    if(powerUpXPos == MATRIX_MIDDLE)
+    {
+        powerUpXPos ++;
+    }
+
+    matrix[powerUpXPos][powerUpYPos] = MAP_POWER_UP;
 }
 
 bool gameMap::checkWinningCondition()

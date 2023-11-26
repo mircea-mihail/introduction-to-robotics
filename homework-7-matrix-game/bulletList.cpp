@@ -7,13 +7,11 @@ bulletNode::bulletNode(bullet *p_newBullet, bulletNode *p_nextBulletNode, bullet
     m_bullet = p_newBullet;
     m_nextBulletNode = p_nextBulletNode;
     m_prevBulletNode = p_prevBulletNode;
-    Serial.print("node constructor\n");
 }
 
 bulletNode::~bulletNode()
 {
     delete m_bullet;
-    Serial.print("node destructor\n");
 }
 
 //////////////// bullet List:

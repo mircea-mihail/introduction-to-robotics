@@ -23,6 +23,7 @@ class player : public matrixEntity
     byte m_direction;
     button m_btn;
     unsigned long m_lastShot = 0;
+    bool m_foundExplodingBullets = false;
 
 private:
     unsigned long long m_lastMoved = 0; // Tracks the last time the LED moved
@@ -49,6 +50,8 @@ public:
     void goToDefaultPosition();
 
     void getCoordonates(int &p_xPosPlayer, int &p_yPosPlayer);
+
+    void resetPowerUps();
 };
 
 #endif

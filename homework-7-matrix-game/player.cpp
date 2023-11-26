@@ -129,8 +129,12 @@ void player::updatePosition()
             dealWithOutOfBounds(m_xNextPos, m_yNextPos);
             setDirection(m_xNextPos, m_yNextPos, m_xPos, m_yPos);
 
-            if(!g_map.isMapElement(MAP_WALL, m_xNextPos, m_yNextPos))
+            if(!g_map.isMapElement(MAP_WALL, m_xNextPos, m_yNextPos) && !g_map.isMapElement(MAP_BULLET, m_xNextPos, m_yNextPos))
             {
+                if(g_map.isMapElement(MAP_POWER_UP, m_xNextPos, m_yNextPos))
+                {
+                    m_foundExplodingBullets = true;
+                }
                 g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_PLAYER);
 
                 // set old position to zero 
@@ -156,7 +160,7 @@ void player::shoot()
         dealWithOutOfBounds(xPos, yPos);
         
         g_bulletList.setLastBulletUpdate();
-        g_bulletList.addBulletNode(new bullet(xPos, yPos, m_direction));
+        g_bulletList.addBulletNode(new bullet(xPos, yPos, m_direction, m_foundExplodingBullets));
 
         m_lastShot = millis();        
     }
@@ -172,4 +176,9 @@ void player::getCoordonates(int &p_xPosPlayer, int &p_yPosPlayer)
 {
     p_xPosPlayer = m_xPos;
     p_yPosPlayer = m_yPos;
+}
+
+void player::resetPowerUps()
+{
+    m_foundExplodingBullets = false;
 }

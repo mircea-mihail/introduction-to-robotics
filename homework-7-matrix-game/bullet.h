@@ -13,11 +13,12 @@ class bullet : public matrixEntity
 private:
     byte m_direction;
     int m_rangeLeft;
-    bool m_explodingBullets = true;
+    bool m_explodingBullets = false;
+    bool m_hasWaitedATick = false;
     bool m_hasExploded = false;
 
 public:
-    bullet(int p_xPos, int p_yPos, byte p_direction, int p_rangeLeft = DEFAULT_RANGE);
+    bullet(int p_xPos, int p_yPos, byte p_direction, bool p_explodingBullets = false, int p_rangeLeft = DEFAULT_RANGE);
 
     void updatePosition() override;
 
@@ -28,7 +29,7 @@ public:
     bool isExplodingType();
 
     void explodeBullet();
-    
+
     bool hasExploded();
 
     ~bullet();
