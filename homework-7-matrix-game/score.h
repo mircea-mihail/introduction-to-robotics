@@ -4,6 +4,7 @@
 #include <EEPROM.h>
 #include "utility.h"
 
+// address related
 #define SCORE_MEMORY_ADDRESS 900
 #define NUMBER_OF_SCORES_KEPT 3 
 #define ADDRESS_AFTER_LAST_SCORE (SCORE_MEMORY_ADDRESS + NUMBER_OF_SCORES_KEPT * sizeof(unsigned long))
@@ -24,82 +25,24 @@ private:
     unsigned long m_timerBeginning = DEFAULT_TIME_VAL;
     unsigned long m_score = 0;
 
-    void updateMemoryScores(unsigned long scores[NUMBER_OF_SCORES_KEPT])
-    {
-        byte scoreIdx = FIRST_SCORE_IDX;
-        for(int addr = SCORE_MEMORY_ADDRESS; addr < ADDRESS_AFTER_LAST_SCORE; addr += sizeof(unsigned long))
-        {
-            EEPROM.put(addr, scores[scoreIdx ++]);
-        }
-    }
+    // writes new scores to memory
+    void updateMemoryScores(unsigned long scores[NUMBER_OF_SCORES_KEPT]);
 
-    void writeScoreToMemory(unsigned long p_scoreToWrite)
-    {
-        unsigned long scores[NUMBER_OF_SCORES_KEPT];
-        byte scoreIdx = FIRST_SCORE_IDX;
-        for(int addr = SCORE_MEMORY_ADDRESS; addr < ADDRESS_AFTER_LAST_SCORE; addr += sizeof(unsigned long))
-        {
-            EEPROM.get(addr, scores[scoreIdx]);
-            Serial.print(scores[scoreIdx++]);
-            Serial.println();
-        }
-
-        if(p_scoreToWrite < scores[FIRST_SCORE_IDX])
-        {
-            scores[THIRD_SCORE_IDX] = scores[SECOND_SCORE_IDX];
-            scores[SECOND_SCORE_IDX] = scores[FIRST_SCORE_IDX];
-            scores[FIRST_SCORE_IDX] = p_scoreToWrite;
-        }
-        else if(p_scoreToWrite < scores[SECOND_SCORE_IDX])
-        {
-            scores[THIRD_SCORE_IDX] = scores[SECOND_SCORE_IDX];
-            scores[SECOND_SCORE_IDX] = p_scoreToWrite;
-        }
-        else if(p_scoreToWrite < scores[THIRD_SCORE_IDX])
-        {
-            scores[THIRD_SCORE_IDX] = p_scoreToWrite;
-        }
-
-        updateMemoryScores(scores);
-    }
+    // starts the memory writing process by reading the current scores and including the new score if necessary
+    void writeScoreToMemory(unsigned long p_scoreToWrite);
 
 public:
-    void startCounting()
-    {
-        m_timerBeginning = millis();
-    }
+    // starts the score timer, call this when the level begins
+    void startCounting();
 
-    unsigned long getTheScore()
-    {
-        m_score = millis() - m_timerBeginning;
+    // stops the score timer, call this when the level ends. It also writes to memory the new score if the case by calling the private functions
+    unsigned long stopCounting();
 
-        writeScoreToMemory(m_score);        
+    // writes 0xFFFFFFFF to all score memory places ( the largest unsigned long value and the worst score)
+    void clearScores();
 
-        return m_score;
-    }
-
-    void clearScores()
-    {
-        for(int addr = SCORE_MEMORY_ADDRESS; addr < ADDRESS_AFTER_LAST_SCORE; addr += sizeof(unsigned long))
-        {
-            EEPROM.put(addr, WORST_SCORE);
-        }
-    }
-
-    void printHighScores()
-    {
-        int playerRank = PLAYER_FIRST_RANK;
-        for(int addr = SCORE_MEMORY_ADDRESS; addr < ADDRESS_AFTER_LAST_SCORE; addr += sizeof(unsigned long))
-        {
-            unsigned long score;
-            EEPROM.get(addr, score);
-            Serial.print(F("no. "));
-            Serial.print(playerRank);
-            Serial.print(F(": "));
-            Serial.println(score);
-            playerRank ++;
-        }
-    }
+    // prints the high scores recorded in memory
+    void printHighScores();
 };
 
 #endif

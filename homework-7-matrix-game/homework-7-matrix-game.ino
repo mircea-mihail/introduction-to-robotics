@@ -68,7 +68,7 @@ void loop() {
                 {
                     g_gameState = WON;
                     g_timeForBulletUpdate = DEFAULT_TIME_VAL;
-                    g_score.getTheScore();
+                    g_score.stopCounting();
                 }
             }
 
