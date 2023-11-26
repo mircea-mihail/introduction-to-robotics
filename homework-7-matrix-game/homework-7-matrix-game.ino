@@ -32,7 +32,8 @@ void setup()
     gameMap::setupHardware();
     g_map.initMatrix();
     g_map.generateMap();
-    
+    // g_map.printEmptyMatrix();
+
     g_gameState = IN_GAME;
 }
 
@@ -43,7 +44,11 @@ void loop() {
             g_bulletList.updateBullets();
             g_player1.updatePosition();
             g_player1.shoot();
-            g_map.updateDisplay();
+
+            int p_xPosPlayer, p_yPosPlayer;
+            g_player1.getCoordonates(p_xPosPlayer, p_yPosPlayer);
+
+            g_map.updateDisplay(p_xPosPlayer, p_yPosPlayer);
 
             if(g_map.checkWinningCondition())
             {
@@ -78,11 +83,12 @@ void loop() {
                 g_gameState = IN_GAME;     
                 g_map.refreshAnimationValues();               
                 g_map.generateMap();
+                // g_map.printEmptyMatrix();
 
                 g_player1.goToDefaultPosition();
             }
 
-            g_map.updateDisplay();
+            g_map.printOnRealMatrix();
             break;
 
         default:

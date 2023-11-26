@@ -47,6 +47,8 @@ public:
     void shoot();
 
     void goToDefaultPosition();
+
+    void getCoordonates(int &p_xPosPlayer, int &p_yPosPlayer);
 };
 
 #endif

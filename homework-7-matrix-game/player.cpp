@@ -166,3 +166,9 @@ void player::goToDefaultPosition()
     m_xPos = MATRIX_MIDDLE;
     m_yPos = MATRIX_MIDDLE;
 }
+
+void player::getCoordonates(int &p_xPosPlayer, int &p_yPosPlayer)
+{
+    p_xPosPlayer = m_xPos;
+    p_yPosPlayer = m_yPos;
+}

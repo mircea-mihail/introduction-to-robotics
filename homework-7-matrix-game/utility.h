@@ -3,8 +3,9 @@
 
 // utility
 #define MATRIX_ADDRESS 0
-#define MATRIX_SIZE 8
+#define MATRIX_SIZE 16
 #define REAL_MATRIX_SIZE 8
+#define REAL_MATRIX_MIDDLE (REAL_MATRIX_SIZE / 2)
 #define MATRIX_MIDDLE (MATRIX_SIZE / 2)
 
 // generallys useful defines
