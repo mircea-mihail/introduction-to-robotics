@@ -3,6 +3,7 @@
 #include "bullet.h"
 #include "bulletList.h"
 #include "player.h"
+#include "score.h"
 
 // game states
 #define IN_GAME 0

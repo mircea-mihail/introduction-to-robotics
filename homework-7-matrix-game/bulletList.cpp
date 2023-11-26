@@ -82,3 +82,8 @@ void bulletList::updateBullets()
         m_lastBulletUpdate = millis();
     }
 }
+
+void bulletList::setLastBulletUpdate()
+{
+    m_lastBulletUpdate = millis();
+}

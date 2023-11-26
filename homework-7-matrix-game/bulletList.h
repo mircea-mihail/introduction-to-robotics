@@ -27,6 +27,9 @@ public:
     void addBulletNode(bullet *p_newBullet);
 
     void updateBullets();
+
+    void setLastBulletUpdate();
+
 };
 
 

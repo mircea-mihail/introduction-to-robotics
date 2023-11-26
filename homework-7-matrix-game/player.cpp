@@ -155,6 +155,7 @@ void player::shoot()
         getBulletPlacement(xPos, yPos);
         dealWithOutOfBounds(xPos, yPos);
         
+        g_bulletList.setLastBulletUpdate();
         g_bulletList.addBulletNode(new bullet(xPos, yPos, m_direction));
 
         m_lastShot = millis();        
