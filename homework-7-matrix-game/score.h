@@ -3,6 +3,7 @@
 
 #include <EEPROM.h>
 #include "utility.h"
+#include <Arduino.h>
 
 // address related
 #define SCORE_MEMORY_ADDRESS 900
@@ -38,7 +39,7 @@ public:
     // stops the score timer, call this when the level ends. It also writes to memory the new score if the case by calling the private functions
     unsigned long stopCounting();
 
-    // writes 0xFFFFFFFF to all score memory places ( the largest unsigned long value and the worst score)
+    // writes 0xFFFFFFFF to all score memory places (the largest unsigned long value and the worst score)
     void clearScores();
 
     // prints the high scores recorded in memory

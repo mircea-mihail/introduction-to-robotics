@@ -68,10 +68,27 @@ void bulletList::updateBullets()
         {
             if(!currentNode->m_bullet->hasRange())
             {
-                bulletNode *nodeToDelete = currentNode; 
-                currentNode = currentNode->m_nextBulletNode;
-                deleteBulletNode(nodeToDelete);
+                if(!currentNode->m_bullet->isExplodingType())
+                {
+                    bulletNode *nodeToDelete = currentNode; 
+                    currentNode = currentNode->m_nextBulletNode;
+                    deleteBulletNode(nodeToDelete);
+                }
+                else
+                {
+                    if(!currentNode->m_bullet->hasExploded())
+                    {
+                        currentNode->m_bullet->explodeBullet();
+                        currentNode = currentNode->m_nextBulletNode;
 
+                    }
+                    else
+                    {
+                        bulletNode *nodeToDelete = currentNode; 
+                        currentNode = currentNode->m_nextBulletNode;
+                        deleteBulletNode(nodeToDelete);
+                    }
+                }
             }
             else
             {

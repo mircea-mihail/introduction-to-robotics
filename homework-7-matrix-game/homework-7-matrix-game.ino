@@ -39,10 +39,8 @@ void setup()
 
     g_gameState = IN_GAME;
 
-    g_map.printEmptyMatrix();
+    // g_map.printEmptyMatrix();
     // g_score.clearScores();
-
-
 }
 
 void loop() {
@@ -68,7 +66,8 @@ void loop() {
                 {
                     g_gameState = WON;
                     g_timeForBulletUpdate = DEFAULT_TIME_VAL;
-                    g_score.stopCounting();
+                    Serial.print("Your score: ");
+                    Serial.println(g_score.stopCounting());
                 }
             }
 
@@ -94,11 +93,9 @@ void loop() {
                 g_map.generateMap();
                 g_score.startCounting();
 
-                // g_map.printEmptyMatrix();
 
                 g_player1.goToDefaultPosition();
-
-                g_map.printEmptyMatrix();
+                // g_map.printEmptyMatrix();
 
             }
 

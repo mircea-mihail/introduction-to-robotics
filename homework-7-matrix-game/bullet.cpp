@@ -45,13 +45,13 @@ void bullet::updatePosition()
         interactWithMapElement(m_xNextPos, m_yNextPos);
         g_map.setPositionValue(m_xNextPos, m_yNextPos, MAP_BULLET);
 
-        // set old position to zero 
         if(m_xPos != m_xNextPos || m_yPos != m_yNextPos)
         {
             g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
-            m_xPos = m_xNextPos;
-            m_yPos = m_yNextPos;
         }
+
+        m_xPos = m_xNextPos;
+        m_yPos = m_yNextPos;
 
         m_rangeLeft --;
     }
@@ -80,7 +80,54 @@ bool bullet::hasRange()
 
 }
 
+bool bullet::isExplodingType()
+{
+    return m_explodingBullets;
+}
+
+void bullet::explodeBullet()
+{
+    if(m_explodingBullets)
+    {
+        int explosionLeft = m_xPos - EXPLOSION_RADIUS;
+        int explosionRight = m_xPos + EXPLOSION_RADIUS;
+        int explosionTop = m_yPos - EXPLOSION_RADIUS;
+        int explosionBottom = m_yPos + EXPLOSION_RADIUS;
+
+        dealWithOutOfBounds(explosionLeft, explosionTop);
+        dealWithOutOfBounds(explosionRight, explosionBottom);
+
+        g_map.setPositionValue(explosionLeft, m_yPos, MAP_BULLET);
+        g_map.setPositionValue(explosionRight, m_yPos, MAP_BULLET);
+        g_map.setPositionValue(m_xPos, explosionTop, MAP_BULLET);
+        g_map.setPositionValue(m_xPos, explosionBottom, MAP_BULLET);
+        
+        m_hasExploded = true;
+    } // don't set the old position to zero when it explodes (it must flicker because of bullet)
+}
+
+bool bullet::hasExploded()
+{
+    return m_hasExploded;
+}
+
+
 bullet::~bullet()
 {
-    g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
+    g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY);
+    if(m_explodingBullets)
+    {
+        int explosionLeft = m_xPos - EXPLOSION_RADIUS;
+        int explosionRight = m_xPos + EXPLOSION_RADIUS;
+        int explosionTop = m_yPos - EXPLOSION_RADIUS;
+        int explosionBottom = m_yPos + EXPLOSION_RADIUS;
+
+        dealWithOutOfBounds(explosionLeft, explosionTop);
+        dealWithOutOfBounds(explosionRight, explosionBottom);
+
+        g_map.setPositionValue(explosionLeft, m_yPos, MAP_EMPTY);
+        g_map.setPositionValue(explosionRight, m_yPos, MAP_EMPTY);
+        g_map.setPositionValue(m_xPos, explosionTop, MAP_EMPTY);
+        g_map.setPositionValue(m_xPos, explosionBottom, MAP_EMPTY);
+    } 
 }

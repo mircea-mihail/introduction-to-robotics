@@ -39,7 +39,7 @@
 #define DIRECTION_RIGHT 3
 
 // bullet defines
-#define BULLET_TICK_RATE 150
+#define BULLET_TICK_RATE 200
 #define SHOOTING_COOLDOWN (BULLET_TICK_RATE)
 #define DEFAULT_RANGE 2
 #define BULLET_BLINK_INTERVAL 10
@@ -51,6 +51,7 @@
 // animation defines
 #define DEFAULT_TIME_VAL 0
 
+// reverses the direction. If it is up it makes it down. If it's right makes it left
 #define reverseDirection(direction) (direction = (direction + (MAP_NUMBER_OF_ORIENTATIONS/2)) % MAP_NUMBER_OF_ORIENTATIONS) 
 
 #define getColValFromByte(byteValue) ((byteValue >> col) & 1)

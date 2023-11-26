@@ -15,9 +15,7 @@ void score::writeScoreToMemory(unsigned long p_scoreToWrite)
     byte scoreIdx = FIRST_SCORE_IDX;
     for(int addr = SCORE_MEMORY_ADDRESS; addr < ADDRESS_AFTER_LAST_SCORE; addr += sizeof(unsigned long))
     {
-        EEPROM.get(addr, scores[scoreIdx]);
-        Serial.print(scores[scoreIdx++]);
-        Serial.println();
+        EEPROM.get(addr, scores[scoreIdx ++]);
     }
 
     if(p_scoreToWrite < scores[FIRST_SCORE_IDX])
