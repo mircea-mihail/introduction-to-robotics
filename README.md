@@ -325,5 +325,6 @@ Below is a youtube link that shows the homework in action and there is also a pi
 https://www.youtube.com/watch?v=_4DbtM731EU&t=145s
 
 <img src="media/Hw7-project.jpg" alt="Hw7-project" height="300"/>
+<img src="media/Hw7-project-1.jpg" alt="Hw7-project-1" height="300"/>
 
 </details>
