@@ -43,7 +43,7 @@ Below is a youtube link that shows the homework in action and there is also a pi
 
 https://www.youtube.com/shorts/vDVLX95Q7Ww 
 
-<img src="media/Hw2-project.jpg" alt="drawing" height="300"/>
+<img src="media/Hw2-project.jpg" alt="Hw2-project" height="300"/>
 
 </details>
 
@@ -94,7 +94,7 @@ Below is a youtube link that shows the homework in action and there is also a pi
 
 https://www.youtube.com/watch?v=6XHYGthXycI
 
-<img src="media/Hw3-project.jpg" alt="drawing" height="300"/>
+<img src="media/Hw3-project.jpg" alt="Hw3-project" height="300"/>
 </details>
 
 ## Homework 4
@@ -135,7 +135,7 @@ Below is a youtube link that shows the homework in action and there is also a pi
 
 https://www.youtube.com/watch?v=VlsCClYC-cU
 
-<img src="media/Hw4-project.jpg" alt="drawing" height="300"/>
+<img src="media/Hw4-project.jpg" alt="Hw4-project" height="300"/>
 
 </details>
 
@@ -188,7 +188,7 @@ Below is a youtube link that shows the homework in action and there is also a pi
 
 https://www.youtube.com/watch?v=ulKlsE1wnI8
 
-<img src="media/Hw5-project.jpg" alt="drawing" height="300"/>
+<img src="media/Hw5-project.jpg" alt="Hw5-project" height="300"/>
 
 </details>
 
@@ -272,6 +272,58 @@ Below is a youtube link that shows the homework in action and there is also a pi
 
 https://www.youtube.com/watch?v=DZubaUXpZoM
 
-<img src="media/Hw6-project.jpg" alt="drawing" height="300"/>
+<img src="media/Hw6-project.jpg" alt="Hw6-project" height="300"/>
+
+</details>
+
+## Homework 7
+
+<details>
+<summary> <B> Cowboy Rocket - an 8x8 matrix game </B></summary>
+
+### About the game
+
+This is a top down terminator-tanks style game in which you have to distroy all walls using your trusty gun and... ROCKETS (if you find the power up)
+
+### Task 
+
+Develop a small game on an 8x8 matrix. The game must have at least 3 types
+of elements: player (blinks slowly), bombs/bullets (blink fast), wall(doesn’t
+blink). The purpose of this to get you started with your matrix project. The
+basic idea is that you generate walls on the map (50% - 75% of the map) and then
+you move around with the player and destroy them. You can do it Bomberman
+style or terminator-tanks style (or another way, be creative).
+
+### My take
+
+While implementing the required task I also went ahead and implemented most bonusses 
+mentioned in the task PDF.
+  * Animations: there is a start game and a winning annimation
+  * Bigger map: implemented a 16x16 logical matrix you walk around with a panning camera above the player
+  * Advanced game: added a rocket power up that enables exploding bullets or rockets you are immune to ( but the walls are not )
+  * Extra button: using the joystick to shoot is not fun so I had to add an extra button for that
+  * Extra sensors: added a brightness sensor that adjusts the brightness of the LED matrix based on outside light
+  * Menu structure: everything is organised on game states that switch between in-animation, in-game, won
+  * Code structure: most of the code is organised in classes and separate files to make everything modular, easy to read and use
+  * Score: the player that destroys all of the walls in the least amount of thime gets a place in the top 3 players in EEPROM
+
+### Hardware Implementation
+
+I used:
+* a MAX7219 serial input/parallel output IC
+* resistors and capacitors as needed
+* a button
+* a light sensor
+* one 8x8 LED matrix
+* an Arduino Uno
+* a Joystick
+* wires
+* a breadboard
+
+Below is a youtube link that shows the homework in action and there is also a picture of the project.
+
+https://www.youtube.com/watch?v=_4DbtM731EU&t=145s
+
+<img src="media/Hw7-project.jpg" alt="Hw7-project" height="300"/>
 
 </details>
