@@ -19,6 +19,7 @@ bool g_finishedAnimiation = false;
 unsigned long g_timeForLastFrame = 0;
 unsigned long g_timeForBulletUpdate = 0;
 
+// call this when starting a new level
 void startLevelSequence()
 {
     g_gameState = IN_GAME;     
@@ -33,6 +34,7 @@ void startLevelSequence()
     // g_score.clearScores();
 }
 
+// adjust brightness using the sensor
 void adjustBrightness()
 {
     int outsideBrightness = g_periph.getBrightness();

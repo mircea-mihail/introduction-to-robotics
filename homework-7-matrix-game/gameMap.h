@@ -22,6 +22,7 @@
 #define GAME_START_FRAME_NUMBER 4
 #define DEFAULT_FRAME_INDEX_VALUE 0
 
+// deals with the map interaction and animation displaying
 class gameMap
 {   
 private:

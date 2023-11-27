@@ -124,6 +124,7 @@ bool bullet::hasExploded()
 bullet::~bullet()
 {
     g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY);
+    
     if(m_explodingBullets)
     {
         int explosionLeft = m_xPos - EXPLOSION_RADIUS;
