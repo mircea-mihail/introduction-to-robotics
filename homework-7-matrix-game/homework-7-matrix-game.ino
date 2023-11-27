@@ -4,6 +4,7 @@
 #include "bulletList.h"
 #include "player.h"
 #include "score.h"
+#include "peripherals.h"
 
 // game states
 #define IN_GAME 0
@@ -52,6 +53,8 @@ void setup()
 
 void loop() 
 {
+
+
     switch(g_gameState)
     {
         case IN_START_ANIMATION:
