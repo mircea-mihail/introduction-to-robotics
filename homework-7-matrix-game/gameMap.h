@@ -20,6 +20,7 @@
 #define WINNING_FRAME_NUMBER 5
 #define GAME_START_FRAME_DISPLAY_TIME 500
 #define GAME_START_FRAME_NUMBER 4
+#define DEFAULT_FRAME_INDEX_VALUE 0
 
 class gameMap
 {   
@@ -41,6 +42,7 @@ private:
 
     unsigned long m_lastBulletMove = 0;
 
+    // logic matrix (the map of the game)
     byte matrix[MATRIX_SIZE][MATRIX_SIZE] = 
     {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -61,6 +63,7 @@ private:
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
     };
 
+    // animation frames displayed when winning
     const byte m_winningMatrixVector[WINNING_FRAME_NUMBER][REAL_MATRIX_SIZE] = {
         {
             0b00011000,
@@ -114,6 +117,7 @@ private:
         }
     };
 
+    // animation frames displayed at the start of the game
     const byte m_gameStartMatrixVector[GAME_START_FRAME_NUMBER][REAL_MATRIX_SIZE] = 
     {
         {
@@ -158,39 +162,61 @@ private:
         }
     };
 
+    // function that checks what is in the logic matrix of the game on realRow and realCol
+    // and displays it as a player, bullet or anything else on the real 8x8 led matrix 
     void displayElement(int realRow, int realCol, int p_row, int p_col);
 
 public:
+    // deals with pin initializations that have to do with the real matrix and the bit shifter
     static void setupHardware();
 
+    // commands that set up the bit shifter to display the matrix as we want 
+    // (brightness, turns off power saving and clears the display)
     void initMatrix();
 
+    // changes a byte in the logic matrix at the position of xPos and yPos with the newValue
     void setPositionValue(int p_xPos, int p_yPos, int p_newValue);
-    
+
+    // goes through the steps to display the piece on the logic matrix that the player is in
+    // on the real led matrix
     void updateDisplay(int p_xPosPlayer, int p_yPosPlayer);
 
+    // checks if the x and y coordonates are within the limints of the logical matrix
     bool isWithinBounds(int p_xPos, int p_yPos);
 
+    // checks if the byte at the xPos and yPos on the logical matrix is the given mapElement
+    // (wall or player or bullet or whatever else)
     bool isMapElement(const byte p_mapElement, int p_xPos, int p_yPos);
 
+    // generates a new level, placing walls power ups and clearing the area around the player
     void generateMap();
 
+    // goes through the whole matrix and checks if there are any walls left    
     bool checkWinningCondition();
 
-    void printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE], byte p_frameToPrint);
+    // for debug -> generates a map with a single wall near the player
+    void printEmptyMatrix();
     
-    bool printWinningMatrixAnimation();
-
-    bool printStartGameMatrixAnimation();
-
-    void refreshAnimationValues();
-
-    void printOnRealMatrix();
-
+    // sets the matrix brightness updating the m_newBrightness with the new value in the parameter
     void setMatrixBrightness(byte p_newBrightness);
 
-    // for debug
-    void printEmptyMatrix();
+    ////////////////////////// animation related
+
+    // prints on the logical matrix starting at 0, 0 the frame stored in the matrix vector
+    void printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE], byte p_frameToPrint);
+    
+    // deals with printing all of the frames in order of the winning animation
+    bool printWinningMatrixAnimation();
+
+    // deals with printing all of the frames in order of the animation 
+    // played at the start of the game
+    bool printStartGameMatrixAnimation();
+
+    // sets all of the animation values at their default value
+    void refreshAnimationValues();
+
+    // Prints the frames from the 0, 0 position of the logic matrix on the real led matrix
+    void printOnRealMatrix();
 };
 
 #endif

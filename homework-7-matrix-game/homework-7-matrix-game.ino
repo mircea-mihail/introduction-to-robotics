@@ -6,13 +6,6 @@
 #include "score.h"
 #include "peripherals.h"
 
-// game states
-#define IN_GAME 0
-#define IN_MENU 1
-#define IN_START_ANIMATION 2
-#define LOST 3
-#define WON 4
-
 gameMap g_map;
 player g_player1(MATRIX_MIDDLE, MATRIX_MIDDLE);
 bulletList g_bulletList;
@@ -142,11 +135,14 @@ void loop()
                 g_timeForLastFrame = DEFAULT_TIME_VAL;
                 g_finishedAnimiation = false;
 
-                startLevelSequence();
+                g_gameState = IN_START_ANIMATION;
             }
 
             g_map.printOnRealMatrix();
             break;
+
+        case IN_PAUSE:
+            
 
         default:
             break;

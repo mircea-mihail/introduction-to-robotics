@@ -13,9 +13,10 @@
 // game states
 #define IN_GAME 0
 #define IN_MENU 1
-#define IN_ANIMATION 2
+#define IN_START_ANIMATION 2
 #define LOST 3
 #define WON 4
+#define IN_PAUSE 5
 
 // player pins
 #define JS_X_PIN A0
@@ -55,7 +56,7 @@
 #define DEFAULT_TIME_VAL 0
 
 // sensor defines
-#define MAX_BRIGHTNESS_INPUT 950
+#define MAX_BRIGHTNESS_INPUT 900
 #define MIN_BRIGHTNESS_INPUT 700
 
 #define MAX_MATRIX_BRIGHTNESS 15
@@ -64,8 +65,10 @@
 // reverses the direction. If it is up it makes it down. If it's right makes it left
 #define reverseDirection(direction) (direction = (direction + (MAP_NUMBER_OF_ORIENTATIONS/2)) % MAP_NUMBER_OF_ORIENTATIONS) 
 
+// when a column in a matrix is encoded in a byte this functions returns the saught after bit value
 #define getColValFromByte(byteValue) ((byteValue >> col) & 1)
 
+// returns the absoulte value of a number
 inline int absolute(int a) 
 {
     if(a < 0)

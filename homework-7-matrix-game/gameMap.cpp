@@ -219,7 +219,7 @@ bool gameMap::printStartGameMatrixAnimation()
 
         if(m_currentFrameIndex == GAME_START_FRAME_NUMBER)
         {
-            m_currentFrameIndex = 0;
+            refreshAnimationValues();
             return true;  
         }
     }
@@ -228,7 +228,7 @@ bool gameMap::printStartGameMatrixAnimation()
 
 void gameMap::refreshAnimationValues()
 {
-    m_currentFrameIndex = 0;
+    m_currentFrameIndex = DEFAULT_FRAME_INDEX_VALUE;
 
 }
 
@@ -262,5 +262,5 @@ void gameMap::printEmptyMatrix()
         }
     }
 
-    matrix[16/2 - 1][16/2] = MAP_WALL;
+    matrix[MATRIX_MIDDLE - 1][MATRIX_MIDDLE] = MAP_WALL;
 }
