@@ -187,6 +187,8 @@ public:
 
     void printOnRealMatrix();
 
+    void setMatrixBrightness(byte p_newBrightness);
+
     // for debug
     void printEmptyMatrix();
 };

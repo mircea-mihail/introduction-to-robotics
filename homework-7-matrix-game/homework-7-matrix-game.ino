@@ -17,6 +17,7 @@ gameMap g_map;
 player g_player1(MATRIX_MIDDLE, MATRIX_MIDDLE);
 bulletList g_bulletList;
 score g_score;
+peripherals g_periph;
 
 byte g_gameState;
 
@@ -37,8 +38,26 @@ void startLevelSequence()
 
     // g_map.printEmptyMatrix();
     // g_score.clearScores();
-
 }
+
+void adjustBrightness()
+{
+    int outsideBrightness = g_periph.getBrightness();
+    if(outsideBrightness < MIN_BRIGHTNESS_INPUT)
+    {
+        g_map.setMatrixBrightness(MIN_MATRIX_BRIGHTNESS);
+    }  
+    else if(outsideBrightness > MAX_BRIGHTNESS_INPUT)
+    {
+        g_map.setMatrixBrightness(MAX_MATRIX_BRIGHTNESS);
+    } 
+    else
+    {
+        int newBrightness = map(outsideBrightness, MIN_BRIGHTNESS_INPUT, MAX_BRIGHTNESS_INPUT, MIN_MATRIX_BRIGHTNESS, MAX_MATRIX_BRIGHTNESS);
+        Serial.println(newBrightness);
+        g_map.setMatrixBrightness(newBrightness);
+    } 
+}   
 
 void setup()
 {
@@ -53,7 +72,7 @@ void setup()
 
 void loop() 
 {
-
+    adjustBrightness();
 
     switch(g_gameState)
     {

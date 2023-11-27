@@ -244,6 +244,12 @@ void gameMap::printOnRealMatrix()
     }
 }
 
+void gameMap::setMatrixBrightness(byte p_newBrightness)
+{
+    p_matrixBrightness = p_newBrightness;
+    p_ledControl.setIntensity(MATRIX_ADDRESS, p_matrixBrightness);
+}
+
 
 // for debug
 void gameMap::printEmptyMatrix()

@@ -51,9 +51,15 @@
 // power up defines
 #define POWER_UP_BLINK_INTERVAL 500
 
-
 // animation defines
 #define DEFAULT_TIME_VAL 0
+
+// sensor defines
+#define MAX_BRIGHTNESS_INPUT 950
+#define MIN_BRIGHTNESS_INPUT 700
+
+#define MAX_MATRIX_BRIGHTNESS 15
+#define MIN_MATRIX_BRIGHTNESS 0
 
 // reverses the direction. If it is up it makes it down. If it's right makes it left
 #define reverseDirection(direction) (direction = (direction + (MAP_NUMBER_OF_ORIENTATIONS/2)) % MAP_NUMBER_OF_ORIENTATIONS) 
