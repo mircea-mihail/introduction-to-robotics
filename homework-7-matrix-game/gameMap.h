@@ -168,9 +168,6 @@ private:
     void displayElement(int realRow, int realCol, int p_row, int p_col);
 
 public:
-    // deals with pin initializations that have to do with the real matrix and the bit shifter
-    static void setupHardware();
-
     // commands that set up the bit shifter to display the matrix as we want 
     // (brightness, turns off power saving and clears the display)
     void initMatrix();
@@ -200,6 +197,9 @@ public:
     
     // sets the matrix brightness updating the m_newBrightness with the new value in the parameter
     void setMatrixBrightness(byte p_newBrightness);
+
+    // resets the player blink 
+    void resetPlayerBlink();
 
     ////////////////////////// animation related
 

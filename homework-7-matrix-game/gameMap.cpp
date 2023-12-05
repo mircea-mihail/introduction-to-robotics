@@ -48,13 +48,6 @@ void gameMap::displayElement(int realRow, int realCol, int p_row, int p_col)
     }
 }
 
-void gameMap::setupHardware()
-{
-    pinMode(DATA_IN_PIN, OUTPUT);
-    pinMode(CLOCK_PIN, OUTPUT);
-    pinMode(LOAD_PIN, OUTPUT);
-}
-
 void gameMap::initMatrix()
 {
     p_ledControl.shutdown(MATRIX_ADDRESS, false); // turn off power saving, enables display
@@ -263,4 +256,10 @@ void gameMap::printEmptyMatrix()
     }
 
     matrix[MATRIX_MIDDLE - 1][MATRIX_MIDDLE] = MAP_WALL;
+}
+
+void gameMap::resetPlayerBlink()
+{
+    m_blinkPlayer = true;
+    m_lastPlayerBlink = millis();
 }
