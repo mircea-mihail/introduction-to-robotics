@@ -10,15 +10,6 @@ void player::storeMovement(int p_xCommand, int p_yCommand)
     pickAnAxes(m_xNextPos, m_yNextPos, m_xPos, m_yPos, p_xCommand, p_yCommand);
 }
 
-bool player::joystickDetected(int p_xCommand, int p_yCommand)
-{
-    if(p_xCommand < MIN_JS_THRESHOLD || p_xCommand > MAX_JS_THRESHOLD || p_yCommand < MIN_JS_THRESHOLD || p_yCommand > MAX_JS_THRESHOLD)
-    {
-        return true;
-    }
-    return false;
-}
-
 void player::setDirection(int p_xNextPos, int p_yNextPos, int p_xPos, int p_yPos)
 {
     if(p_xNextPos != p_xPos && p_yNextPos == p_yPos)
@@ -43,32 +34,7 @@ void player::setDirection(int p_xNextPos, int p_yNextPos, int p_xPos, int p_yPos
 
 bool player::pulledTrigger()
 {
-    unsigned long time = millis();
-    int state = !digitalRead(BUTTON_PIN);
-
-    // if the button has a constant state
-    if(state == m_btn.m_prevState)
-    {
-        // if the constant state has been kept for a while
-        if(time - m_btn.m_prevTime > DEBOUNCE_TIME && m_btn.m_prevCountedState != state)
-        {
-            m_btn.m_prevCountedState = state;
-
-            if(state == HIGH)
-            {
-                m_btn.m_prevState = state;
-                return true;
-            }
-        }
-    }
-    else
-    {
-        m_btn.m_prevTime = time;
-    }
-
-    m_btn.m_prevState = state;
-    
-    return false;
+    return m_hwCtrl.pressedButton();
 }
 
 void player::getBulletPlacement(int &p_xPos, int &p_yPos)
@@ -106,21 +72,12 @@ player::player(int p_xPos, int p_yPos)
     g_map.setPositionValue(m_xPos, m_yPos, MAP_PLAYER); 
 }
 
-void player::setupJoystickAndButton()
+bool player::updatePosition()  
 {
-    pinMode(JS_X_PIN, INPUT);
-    pinMode(JS_Y_PIN, INPUT);
-    pinMode(BUTTON_PIN, INPUT_PULLUP);   
-}
-
-void player::updatePosition()  
-{
-    int xCommand = analogRead(JS_X_PIN);
-    int yCommand = analogRead(JS_Y_PIN);
-
     g_map.setPositionValue(m_xPos, m_yPos, MAP_PLAYER);
 
-    if(joystickDetected(xCommand, yCommand))
+    int xCommand, yCommand;
+    if(m_hwCtrl.joystickDetected(xCommand, yCommand))
     {
         storeMovement(xCommand, yCommand);
         
@@ -129,6 +86,7 @@ void player::updatePosition()
             dealWithOutOfBounds(m_xNextPos, m_yNextPos);
             setDirection(m_xNextPos, m_yNextPos, m_xPos, m_yPos);
 
+            bool moved = false;
             if(!g_map.isMapElement(MAP_WALL, m_xNextPos, m_yNextPos) && !g_map.isMapElement(MAP_BULLET, m_xNextPos, m_yNextPos))
             {
                 if(g_map.isMapElement(MAP_POWER_UP, m_xNextPos, m_yNextPos))
@@ -143,11 +101,18 @@ void player::updatePosition()
                     g_map.setPositionValue(m_xPos, m_yPos, MAP_EMPTY); 
                     m_xPos = m_xNextPos;
                     m_yPos = m_yNextPos;
+                    moved = true;
                 }
             }
             m_lastMoved = millis();
+            
+            if(moved)
+            {
+                return true;
+            }
         }
     }
+    return false;
 }
 
 void player::shoot()

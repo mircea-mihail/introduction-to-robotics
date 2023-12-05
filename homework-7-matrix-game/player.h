@@ -4,25 +4,16 @@
 #include "matrixEntity.h"
 #include "bulletList.h"
 #include "gameMap.h"
-
-// button
-#define DEBOUNCE_TIME 50
+#include "inputHwControl.h"
 
 extern bulletList g_bulletList;
 extern gameMap g_map;
 
-struct button
-{
-    int m_prevState = LOW;
-    int m_prevCountedState = LOW;
-    unsigned long m_prevTime = 0;
-};
-
 // player class to control a player
 class player : public matrixEntity
 {
+    inputHwControl m_hwCtrl;
     byte m_direction;
-    button m_btn;
     unsigned long m_lastShot = 0;
     bool m_foundExplodingBullets = false;
 
@@ -32,9 +23,6 @@ private:
     // stores the next movement of the player in the next move members
     void storeMovement(int p_xCommand, int p_yCommand);
     
-    // checks if the joystick has been moved past the threshold values
-    bool joystickDetected(int p_xCommand, int p_yCommand);
-
     // sets the direction the player is facing based on their last move
     void setDirection(int p_xNextPos, int p_yNextPos, int p_xPos, int p_yPos);
 
@@ -47,12 +35,9 @@ private:
 public:
     // initialises the player's position, direction and places them on the map
     player(int p_xPos, int p_yPos);
-
-    // sets up the hardware the player needs
-    void setupJoystickAndButton();
-
+    
     // updates the player's position based on the joystick movement
-    void updatePosition() override;
+    bool updatePosition() override;
 
     // tries to shoot if the shooting cooldown has expired and the player pressed the shoot button
     void shoot();
