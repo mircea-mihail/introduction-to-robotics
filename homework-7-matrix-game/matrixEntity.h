@@ -4,12 +4,6 @@
 #include "utility.h"
 #include "gameMap.h"
 
-// joystick 
-#define JS_DEFAULT_VALUE 512
-
-#define MIN_JS_THRESHOLD 312
-#define MAX_JS_THRESHOLD 712
-
 extern gameMap g_map;
 
 // base class for player and bullet and maybe enemy providing some basic functionality and useful members
@@ -24,7 +18,7 @@ protected:
 
 public:
     // pure virtual class that should be implemented by all children
-    virtual void updatePosition() = 0;
+    virtual bool updatePosition() = 0;
 
     // moves the entity in a direction if the entity is controlled by a joystick
     void initialPositionUpdate(int &p_xPos, int &p_yPos, int p_xCommand, int p_yCommand);

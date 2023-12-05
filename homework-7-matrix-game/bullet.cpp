@@ -11,7 +11,7 @@ bullet::bullet(int p_xPos, int p_yPos, byte p_direction, bool p_explodingBullets
     g_map.setPositionValue(m_xPos, m_yPos, MAP_BULLET); 
 }
 
-void bullet::updatePosition()
+bool bullet::updatePosition()
 {
     m_xNextPos = m_xPos;
     m_yNextPos = m_yPos;
@@ -61,6 +61,7 @@ void bullet::updatePosition()
         m_rangeLeft = -1;
     }
         
+    return true;
 }
 
 void bullet::interactWithMapElement(int p_xPos, int p_yPos)

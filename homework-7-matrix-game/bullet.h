@@ -23,7 +23,7 @@ public:
     bullet(int p_xPos, int p_yPos, byte p_direction, bool p_explodingBullets = false, int p_rangeLeft = DEFAULT_RANGE);
 
     // updates the bullet position using the direction it is going in
-    void updatePosition() override;
+    bool updatePosition() override;
 
     // checks if the range left is > 0
     bool hasRange();

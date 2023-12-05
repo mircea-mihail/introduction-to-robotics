@@ -78,7 +78,6 @@
 // misc peripherals
 #define BRIGHTNESS_PIN A2
 
-
 // reverses the direction. If it is up it makes it down. If it's right makes it left
 #define reverseDirection(direction) (direction = (direction + (MAP_NUMBER_OF_ORIENTATIONS/2)) % MAP_NUMBER_OF_ORIENTATIONS) 
 
