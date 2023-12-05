@@ -16,12 +16,12 @@
 #define IN_START_ANIMATION 2
 #define LOST 3
 #define WON 4
-#define IN_PAUSE 5
+#define IN_MENU 5
 
 // player pins
 #define JS_X_PIN A0
 #define JS_Y_PIN A1
-#define BUTTON_PIN 6
+#define BUTTON_PIN 13
 
 // matrix occupation related
 #define MAP_NUMBER_OF_ORIENTATIONS 4
@@ -61,6 +61,23 @@
 
 #define MAX_MATRIX_BRIGHTNESS 15
 #define MIN_MATRIX_BRIGHTNESS 0
+
+// joystick 
+#define JS_DEFAULT_VALUE 512
+#define MIN_JS_THRESHOLD 312
+#define MAX_JS_THRESHOLD 712
+
+// LCD display
+#define RESET 9
+#define ENABLE 8
+#define DATA4 7
+#define DATA5 6
+#define DATA6 5
+#define DATA7 4
+
+// misc peripherals
+#define BRIGHTNESS_PIN A2
+
 
 // reverses the direction. If it is up it makes it down. If it's right makes it left
 #define reverseDirection(direction) (direction = (direction + (MAP_NUMBER_OF_ORIENTATIONS/2)) % MAP_NUMBER_OF_ORIENTATIONS) 
