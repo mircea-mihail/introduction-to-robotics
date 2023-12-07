@@ -30,6 +30,19 @@ bool inputHwControl::pressedButton()
     return false;
 }
 
+bool inputHwControl::joystickDetected(int &p_xCommand, int &p_yCommand)
+{
+    p_xCommand = analogRead(JS_X_PIN);
+    p_yCommand = analogRead(JS_Y_PIN);
+
+    if(p_xCommand < MIN_JS_THRESHOLD || p_xCommand > MAX_JS_THRESHOLD || p_yCommand < MIN_JS_THRESHOLD || p_yCommand > MAX_JS_THRESHOLD)
+    {
+        return true;
+    }
+    return false;
+}
+
+
 int inputHwControl::getBrightness()
 {
     return analogRead(BRIGHTNESS_PIN);
