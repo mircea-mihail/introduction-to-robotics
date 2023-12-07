@@ -11,12 +11,20 @@
 // generallys useful defines
 
 // game states
-#define IN_GAME 0
-#define IN_MENU 1
-#define IN_START_ANIMATION 2
-#define LOST 3
-#define WON 4
-#define IN_MENU 5
+#define GAME_IN_GAME 0
+#define GAME_IN_MENU 1
+#define GAME_IN_START_ANIMATION 2
+#define GAME_LOST 3
+#define GAME_WON 4
+#define GAME_IN_MENU 5
+
+// menu states
+#define MENU_IN_START_GAME 0 
+#define MENU_IN_SETTINGS 1
+#define MENU_IN_ABOUT 2
+// Not options but valid states
+#define MENU_IN_GAME 3
+
 
 // player pins
 #define JS_X_PIN A0
@@ -56,8 +64,8 @@
 #define DEFAULT_TIME_VAL 0
 
 // sensor defines
-#define MAX_BRIGHTNESS_INPUT 900
-#define MIN_BRIGHTNESS_INPUT 700
+#define MAX_BRIGHTNESS_INPUT 801
+#define MIN_BRIGHTNESS_INPUT 800
 
 #define MAX_MATRIX_BRIGHTNESS 15
 #define MIN_MATRIX_BRIGHTNESS 0
@@ -74,6 +82,7 @@
 #define DATA5 6
 #define DATA6 5
 #define DATA7 4
+#define LCD_CONTRAST 3
 
 // misc peripherals
 #define BRIGHTNESS_PIN A2
