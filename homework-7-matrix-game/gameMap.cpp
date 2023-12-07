@@ -223,6 +223,8 @@ void gameMap::refreshAnimationValues()
 {
     m_currentFrameIndex = DEFAULT_FRAME_INDEX_VALUE;
 
+    // quick temporary fix
+    cleanMapForAnimation();
 }
 
 
@@ -241,6 +243,17 @@ void gameMap::setMatrixBrightness(byte p_newBrightness)
 {
     p_matrixBrightness = p_newBrightness;
     p_ledControl.setIntensity(MATRIX_ADDRESS, p_matrixBrightness);
+}
+
+void gameMap::cleanMapForAnimation()
+{
+    for(int row = 0; row < MATRIX_SIZE; row++)
+    {
+        for(int col = 0; col < MATRIX_SIZE; col++)
+        {   
+            matrix[row][col] = MAP_EMPTY;
+        }
+    }
 }
 
 

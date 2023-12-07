@@ -216,6 +216,9 @@ public:
     // sets all of the animation values at their default value
     void refreshAnimationValues();
 
+    // clean up the animation area of the map
+    void cleanMapForAnimation();
+
     // Prints the frames from the 0, 0 position of the logic matrix on the real led matrix
     void printOnRealMatrix();
 };
