@@ -12,8 +12,10 @@ player g_player1(MATRIX_MIDDLE, MATRIX_MIDDLE);
 bulletList g_bulletList;
 score g_score;
 inputHwControl g_hwCtrl;
+gameMenu g_menu;
 
 byte g_gameState;
+byte g_menuState;
 
 // frame display
 bool g_finishedAnimiation = false;
@@ -39,16 +41,16 @@ void initAllHw()
     pinMode(DATA5, OUTPUT);
     pinMode(DATA6, OUTPUT);
     pinMode(DATA7, OUTPUT);
+    pinMode(LCD_CONTRAST, OUTPUT);
 
     // brightness sensor
-    pinMode(BRIGHTNESS_PIN, INPUT);
-    
+    pinMode(BRIGHTNESS_PIN, INPUT);    
 }
 
 // call this when starting a new level
 void startLevelSequence()
 {
-    g_gameState = IN_GAME;     
+    g_gameState = GAME_IN_GAME;     
     g_map.refreshAnimationValues();               
     g_map.generateMap();
     g_score.startCounting();
@@ -57,7 +59,7 @@ void startLevelSequence()
     g_player1.resetPowerUps();
     g_player1.goToDefaultPosition();
 
-    // g_map.printEmptyMatrix();
+    g_map.printEmptyMatrix();
     // g_score.clearScores();
 }
 
@@ -100,9 +102,9 @@ void doInGameRoutine()
         }
         if(millis() - g_timeForBulletUpdate > WINNING_FRAME_DISPLAY_TIME)
         {
-            g_gameState = WON;
+            g_gameState = GAME_WON;
             g_timeForBulletUpdate = DEFAULT_TIME_VAL;
-            Serial.print("Your score: ");
+            Serial.print(F("Your score: "));
             Serial.println(g_score.stopCounting());
         }
     }
@@ -110,6 +112,7 @@ void doInGameRoutine()
 
 void doInStartAnimationRoutine()
 {
+    // places the player on 0 0 to display what is printed on the "map" during animation
     g_map.updateDisplay(0, 0);
 
     if(g_map.printStartGameMatrixAnimation())
@@ -126,7 +129,7 @@ void doInStartAnimationRoutine()
         g_timeForLastFrame = DEFAULT_TIME_VAL;
         g_finishedAnimiation = false;
 
-        g_gameState = IN_GAME;
+        g_gameState = GAME_IN_GAME;
         
         startLevelSequence();
     }
@@ -134,6 +137,9 @@ void doInStartAnimationRoutine()
 
 void doInWinningStateRoutine()
 {
+    g_map.updateDisplay(0, 0);
+
+    // winning animation
     if(g_map.printWinningMatrixAnimation())
     {
         if(g_timeForLastFrame == DEFAULT_TIME_VAL)
@@ -143,15 +149,16 @@ void doInWinningStateRoutine()
         g_finishedAnimiation = true;
     }
     
+    // if animation is finished go to start animation
     if(millis() - g_timeForLastFrame > WINNING_FRAME_DISPLAY_TIME && g_finishedAnimiation)
     {
         g_timeForLastFrame = DEFAULT_TIME_VAL;
         g_finishedAnimiation = false;
 
-        g_gameState = IN_START_ANIMATION;
+        g_gameState = GAME_IN_MENU;
+        g_menu.setStateToDefault();
+        g_menu.printEndMessage();
     }
-
-    g_map.printOnRealMatrix();
 }
 
 void setup()
@@ -159,7 +166,7 @@ void setup()
     Serial.begin(115200);
     initAllHw();
 
-    g_gameState = IN_START_ANIMATION;
+    g_gameState = GAME_IN_MENU;
     g_map.initMatrix();
 }
 
@@ -167,22 +174,28 @@ void loop()
 {
     adjustBrightness();
 
+    g_menuState = g_menu.menuSequence();
+
     switch(g_gameState)
     {
-        case IN_START_ANIMATION:
+        case GAME_IN_START_ANIMATION:
             doInStartAnimationRoutine();
             break;
         
-        case IN_GAME:
+        case GAME_IN_GAME:
             doInGameRoutine();
             break;
 
-        case WON:
+        case GAME_WON:
             doInWinningStateRoutine();
             break;            
 
-        case IN_MENU:
-            
+        case GAME_IN_MENU:
+            if(g_menuState == MENU_IN_GAME)
+            {
+                g_gameState = GAME_IN_START_ANIMATION;
+                g_map.refreshAnimationValues();
+            }
             break;
 
         default:
