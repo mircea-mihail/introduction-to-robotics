@@ -42,6 +42,79 @@ bool inputHwControl::joystickDetected(int &p_xCommand, int &p_yCommand)
     return false;
 }
 
+bool inputHwControl::joystickLeft()
+{
+    int xCommand = analogRead(JS_X_PIN);
+    int yCommand = analogRead(JS_Y_PIN);
+
+    if(xCommand < MIN_JS_THRESHOLD || xCommand > MAX_JS_THRESHOLD || yCommand < MIN_JS_THRESHOLD || yCommand > MAX_JS_THRESHOLD)
+    {
+        if(absolute(JS_DEFAULT_VALUE - xCommand) < absolute(JS_DEFAULT_VALUE - yCommand))
+        {
+            if(yCommand > MAX_JS_THRESHOLD)
+            {
+                return true;
+            }
+        }   
+    }
+    return false;
+}
+
+bool inputHwControl::joystickRight()
+{
+    int xCommand = analogRead(JS_X_PIN);
+    int yCommand = analogRead(JS_Y_PIN);
+
+    if(xCommand < MIN_JS_THRESHOLD || xCommand > MAX_JS_THRESHOLD || yCommand < MIN_JS_THRESHOLD || yCommand > MAX_JS_THRESHOLD)
+    {
+        if(absolute(JS_DEFAULT_VALUE - xCommand) < absolute(JS_DEFAULT_VALUE - yCommand))
+        {
+            if(yCommand < MIN_JS_THRESHOLD)
+            {
+                return true;
+            }
+        }   
+    }
+    return false;   
+}
+
+bool inputHwControl::joystickUp()
+{
+    int xCommand = analogRead(JS_X_PIN);
+    int yCommand = analogRead(JS_Y_PIN);
+
+    if(xCommand < MIN_JS_THRESHOLD || xCommand > MAX_JS_THRESHOLD || yCommand < MIN_JS_THRESHOLD || yCommand > MAX_JS_THRESHOLD)
+    {
+        if(absolute(JS_DEFAULT_VALUE - xCommand) > absolute(JS_DEFAULT_VALUE - yCommand))
+        {
+            if(xCommand < MIN_JS_THRESHOLD)
+            {
+                return true;
+            }
+        }   
+    }
+    return false;
+}
+
+bool inputHwControl::joystickDown()
+{
+    int xCommand = analogRead(JS_X_PIN);
+    int yCommand = analogRead(JS_Y_PIN);
+
+    if(xCommand < MIN_JS_THRESHOLD || xCommand > MAX_JS_THRESHOLD || yCommand < MIN_JS_THRESHOLD || yCommand > MAX_JS_THRESHOLD)
+    {
+        if(absolute(JS_DEFAULT_VALUE - xCommand) > absolute(JS_DEFAULT_VALUE - yCommand))
+        {
+            if(xCommand > MAX_JS_THRESHOLD)
+            {
+                return true;
+            }
+        }   
+    }
+    return false;   
+}
+
+
 
 int inputHwControl::getBrightness()
 {

@@ -5,10 +5,13 @@
 #include <LiquidCrystal.h>
 #include "utility.h"
 #include "inputHwControl.h"
+#include "gameMap.h"
 
 // lcd default characteristics
 #define LCD_COLS 16
 #define LCD_ROWS 2
+
+#define CONTRAST_INCREMENT_VAL 10
 
 // printing defines
 #define FIRST_LCD_ROW 0
@@ -22,11 +25,20 @@
 #define INTRO_MESSAGE_MILLIS 3000
 #define END_MESSAGE_MILLIS 3000
 
+// settings submenu states:
+#define IN_MATRIX_BRIGHTNESS 0
+#define IN_LCD_BRIGHTNESS 1
+#define RETURN_FROM_SETTINGS 2
+
+extern gameMap g_map;
+
 class gameMenu
 {
 private:
-    int m_state;
-    
+    bool m_inSubmenu = false;
+    int m_state = MENU_IN_START_GAME;
+    int m_settingsState = RETURN_FROM_SETTINGS;
+
     bool m_changedState = true;
     unsigned long m_lastCycleTime = 0;
 
@@ -35,6 +47,8 @@ private:
 
     bool m_showEndMessage = false;
     unsigned long m_endMessageTime = 0;
+
+    unsigned long m_lastContrastChange = 0;
 
     // menu variables:
     bool m_showAboutText = false;
@@ -155,16 +169,16 @@ public:
         m_endMessageTime = millis();
     }
 
-    void keepStateInBounds(int &p_state)
+    void keepStateInBounds(int &p_state, const int p_lowerBound, const int p_upperBound)
     {
-        if(p_state > MENU_IN_ABOUT)
+        if(p_state > p_upperBound)
         {
-            p_state = MENU_IN_START_GAME;
+            p_state = p_lowerBound;
         }
 
-        if(p_state < MENU_IN_START_GAME)
+        if(p_state < p_lowerBound)
         {
-            p_state = MENU_IN_ABOUT;
+            p_state = p_upperBound;
         }
     }
     
@@ -178,7 +192,7 @@ public:
         m_showAboutText = false;
     }
 
-    void goToNextMenuOption()
+    void goToNextMenuOption(int &p_currentState, const int p_lowerBound, const int p_upperBound)
     {
         int xJsCommand, yJsCommand;
         if(m_hwCtrl.joystickDetected(xJsCommand, yJsCommand))
@@ -195,21 +209,83 @@ public:
 
                 if(xJsCommand < MIN_JS_THRESHOLD)
                 {
-                    m_state --;
+                    p_currentState --;
                 }
                 else if(xJsCommand > MIN_JS_THRESHOLD)
                 {
-                    m_state ++;
+                    p_currentState ++;
                 }
         
-                keepStateInBounds(m_state);
+                keepStateInBounds(p_currentState, p_lowerBound, p_upperBound);
 
                 m_lcd.clear();
                 m_changedState = true;
                 refreshMenuVariables();
             }
         }
+    }
 
+    void goToSettingsMenu()
+    {
+        goToNextMenuOption(m_settingsState, IN_MATRIX_BRIGHTNESS, IN_LCD_BRIGHTNESS);
+
+        if(m_hwCtrl.joystickLeft() && m_hwCtrl.pressedButton())
+        {
+            m_inSubmenu = false;
+            changeState(m_settingsState, RETURN_FROM_SETTINGS);
+        }
+
+        switch (m_settingsState)
+        {
+        case IN_MATRIX_BRIGHTNESS:
+            if(m_changedState)
+            {
+                m_lcd.print(F("<  matrix sun"));
+                m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
+                m_lcd.print(F("< "));
+
+                m_changedState = false;
+            }
+            
+            break;
+
+        case IN_LCD_BRIGHTNESS:
+            if(m_changedState)
+            {
+                m_lcd.print(F("<   lcd  sun"));
+                m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
+                m_lcd.print(F("< "));
+
+                m_changedState = false;
+            }
+
+            if(m_hwCtrl.joystickLeft() && !m_hwCtrl.pressedButton())
+            {
+                if(millis() - m_lastContrastChange > CYCLE_DELAY_MILLIS)
+                {
+                    m_lastContrastChange = millis();
+                    m_lcdContrast += CONTRAST_INCREMENT_VAL;
+                    analogWrite(LCD_CONTRAST, m_lcdContrast);
+                }
+            }
+
+            if(m_hwCtrl.joystickRight() && !m_hwCtrl.pressedButton())
+            {
+                if(millis() - m_lastContrastChange > CYCLE_DELAY_MILLIS)
+                {
+                    m_lastContrastChange = millis();
+                    m_lcdContrast -= CONTRAST_INCREMENT_VAL;
+                    analogWrite(LCD_CONTRAST, m_lcdContrast);
+                }
+            }
+            break;
+
+        case RETURN_FROM_SETTINGS:
+            break;
+        
+        default:
+            break;
+        }
     }
 
     int menuSequence()
@@ -224,9 +300,9 @@ public:
             return m_state;
         }
 
-        if(m_state != MENU_IN_GAME)
+        if(m_state != MENU_IN_GAME && !m_inSubmenu)
         {
-            goToNextMenuOption();
+            goToNextMenuOption(m_state, MENU_IN_START_GAME, MENU_IN_ABOUT);
         }
 
         switch (m_state)
@@ -245,10 +321,27 @@ public:
             break;
 
         case MENU_IN_SETTINGS:
-            if(m_changedState)
+            if(m_settingsState == RETURN_FROM_SETTINGS)
             {
-                m_lcd.print(F("    settings"));
-                m_changedState = false;
+                if(m_changedState)
+                {
+                    m_lcd.print(F("    settings   >"));
+                    m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
+                    m_lcd.print(F("               >"));
+
+                    m_changedState = false;
+                    m_inSubmenu = false;
+                }
+
+                if(m_hwCtrl.joystickRight() && m_hwCtrl.pressedButton())
+                {
+                    m_inSubmenu = true;
+                    changeState(m_settingsState, IN_MATRIX_BRIGHTNESS);
+                }
+            }
+            else
+            {
+                goToSettingsMenu();
             }
             break;
 
@@ -258,6 +351,7 @@ public:
                 if(!m_showAboutText)
                 {
                     m_lcd.print(F("     about"));
+
                     m_changedState = false;
                 }
                 else

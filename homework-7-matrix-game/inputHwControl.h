@@ -24,7 +24,12 @@ public:
     bool pressedButton();
 
     bool joystickDetected(int &p_xCommand, int &p_yCommand);
-    
+
+    bool joystickLeft();
+    bool joystickRight();
+    bool joystickDown();
+    bool joystickUp();
+
     int getBrightness();
 };
 
