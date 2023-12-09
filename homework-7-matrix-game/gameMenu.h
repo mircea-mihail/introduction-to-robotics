@@ -49,6 +49,7 @@ private:
     unsigned long m_endMessageTime = 0;
 
     unsigned long m_lastContrastChange = 0;
+    unsigned long m_lcdScrollChange = 0;
 
     // menu variables:
     bool m_showAboutText = false;
@@ -356,10 +357,29 @@ public:
                 }
                 else
                 {
-                    m_lcd.print(F("more on github"));
+                    m_lcd.print(F("Rocket Cowboy by Mircea"));
                     m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_COL);
-                    m_lcd.print(F("/mircea-mihail"));
+                    m_lcd.print(F("github.com/mircea-mihail for more info"));
                     m_changedState = false;
+                }
+            }
+            if(m_showAboutText)
+            {
+                if(m_hwCtrl.joystickLeft())
+                {
+                    if(millis() - m_lcdScrollChange > CYCLE_DELAY_MILLIS)
+                    {
+                        m_lcd.scrollDisplayRight();
+                        m_lcdScrollChange = millis();
+                    }
+                }
+                if(m_hwCtrl.joystickRight())
+                {
+                    if(millis() - m_lcdScrollChange > CYCLE_DELAY_MILLIS)
+                    {
+                        m_lcd.scrollDisplayLeft();
+                        m_lcdScrollChange = millis();
+                    }
                 }
             }
 
