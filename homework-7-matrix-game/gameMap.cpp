@@ -243,6 +243,37 @@ void gameMap::setMatrixBrightness(byte p_newBrightness)
     m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness);
 }
 
+byte gameMap::getMatrixBrightness()
+{
+    return m_matrixBrightness;
+}
+
+byte gameMap::incrementMatrixBrightness()
+{
+    m_matrixBrightness ++;
+    if(m_matrixBrightness > MAX_MATRIX_BRIGHTNESS)
+    {
+        m_matrixBrightness = MIN_MATRIX_BRIGHTNESS;
+    }
+
+    m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness);
+    return m_matrixBrightness;
+}
+
+byte gameMap::decrementMatrixBrightness()
+{
+    if(m_matrixBrightness == MIN_MATRIX_BRIGHTNESS)
+    {
+        m_matrixBrightness = MAX_MATRIX_BRIGHTNESS;
+    }
+    else
+    {
+        m_matrixBrightness --;  
+    }
+    m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness);
+    return m_matrixBrightness;
+}
+
 void gameMap::cleanMapForAnimation()
 {
     for(int row = 0; row < MATRIX_SIZE; row++)

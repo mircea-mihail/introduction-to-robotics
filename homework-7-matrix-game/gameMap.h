@@ -198,36 +198,11 @@ public:
     // sets the matrix brightness updating the m_newBrightness with the new value in the parameter
     void setMatrixBrightness(byte p_newBrightness);
 
-    byte getMatrixBrightness()
-    {
-        return m_matrixBrightness;
-    }
+    byte getMatrixBrightness();
 
-    byte incrementMatrixBrightness()
-    {
-        m_matrixBrightness ++;
-        if(m_matrixBrightness > MAX_MATRIX_BRIGHTNESS)
-        {
-            m_matrixBrightness = MIN_MATRIX_BRIGHTNESS;
-        }
+    byte incrementMatrixBrightness();
 
-        m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness);
-        return m_matrixBrightness;
-    }
-
-    byte decrementMatrixBrightness()
-    {
-        if(m_matrixBrightness == MIN_MATRIX_BRIGHTNESS)
-        {
-            m_matrixBrightness = MAX_MATRIX_BRIGHTNESS;
-        }
-        else
-        {
-            m_matrixBrightness --;  
-        }
-        m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness);
-        return m_matrixBrightness;
-    }
+    byte decrementMatrixBrightness();
 
     // resets the player blink 
     void resetPlayerBlink();

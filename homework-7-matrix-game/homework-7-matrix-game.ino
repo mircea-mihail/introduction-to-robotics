@@ -172,7 +172,7 @@ void setup()
 
 void loop() 
 {
-    adjustBrightness();
+    //adjustBrightness();
 
     g_menuState = g_menu.menuSequence();
 
