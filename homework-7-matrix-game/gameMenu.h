@@ -11,7 +11,7 @@
 #define LCD_COLS 16
 #define LCD_ROWS 2
 
-#define CONTRAST_INCREMENT_VAL 10
+#define CONTRAST_INCREMENT_VAL 16
 
 // printing defines
 #define FIRST_LCD_ROW 0
@@ -29,6 +29,9 @@
 #define IN_MATRIX_BRIGHTNESS 0
 #define IN_LCD_BRIGHTNESS 1
 #define RETURN_FROM_SETTINGS 2
+
+// miscelanious
+#define PWM_RESOLUTION 255
 
 extern gameMap g_map;
 
@@ -50,6 +53,7 @@ private:
 
     unsigned long m_lastContrastChange = 0;
     unsigned long m_lcdScrollChange = 0;
+    unsigned long m_lastMatrixBrightnessChange = 0;
 
     // menu variables:
     bool m_showAboutText = false;
@@ -226,6 +230,41 @@ public:
         }
     }
 
+    void printHashesLCD(int p_fillAmount)
+    {
+        m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
+
+        int percent = map(p_fillAmount, 0, PWM_RESOLUTION, LCD_COLS, 0);
+        for(int i = 0; i < LCD_COLS; i++)
+        {
+            if(i < percent)
+            {
+                m_lcd.print("#");
+            }
+            else
+            {
+                m_lcd.print(" ");
+            }
+        }
+    }
+
+    void printHashesForMatrix(int p_fillAmount)
+    {
+        m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
+
+        for(int i = 0; i < LCD_COLS; i++)
+        {
+            if(i < p_fillAmount)
+            {
+                m_lcd.print("#");
+            }
+            else
+            {
+                m_lcd.print(" ");
+            }
+        }
+    }
+
     void goToSettingsMenu()
     {
         goToNextMenuOption(m_settingsState, IN_MATRIX_BRIGHTNESS, IN_LCD_BRIGHTNESS);
@@ -244,10 +283,33 @@ public:
                 m_lcd.print(F("<  matrix sun"));
                 m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
                 m_lcd.print(F("< "));
+                printHashesForMatrix(g_map.getMatrixBrightness());
 
                 m_changedState = false;
             }
             
+            if(m_hwCtrl.joystickLeft())
+            {
+                if(millis() - m_lastMatrixBrightnessChange > CYCLE_DELAY_MILLIS)
+                {
+                    m_lastMatrixBrightnessChange = millis();
+                    byte matrixBrightness = g_map.decrementMatrixBrightness();
+                    printHashesForMatrix(matrixBrightness);
+                    Serial.print(matrixBrightness);
+                }
+            }
+
+            if(m_hwCtrl.joystickRight())
+            {
+                if(millis() - m_lastMatrixBrightnessChange > CYCLE_DELAY_MILLIS)
+                {
+                    m_lastMatrixBrightnessChange = millis();
+                    byte matrixBrightness = g_map.incrementMatrixBrightness();
+                    printHashesForMatrix(matrixBrightness);
+                    Serial.print(matrixBrightness);
+                }
+            }
+
             break;
 
         case IN_LCD_BRIGHTNESS:
@@ -256,26 +318,30 @@ public:
                 m_lcd.print(F("<   lcd  sun"));
                 m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
                 m_lcd.print(F("< "));
-
+                printHashesLCD(m_lcdContrast);
                 m_changedState = false;
             }
 
-            if(m_hwCtrl.joystickLeft() && !m_hwCtrl.pressedButton())
+            if(m_hwCtrl.joystickLeft())
             {
                 if(millis() - m_lastContrastChange > CYCLE_DELAY_MILLIS)
                 {
                     m_lastContrastChange = millis();
                     m_lcdContrast += CONTRAST_INCREMENT_VAL;
+                    printHashesLCD(m_lcdContrast);
+
                     analogWrite(LCD_CONTRAST, m_lcdContrast);
                 }
             }
 
-            if(m_hwCtrl.joystickRight() && !m_hwCtrl.pressedButton())
+            if(m_hwCtrl.joystickRight())
             {
                 if(millis() - m_lastContrastChange > CYCLE_DELAY_MILLIS)
                 {
                     m_lastContrastChange = millis();
                     m_lcdContrast -= CONTRAST_INCREMENT_VAL;
+                    printHashesLCD(m_lcdContrast);
+
                     analogWrite(LCD_CONTRAST, m_lcdContrast);
                 }
             }

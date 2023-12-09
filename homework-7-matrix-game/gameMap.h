@@ -26,8 +26,8 @@
 class gameMap
 {   
 private:
-    LedControl p_ledControl = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, DRIVER_INDEX);
-    byte p_matrixBrightness = 1;
+    LedControl m_ledControl = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, DRIVER_INDEX);
+    byte m_matrixBrightness = 1;
     
     unsigned long m_lastPlayerBlink = 0;
     unsigned long m_lastBulletBlink = 0;
@@ -197,6 +197,37 @@ public:
     
     // sets the matrix brightness updating the m_newBrightness with the new value in the parameter
     void setMatrixBrightness(byte p_newBrightness);
+
+    byte getMatrixBrightness()
+    {
+        return m_matrixBrightness;
+    }
+
+    byte incrementMatrixBrightness()
+    {
+        m_matrixBrightness ++;
+        if(m_matrixBrightness > MAX_MATRIX_BRIGHTNESS)
+        {
+            m_matrixBrightness = MIN_MATRIX_BRIGHTNESS;
+        }
+
+        m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness);
+        return m_matrixBrightness;
+    }
+
+    byte decrementMatrixBrightness()
+    {
+        if(m_matrixBrightness == MIN_MATRIX_BRIGHTNESS)
+        {
+            m_matrixBrightness = MAX_MATRIX_BRIGHTNESS;
+        }
+        else
+        {
+            m_matrixBrightness --;  
+        }
+        m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness);
+        return m_matrixBrightness;
+    }
 
     // resets the player blink 
     void resetPlayerBlink();

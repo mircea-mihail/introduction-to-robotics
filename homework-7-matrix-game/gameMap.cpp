@@ -5,7 +5,7 @@ void gameMap::displayElement(int realRow, int realCol, int p_row, int p_col)
     switch(matrix[p_row][p_col])
     {
         case(MAP_PLAYER):
-            p_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, m_blinkPlayer);
+            m_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, m_blinkPlayer);
 
             if(millis() - m_lastPlayerBlink > PLAYER_BLINK_INTERVAL)
             {
@@ -15,15 +15,15 @@ void gameMap::displayElement(int realRow, int realCol, int p_row, int p_col)
             break;
 
         case(MAP_WALL):
-            p_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, HIGH);
+            m_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, HIGH);
             break;
 
         case(MAP_EMPTY):
-            p_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, LOW);
+            m_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, LOW);
             break;
 
         case MAP_BULLET:
-            p_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, m_blinkBullet);
+            m_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, m_blinkBullet);
 
             if(millis() - m_lastBulletBlink > BULLET_BLINK_INTERVAL)
             {
@@ -33,7 +33,7 @@ void gameMap::displayElement(int realRow, int realCol, int p_row, int p_col)
             break;
 
         case MAP_POWER_UP:
-            p_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, m_blinkPowerUp);
+            m_ledControl.setLed(MATRIX_ADDRESS, realRow, realCol, m_blinkPowerUp);
 
             if(millis() - m_lastPowerUpBlink > POWER_UP_BLINK_INTERVAL)
             {
@@ -50,9 +50,9 @@ void gameMap::displayElement(int realRow, int realCol, int p_row, int p_col)
 
 void gameMap::initMatrix()
 {
-    p_ledControl.shutdown(MATRIX_ADDRESS, false); // turn off power saving, enables display
-    p_ledControl.setIntensity(MATRIX_ADDRESS, p_matrixBrightness); // sets brightness (0~15 possible values)
-    p_ledControl.clearDisplay(MATRIX_ADDRESS); // Clear the matrix display
+    m_ledControl.shutdown(MATRIX_ADDRESS, false); // turn off power saving, enables display
+    m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness); // sets brightness (0~15 possible values)
+    m_ledControl.clearDisplay(MATRIX_ADDRESS); // Clear the matrix display
 }
 
 void gameMap::setPositionValue(int p_xPos, int p_yPos, int p_newValue)
@@ -200,7 +200,6 @@ bool gameMap::printWinningMatrixAnimation()
     return false;
 }
 
-
 bool gameMap::printStartGameMatrixAnimation()
 {
     if(millis() - m_lastFrameTime > GAME_START_FRAME_DISPLAY_TIME)
@@ -227,22 +226,21 @@ void gameMap::refreshAnimationValues()
     cleanMapForAnimation();
 }
 
-
 void gameMap::printOnRealMatrix()
 {
     for(int row = 0; row < REAL_MATRIX_SIZE; row++)
     {
         for(int col = 0; col < REAL_MATRIX_SIZE; col++)
         {   
-            p_ledControl.setLed(MATRIX_ADDRESS, row, col, matrix[row][col]);
+            m_ledControl.setLed(MATRIX_ADDRESS, row, col, matrix[row][col]);
         }
     }
 }
 
 void gameMap::setMatrixBrightness(byte p_newBrightness)
 {
-    p_matrixBrightness = p_newBrightness;
-    p_ledControl.setIntensity(MATRIX_ADDRESS, p_matrixBrightness);
+    m_matrixBrightness = p_newBrightness;
+    m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness);
 }
 
 void gameMap::cleanMapForAnimation()
@@ -255,7 +253,6 @@ void gameMap::cleanMapForAnimation()
         }
     }
 }
-
 
 // for debug
 void gameMap::printEmptyMatrix()
