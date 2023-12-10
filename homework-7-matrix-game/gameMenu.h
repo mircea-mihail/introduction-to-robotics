@@ -254,7 +254,7 @@ public:
 
         for(int i = 0; i < LCD_COLS; i++)
         {
-            if(i < p_fillAmount)
+            if(i <= p_fillAmount)
             {
                 m_lcd.print("#");
             }

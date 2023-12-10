@@ -163,6 +163,19 @@ private:
         }
     };
 
+    const uint8_t m_gameIcons[NUMBER_OF_ICONS][REAL_MATRIX_SIZE] = {
+    {
+        0b00111100,
+        0b01110000,
+        0b11111000,
+        0b11001100,
+        0b00000110,
+        0b00000011,
+        0b00000001,
+        0b00000000
+    }};
+
+
     // function that checks what is in the logic matrix of the game on realRow and realCol
     // and displays it as a player, bullet or anything else on the real 8x8 led matrix 
     void displayElement(int realRow, int realCol, int p_row, int p_col);
@@ -198,16 +211,19 @@ public:
     // sets the matrix brightness updating the m_newBrightness with the new value in the parameter
     void setMatrixBrightness(byte p_newBrightness);
 
+    // returns the current matrix brightness value
     byte getMatrixBrightness();
 
+    // increments the current matrix brightness value and assigns it
     byte incrementMatrixBrightness();
 
+    // decrements the current matrix brightness value and assigns it
     byte decrementMatrixBrightness();
 
     // resets the player blink 
     void resetPlayerBlink();
 
-    ////////////////////////// animation related
+    ////////////////////////// animation and graphics related
 
     // prints on the logical matrix starting at 0, 0 the frame stored in the matrix vector
     void printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE], byte p_frameToPrint);
@@ -222,11 +238,8 @@ public:
     // sets all of the animation values at their default value
     void refreshAnimationValues();
 
-    // clean up the animation area of the map
-    void cleanMapForAnimation();
-
-    // Prints the frames from the 0, 0 position of the logic matrix on the real led matrix
-    void printOnRealMatrix();
+    // displays the settings wheel on the matrix
+    void displayIcon(const byte p_iconIndex);
 };
 
 #endif

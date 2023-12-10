@@ -177,7 +177,7 @@ void gameMap::printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE],  b
     {
         for(int col = 0; col < REAL_MATRIX_SIZE; col++)
         {   
-            matrix[row][col] = getColValFromByte(p_matrixVector[p_frameToPrint][row]);
+            matrix[row][col] = getColValFromByte(p_matrixVector[p_frameToPrint][row], col);
         }
     }
 }
@@ -221,20 +221,6 @@ bool gameMap::printStartGameMatrixAnimation()
 void gameMap::refreshAnimationValues()
 {
     m_currentFrameIndex = DEFAULT_FRAME_INDEX_VALUE;
-
-    // quick temporary fix
-    cleanMapForAnimation();
-}
-
-void gameMap::printOnRealMatrix()
-{
-    for(int row = 0; row < REAL_MATRIX_SIZE; row++)
-    {
-        for(int col = 0; col < REAL_MATRIX_SIZE; col++)
-        {   
-            m_ledControl.setLed(MATRIX_ADDRESS, row, col, matrix[row][col]);
-        }
-    }
 }
 
 void gameMap::setMatrixBrightness(byte p_newBrightness)
@@ -274,15 +260,15 @@ byte gameMap::decrementMatrixBrightness()
     return m_matrixBrightness;
 }
 
-void gameMap::cleanMapForAnimation()
+void gameMap::displayIcon(const byte p_iconIndex)
 {
-    for(int row = 0; row < MATRIX_SIZE; row++)
+    for(int row = 0; row < REAL_MATRIX_SIZE; row++)
     {
-        for(int col = 0; col < MATRIX_SIZE; col++)
+        for(int col = 0; col < REAL_MATRIX_SIZE; col++)
         {   
-            matrix[row][col] = MAP_EMPTY;
+            m_ledControl.setLed(MATRIX_ADDRESS, row, col, getColValFromByte(m_gameIcons[p_iconIndex][row], col));
         }
-    }
+    }   
 }
 
 // for debug

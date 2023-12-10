@@ -84,6 +84,10 @@
 #define DATA7 4
 #define LCD_CONTRAST 3
 
+// icons for the menu
+#define NUMBER_OF_ICONS 1
+#define ICON_HAMMER 0
+
 // misc peripherals
 #define BRIGHTNESS_PIN A2
 
@@ -91,7 +95,7 @@
 #define reverseDirection(direction) (direction = (direction + (MAP_NUMBER_OF_ORIENTATIONS/2)) % MAP_NUMBER_OF_ORIENTATIONS) 
 
 // when a column in a matrix is encoded in a byte this functions returns the saught after bit value
-#define getColValFromByte(byteValue) ((byteValue >> col) & 1)
+#define getColValFromByte(byteValue, col) ((byteValue >> col) & 1)
 
 // returns the absoulte value of a number
 inline int absolute(int a) 

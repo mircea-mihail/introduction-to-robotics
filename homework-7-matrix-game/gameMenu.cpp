@@ -22,6 +22,8 @@ int gameMenu::menuSequence()
     case MENU_IN_START_GAME:
         if(m_changedState)
         {
+            g_map.displayIcon(ICON_HAMMER);
+            
             m_lcd.print(F("   start game"));
             m_changedState = false;
         }
@@ -37,6 +39,8 @@ int gameMenu::menuSequence()
         {
             if(m_changedState)
             {
+                g_map.displayIcon(ICON_HAMMER);
+
                 m_lcd.print(F("    settings   >"));
                 m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
                 m_lcd.print(F("               >"));
@@ -60,6 +64,8 @@ int gameMenu::menuSequence()
     case MENU_IN_ABOUT:
         if(m_changedState)
         {
+            g_map.displayIcon(ICON_HAMMER);
+
             if(!m_showAboutText)
             {
                 m_lcd.print(F("     about"));
