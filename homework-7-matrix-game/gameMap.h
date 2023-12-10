@@ -27,7 +27,7 @@ class gameMap
 {   
 private:
     LedControl m_ledControl = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, DRIVER_INDEX);
-    byte m_matrixBrightness = 1;
+    byte m_matrixBrightness = 0;
     
     unsigned long m_lastPlayerBlink = 0;
     unsigned long m_lastBulletBlink = 0;
@@ -164,16 +164,37 @@ private:
     };
 
     const uint8_t m_gameIcons[NUMBER_OF_ICONS][REAL_MATRIX_SIZE] = {
-    {
-        0b00111100,
-        0b01110000,
-        0b11111000,
-        0b11001100,
-        0b00000110,
-        0b00000011,
-        0b00000001,
-        0b00000000
-    }};
+        {
+            0b00111100,
+            0b01110000,
+            0b11111000,
+            0b11001100,
+            0b00000110,
+            0b00000011,
+            0b00000001,
+            0b00000000
+        },
+        {
+            0b01111110,
+            0b01010110,
+            0b01101010,
+            0b01111110,
+            0b00000010,
+            0b00100010,
+            0b01100010,
+            0b00100010
+        },
+        {
+            0b00111100,
+            0b01100110,
+            0b01100110,
+            0b00110000,
+            0b00011000,
+            0b00011000,
+            0b00000000,
+            0b00011000
+        }
+    };
 
 
     // function that checks what is in the logic matrix of the game on realRow and realCol

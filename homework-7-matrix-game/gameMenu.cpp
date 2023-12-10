@@ -22,7 +22,7 @@ int gameMenu::menuSequence()
     case MENU_IN_START_GAME:
         if(m_changedState)
         {
-            g_map.displayIcon(ICON_HAMMER);
+            g_map.displayIcon(ICON_START);
             
             m_lcd.print(F("   start game"));
             m_changedState = false;
@@ -64,7 +64,7 @@ int gameMenu::menuSequence()
     case MENU_IN_ABOUT:
         if(m_changedState)
         {
-            g_map.displayIcon(ICON_HAMMER);
+            g_map.displayIcon(ICON_ABOUT);
 
             if(!m_showAboutText)
             {
@@ -170,10 +170,10 @@ void gameMenu::goToSettingsMenu()
 
         break;
 
-    case IN_LCD_BRIGHTNESS:
+    case IN_LCD_CONTRAST:
         if(m_changedState)
         {
-            m_lcd.print(F("<   lcd  sun"));
+            m_lcd.print(F("<   lcd  ctr"));
             m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
             m_lcd.print(F("< "));
             printHashesLCD(m_lcdContrast);
@@ -205,6 +205,40 @@ void gameMenu::goToSettingsMenu()
         }
         break;
 
+    case IN_LCD_BRIGHTNESS:
+        if(m_changedState)
+        {
+            m_lcd.print(F("<   lcd  sun"));
+            m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
+            m_lcd.print(F("< "));
+            printHashesLCD(m_lcdBrightness);
+            m_changedState = false;
+        }
+
+        if(m_hwCtrl.joystickLeft())
+        {
+            if(millis() - m_lastBrightnessChange > CYCLE_DELAY_MILLIS)
+            {
+                m_lastBrightnessChange = millis();
+                m_lcdBrightness += CONTRAST_INCREMENT_VAL;
+                printHashesLCD(m_lcdBrightness);
+
+                analogWrite(LCD_BRIGHTNESS, PWM_RESOLUTION - m_lcdBrightness);
+            }
+        }
+
+        if(m_hwCtrl.joystickRight())
+        {
+            if(millis() - m_lastBrightnessChange > CYCLE_DELAY_MILLIS)
+            {
+                m_lastBrightnessChange = millis();
+                m_lcdBrightness -= CONTRAST_INCREMENT_VAL;
+                printHashesLCD(m_lcdBrightness);
+
+                analogWrite(LCD_BRIGHTNESS, PWM_RESOLUTION - m_lcdBrightness);
+            }
+        }
+        break;
     case RETURN_FROM_SETTINGS:
         break;
     

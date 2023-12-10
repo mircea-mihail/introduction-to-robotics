@@ -50,9 +50,11 @@ void initAllHw()
 // call this when starting a new level
 void startLevelSequence()
 {
-    g_gameState = GAME_IN_GAME;     
+    g_gameState = GAME_IN_GAME;    
+
     g_map.refreshAnimationValues();               
     g_map.generateMap();
+
     g_score.startCounting();
     g_score.printHighScores();
     
@@ -113,9 +115,7 @@ void doInGameRoutine()
 void doInStartAnimationRoutine()
 {
     // places the player on 0 0 to display what is printed on the "map" during animation
-    g_map.updateDisplay(0, 0);
-
-    if(g_map.printStartGameMatrixAnimation())
+    if(!g_finishedAnimiation && g_map.printStartGameMatrixAnimation())
     {
         if(g_timeForLastFrame == DEFAULT_TIME_VAL)
         {
@@ -137,10 +137,8 @@ void doInStartAnimationRoutine()
 
 void doInWinningStateRoutine()
 {
-    g_map.updateDisplay(0, 0);
-
     // winning animation
-    if(g_map.printWinningMatrixAnimation())
+    if(!g_finishedAnimiation && g_map.printWinningMatrixAnimation())
     {
         if(g_timeForLastFrame == DEFAULT_TIME_VAL)
         {
@@ -148,7 +146,7 @@ void doInWinningStateRoutine()
         }
         g_finishedAnimiation = true;
     }
-    
+
     // if animation is finished go to start animation
     if(millis() - g_timeForLastFrame > WINNING_FRAME_DISPLAY_TIME && g_finishedAnimiation)
     {

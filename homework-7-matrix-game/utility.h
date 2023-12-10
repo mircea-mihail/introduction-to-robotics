@@ -80,13 +80,17 @@
 #define ENABLE 8
 #define DATA4 7
 #define DATA5 6
-#define DATA6 5
+#define DATA6 2
 #define DATA7 4
 #define LCD_CONTRAST 3
+#define LCD_BRIGHTNESS 5
+
 
 // icons for the menu
-#define NUMBER_OF_ICONS 1
+#define NUMBER_OF_ICONS 3
 #define ICON_HAMMER 0
+#define ICON_START 1
+#define ICON_ABOUT 2
 
 // misc peripherals
 #define BRIGHTNESS_PIN A2

@@ -27,8 +27,9 @@
 
 // settings submenu states:
 #define IN_MATRIX_BRIGHTNESS 0
-#define IN_LCD_BRIGHTNESS 1
-#define RETURN_FROM_SETTINGS 2
+#define IN_LCD_CONTRAST 1
+#define IN_LCD_BRIGHTNESS 2 // always second biggest (for logic purposes)
+#define RETURN_FROM_SETTINGS 3 // always the biggest of the three
 
 // miscelanious
 #define PWM_RESOLUTION 255
@@ -52,13 +53,15 @@ private:
     unsigned long m_endMessageTime = 0;
 
     unsigned long m_lastContrastChange = 0;
+    unsigned long m_lastBrightnessChange = 0;
     unsigned long m_lcdScrollChange = 0;
     unsigned long m_lastMatrixBrightnessChange = 0;
 
     // menu variables:
     bool m_showAboutText = false;
 
-    byte m_lcdContrast = 100;
+    byte m_lcdContrast = PWM_RESOLUTION/2;
+    byte m_lcdBrightness = PWM_RESOLUTION/2;
     inputHwControl m_hwCtrl;
     // const int RESET = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
     LiquidCrystal m_lcd = LiquidCrystal(RESET, ENABLE, DATA4, DATA5, DATA6, DATA7);
@@ -176,6 +179,7 @@ private:
 public:
     gameMenu()
     {
+        analogWrite(LCD_BRIGHTNESS, m_lcdBrightness);
         m_lcd.begin(LCD_COLS, LCD_ROWS);
         m_lcd.clear();
         analogWrite(LCD_CONTRAST, m_lcdContrast);

@@ -177,7 +177,7 @@ void gameMap::printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE],  b
     {
         for(int col = 0; col < REAL_MATRIX_SIZE; col++)
         {   
-            matrix[row][col] = getColValFromByte(p_matrixVector[p_frameToPrint][row], col);
+            m_ledControl.setLed(MATRIX_ADDRESS, row, col, getColValFromByte(p_matrixVector[p_frameToPrint][row], col));
         }
     }
 }
