@@ -337,7 +337,7 @@ https://www.youtube.com/watch?v=_4DbtM731EU&t=145s
 
 ### About the game
 
-As i said in the previous description, this is a top down terminator-tanks style game in which you have to distroy all 
+As I said in the previous description, this is a top down terminator-tanks style game in which you have to distroy all 
 walls using your trusty gun and... ROCKETS (if you find the power up). When it comes to the game I didn't do anything 
 extra, but for this homework I did implement an LCD Screen to display a menu before and after each game and to inform the 
 player during gameplay how many walls are left to destroy on the map.
@@ -349,17 +349,23 @@ are no Digital pins left free, other than pin 0 and pin 1 (used for serial commu
 
 #### Add the following functionality for this checkpoint:
   1. Intro Message - When powering up the project, a greeting message should be shown for a few moments.
-  2. Menu:
-    * Start game, starts the initial level of
+  2. Menu
+    * Start game, starts the initial level of the game.
     * Settings
       * LCD brightness control. Save value to EEPROM and load it upon system start.
       * Matrix brightness control (see function setIntesnity from the led-Control library). Make sure to display 
       something on the matrix when selecting it. Save value to EEPROM and load it upon system start.
-      * LCD contrast control. This wasn't here initially but i ended up implementing it anyway as it felt important
+      * LCD contrast control. This wasn't here initially but I ended up implementing it anyway as it felt important
     * About: should include details about the creator(s) of the game. At least game name, author and github link or
     user (used the joystick to scroll left and right)
   3. End Message - When the game ends, add a message. Wait for a promt from the user (a button push, for example), 
   before returning to main menu again.
+  4. During gameplay:
+    * Show relevant details, that are dynamic (change with gameplay): time, level, lives etc. Doesn’t matter, what can be used. 
+    You can implement the number of LEDs that are still switched on.
+    * Implement an end game / level functionality. You current game should end. For example, if you implemented the game where you
+    ”destroy” all the LEDs, it should end when you finished them all. Upon ending, it should display the aforementioned message, wait for
+    user prompt and then return to the main menu again.
 
 #### Notable mentitons
 
@@ -387,13 +393,13 @@ Previously used hardware:
 Hardware added for this checkpoint:
 * 16x2 LCD display
 
-Below is a youtube link that shows the homework in action and there is also a picture of the project.
+Below is a youtube link that shows the homework in action and there is also some pictures of the project.
 
-https://www.youtube.com/watch?v=_4DbtM731EU&t=145s
+https://www.youtube.com/watch?v=iEq4sabx84g
 
 <img src="media/Hw7-5-project.jpg" alt="Hw7-project" height="300"/>
 <img src="media/Hw7-5-1-project.jpg" alt="Hw7-5-1-project" height="300"/>
 <img src="media/Hw7-5-2-project.jpg" alt="Hw7-5-2-project" height="300"/>
-<img src="media/Hw7-5-3-project.jpg" alt="Hw7-5-3-project" height="300"/>
+<img src="media/Hw7-5-3-project.jpg" alt="Hw7-5-3-project" width="1200"/>
 
 </details>
