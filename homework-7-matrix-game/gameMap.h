@@ -201,6 +201,9 @@ private:
     // and displays it as a player, bullet or anything else on the real 8x8 led matrix 
     void displayElement(int realRow, int realCol, int p_row, int p_col);
 
+        // prints on the logical matrix starting at 0, 0 the frame stored in the matrix vector
+    void printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE], byte p_frameToPrint);
+
 public:
     // commands that set up the bit shifter to display the matrix as we want 
     // (brightness, turns off power saving and clears the display)
@@ -229,9 +232,6 @@ public:
     // returns the number of walls left on the map
     int getWallsLeft();
 
-    // for debug -> generates a map with a single wall near the player
-    void printEmptyMatrix();
-    
     // sets the matrix brightness updating the m_newBrightness with the new value in the parameter
     void setMatrixBrightness(byte p_newBrightness);
 
@@ -244,14 +244,8 @@ public:
     // decrements the current matrix brightness value and assigns it
     byte decrementMatrixBrightness();
 
-    // resets the player blink 
-    void resetPlayerBlink();
-
     ////////////////////////// animation and graphics related
 
-    // prints on the logical matrix starting at 0, 0 the frame stored in the matrix vector
-    void printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE], byte p_frameToPrint);
-    
     // deals with printing all of the frames in order of the winning animation
     bool printWinningMatrixAnimation();
 
@@ -264,6 +258,11 @@ public:
 
     // displays the settings wheel on the matrix
     void displayIcon(const byte p_iconIndex);
+
+    ///////////////////////////// debug purposes
+
+    // for debug -> generates a map with a single wall near the player
+    void printEmptyMatrix();
 };
 
 #endif

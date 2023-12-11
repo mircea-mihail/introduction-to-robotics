@@ -300,9 +300,3 @@ void gameMap::printEmptyMatrix()
 
     matrix[MATRIX_MIDDLE - 1][MATRIX_MIDDLE] = MAP_WALL;
 }
-
-void gameMap::resetPlayerBlink()
-{
-    m_blinkPlayer = true;
-    m_lastPlayerBlink = millis();
-}
