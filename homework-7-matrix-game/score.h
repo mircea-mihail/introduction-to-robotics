@@ -2,13 +2,10 @@
 #define SCORE_H
 
 #include <EEPROM.h>
-#include "utility.h"
 #include <Arduino.h>
+#include "utility.h"
+#include "memory.h"
 
-// address related
-#define SCORE_MEMORY_ADDRESS 900
-#define NUMBER_OF_SCORES_KEPT 3 
-#define ADDRESS_AFTER_LAST_SCORE (SCORE_MEMORY_ADDRESS + NUMBER_OF_SCORES_KEPT * sizeof(unsigned long))
 
 // scoring related
 #define WORST_SCORE 0xFFFFFFFF
