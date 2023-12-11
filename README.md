@@ -320,11 +320,80 @@ I used:
 * wires
 * a breadboard
 
-Below is a youtube link that shows the homework in action and there is also a picture of the project.
+Below is a youtube link that shows the homework in action and there are also a couple of pictures of the project.
 
 https://www.youtube.com/watch?v=_4DbtM731EU&t=145s
 
 <img src="media/Hw7-project.jpg" alt="Hw7-project" height="300"/>
 <img src="media/Hw7-project-1.jpg" alt="Hw7-project-1" height="300"/>
+
+</details>
+
+
+## Homework 7.5
+
+<details>
+<summary> <B> Cowboy Rocket - LCD Checkpoint </B></summary>
+
+### About the game
+
+As i said in the previous description, this is a top down terminator-tanks style game in which you have to distroy all 
+walls using your trusty gun and... ROCKETS (if you find the power up). When it comes to the game I didn't do anything 
+extra, but for this homework I did implement an LCD Screen to display a menu before and after each game and to inform the 
+player during gameplay how many walls are left to destroy on the map.
+
+Another notable thing is that I ended up fitting the whole project on a single breadboard which is pretty cool. Also, there
+are no Digital pins left free, other than pin 0 and pin 1 (used for serial communication with the computer) and three analog pins.
+
+### Task 
+
+#### Add the following functionality for this checkpoint:
+  1. Intro Message - When powering up the project, a greeting message should be shown for a few moments.
+  2. Menu:
+    * Start game, starts the initial level of
+    * Settings
+      * LCD brightness control. Save value to EEPROM and load it upon system start.
+      * Matrix brightness control (see function setIntesnity from the led-Control library). Make sure to display 
+      something on the matrix when selecting it. Save value to EEPROM and load it upon system start.
+      * LCD contrast control. This wasn't here initially but i ended up implementing it anyway as it felt important
+    * About: should include details about the creator(s) of the game. At least game name, author and github link or
+    user (used the joystick to scroll left and right)
+  3. End Message - When the game ends, add a message. Wait for a promt from the user (a button push, for example), 
+  before returning to main menu again.
+
+#### Notable mentitons
+
+Other than implementing everything mentioned in the task, I also went ahead and did some extra things that felt necessary for my project:
+* connected the shift register to the matrix fitting wires under the matrix in order to have enough room to keep everything on one breadboard
+* added a matrix icon for every main menu option 
+* made all animations skippable
+* made boot/end-game messages skippable 
+* fixed animation bug and refactored the animation related methods to not rely on the map (display directly on the LED matrix)
+* drew and displayed two custom characters for brightness and contrast
+
+### Hardware Implementation
+
+Previously used hardware:
+* a MAX7219 serial input/parallel output IC
+* resistors and capacitors as needed
+* a button
+* a light sensor
+* one 8x8 LED matrix
+* an Arduino Uno
+* a Joystick
+* wires
+* a breadboard
+
+Hardware added for this checkpoint:
+* 16x2 LCD display
+
+Below is a youtube link that shows the homework in action and there is also a picture of the project.
+
+https://www.youtube.com/watch?v=_4DbtM731EU&t=145s
+
+<img src="media/Hw7-5-project.jpg" alt="Hw7-project" height="300"/>
+<img src="media/Hw7-5-1-project.jpg" alt="Hw7-5-1-project" height="300"/>
+<img src="media/Hw7-5-2-project.jpg" alt="Hw7-5-2-project" height="300"/>
+<img src="media/Hw7-5-3-project.jpg" alt="Hw7-5-3-project" height="300"/>
 
 </details>
