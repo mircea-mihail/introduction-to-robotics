@@ -171,9 +171,9 @@ private:
             0b11111000,
             0b11001100,
             0b00000110,
-            0b00000011,
-            0b00000001,
-            0b00000000
+            0b11110011,
+            0b01110001,
+            0b01100000
         },
         {
             0b00011000,
@@ -196,7 +196,6 @@ private:
             0b00011000
         }
     };
-
 
     // function that checks what is in the logic matrix of the game on realRow and realCol
     // and displays it as a player, bullet or anything else on the real 8x8 led matrix 

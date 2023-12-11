@@ -200,7 +200,8 @@ void gameMenu::goToSettingsMenu()
     case IN_MATRIX_BRIGHTNESS:
         if(m_changedState)
         {
-            m_lcd.print(F("<  matrix sun"));
+            m_lcd.print(F("<     mat "));
+            m_lcd.write(SUN_CHAR);
             m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
             m_lcd.print(F("< "));
             printHashesForMatrix(g_map.getMatrixBrightness());
@@ -237,7 +238,8 @@ void gameMenu::goToSettingsMenu()
     case IN_LCD_CONTRAST:
         if(m_changedState)
         {
-            m_lcd.print(F("<   lcd  ctr"));
+            m_lcd.print(F("<     lcd "));
+            m_lcd.write(CONTRAST_CHAR);
             m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
             m_lcd.print(F("< "));
             printHashesLCD(m_lcdContrast);
@@ -250,7 +252,7 @@ void gameMenu::goToSettingsMenu()
             if(millis() - m_lastContrastChange > CYCLE_DELAY_MILLIS)
             {
                 m_lastContrastChange = millis();
-                m_lcdContrast += CONTRAST_INCREMENT_VAL;
+                m_lcdContrast += LCD_INCREMENT_VAL;
                 printHashesLCD(m_lcdContrast);
 
                 analogWrite(LCD_CONTRAST, m_lcdContrast);
@@ -263,7 +265,7 @@ void gameMenu::goToSettingsMenu()
             if(millis() - m_lastContrastChange > CYCLE_DELAY_MILLIS)
             {
                 m_lastContrastChange = millis();
-                m_lcdContrast -= CONTRAST_INCREMENT_VAL;
+                m_lcdContrast -= LCD_INCREMENT_VAL;
                 printHashesLCD(m_lcdContrast);
 
                 analogWrite(LCD_CONTRAST, m_lcdContrast);
@@ -276,7 +278,8 @@ void gameMenu::goToSettingsMenu()
     case IN_LCD_BRIGHTNESS:
         if(m_changedState)
         {
-            m_lcd.print(F("<   lcd  sun"));
+            m_lcd.print(F("<     lcd "));
+            m_lcd.write(SUN_CHAR);
             m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
             m_lcd.print(F("< "));
             printHashesLCD(PWM_RESOLUTION - m_lcdBrightness);
@@ -289,7 +292,7 @@ void gameMenu::goToSettingsMenu()
             if(millis() - m_lastBrightnessChange > CYCLE_DELAY_MILLIS)
             {
                 m_lastBrightnessChange = millis();
-                m_lcdBrightness -= CONTRAST_INCREMENT_VAL;
+                m_lcdBrightness -= LCD_INCREMENT_VAL;
                 printHashesLCD(PWM_RESOLUTION - m_lcdBrightness);
 
                 analogWrite(LCD_BRIGHTNESS, m_lcdBrightness);
@@ -302,7 +305,7 @@ void gameMenu::goToSettingsMenu()
             if(millis() - m_lastBrightnessChange > CYCLE_DELAY_MILLIS)
             {
                 m_lastBrightnessChange = millis();
-                m_lcdBrightness += CONTRAST_INCREMENT_VAL;
+                m_lcdBrightness += LCD_INCREMENT_VAL;
                 printHashesLCD(PWM_RESOLUTION - m_lcdBrightness);
 
                 analogWrite(LCD_BRIGHTNESS, m_lcdBrightness);
@@ -329,6 +332,9 @@ gameMenu::gameMenu()
     m_lcd.begin(LCD_COLS, LCD_ROWS);
     m_lcd.clear();
     analogWrite(LCD_CONTRAST, m_lcdContrast);
+
+    m_lcd.createChar(SUN_CHAR, m_customCharArray[SUN_CHAR]);
+    m_lcd.createChar(CONTRAST_CHAR, m_customCharArray[CONTRAST_CHAR]);
 }
 
 int gameMenu::menuSequence()

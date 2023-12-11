@@ -13,7 +13,7 @@
 #define LCD_COLS 16
 #define LCD_ROWS 2
 
-#define CONTRAST_INCREMENT_VAL 16
+#define LCD_INCREMENT_VAL 16
 
 // printing defines
 #define FIRST_LCD_ROW 0
@@ -32,6 +32,14 @@
 #define IN_LCD_CONTRAST 1
 #define IN_LCD_BRIGHTNESS 2 // always second biggest (for logic purposes)
 #define RETURN_FROM_SETTINGS 3 // always the biggest of the three
+
+// custom lcd characters
+#define LCD_CHARACTER_HEIGHT 8
+#define NUMBER_OF_CUSTOM_CHARACTERS 3
+
+#define EMPTY_CHAR 0
+#define SUN_CHAR 1
+#define CONTRAST_CHAR 2
 
 // miscelanious
 #define PWM_RESOLUTION 255
@@ -68,6 +76,40 @@ private:
     inputHwControl m_hwCtrl;
     // const int RESET = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
     LiquidCrystal m_lcd = LiquidCrystal(RESET, ENABLE, DATA4, DATA5, DATA6, DATA7);
+
+    // custom LCD characters:
+    byte m_customCharArray[NUMBER_OF_CUSTOM_CHARACTERS][LCD_CHARACTER_HEIGHT] = {
+        {
+            B00000,
+            B00000,
+            B00000,
+            B00000,
+            B00000,
+            B00000,
+            B00000,
+            B00000
+        },
+        {
+            B00100,
+            B10001,
+            B01110,
+            B01110,
+            B01110,
+            B10001,
+            B00100,
+            B00000
+        },
+        {
+            B00000,
+            B11111,
+            B10001,
+            B10011,
+            B10111,
+            B11111,
+            B00000,
+            B00000
+        }
+    };
 
     // updates the state and does other changes to prepare the object for the state change
     void changeState(int &p_state, int p_newState);
