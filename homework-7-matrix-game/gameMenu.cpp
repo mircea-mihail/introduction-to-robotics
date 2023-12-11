@@ -405,13 +405,13 @@ int gameMenu::menuSequence()
 
             if(!m_showAboutText)
             {
-                m_lcd.print(F("     about"));
+                m_lcd.print(F("   learn more"));
 
                 m_changedState = false;
             }
             else
             {
-                m_lcd.print(F("Rocket Cowboy by Mircea"));
+                m_lcd.print(F("Rocket Cowboy by Mircea Mihail Ionescu"));
                 m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_COL);
                 m_lcd.print(F("github.com/mircea-mihail for more info"));
                 m_changedState = false;
