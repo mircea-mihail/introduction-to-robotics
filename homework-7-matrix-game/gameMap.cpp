@@ -171,6 +171,22 @@ bool gameMap::checkWinningCondition()
     return true;
 }
 
+int gameMap::getWallsLeft()
+{
+    int wallsLeft = 0;
+    for(int row = 0; row < MATRIX_SIZE; row++)
+    {
+        for(int col = 0; col < MATRIX_SIZE; col++)
+        {
+            if(matrix[row][col] == MAP_WALL)
+            {
+                wallsLeft ++;
+            }
+        }       
+    }
+    return wallsLeft;   
+}
+
 void gameMap::printMatrixFrame(const byte p_matrixVector[][REAL_MATRIX_SIZE],  byte p_frameToPrint)
 {
     for(int row = 0; row < REAL_MATRIX_SIZE; row++)

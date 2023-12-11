@@ -57,6 +57,7 @@ private:
     unsigned long m_lcdScrollChange = 0;
     unsigned long m_lastMatrixBrightnessChange = 0;
 
+    int m_wallsLeftOnMap = 0;
     // menu variables:
     bool m_showAboutText = false;
 

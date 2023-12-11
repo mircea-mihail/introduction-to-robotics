@@ -175,14 +175,14 @@ private:
             0b00000000
         },
         {
+            0b00011000,
             0b01111110,
-            0b01010110,
-            0b01101010,
-            0b01111110,
-            0b00000010,
-            0b00100010,
-            0b01100010,
-            0b00100010
+            0b00011000,
+            0b00001000,
+            0b00111100,
+            0b01011010,
+            0b01011010,
+            0b00100100
         },
         {
             0b00111100,
@@ -225,6 +225,9 @@ public:
 
     // goes through the whole matrix and checks if there are any walls left    
     bool checkWinningCondition();
+
+    // returns the number of walls left on the map
+    int getWallsLeft();
 
     // for debug -> generates a map with a single wall near the player
     void printEmptyMatrix();

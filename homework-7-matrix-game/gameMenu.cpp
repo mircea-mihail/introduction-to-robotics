@@ -109,10 +109,16 @@ int gameMenu::menuSequence()
         break; 
 
     case MENU_IN_GAME:
-        if(m_changedState)
+        int wallsOnMap = g_map.getWallsLeft();
+        if(wallsOnMap != m_wallsLeftOnMap)
         {
-            m_lcd.print(F("shoot them ALL!!"));
-            m_changedState = false;
+            m_lcd.clear();
+            m_wallsLeftOnMap = wallsOnMap;
+            m_lcd.print(F(" walls left:"));
+            m_lcd.print(m_wallsLeftOnMap);
+                        
+            m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
+            m_lcd.print(F(" get 'em COWBOY"));
         }
         break;    
     
