@@ -23,13 +23,14 @@
 
 
 /// visual map:
-/*
+/*               addr (in EEPROM)
 ---------------- 1024 (Max size)
 ...
----------------- 
+---------------- 915
 brightness
+and contrast
 settings
----------------- 924 
+---------------- 912 
 scores kept
 (ulong)
 ---------------- 900 (score mem addr)

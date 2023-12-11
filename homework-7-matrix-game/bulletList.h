@@ -38,7 +38,6 @@ public:
     // sets the last bullet uupdate time to the current time for better sync
     // of the new bullets to the tick rate ( better to have slower bullets than faster ones)
     void setLastBulletUpdate();
-
 };
 
 
