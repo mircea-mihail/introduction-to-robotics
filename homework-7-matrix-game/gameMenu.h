@@ -67,212 +67,51 @@ private:
     // const int RESET = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
     LiquidCrystal m_lcd = LiquidCrystal(RESET, ENABLE, DATA4, DATA5, DATA6, DATA7);
 
-    void changeState(int &p_state, int p_newState)
-    {
-        p_state = p_newState;
-        
-        m_lcd.clear();
-        m_changedState = true;
-    }
+    // updates the state and does other changes to prepare the object for the state change
+    void changeState(int &p_state, int p_newState);
 
-    bool doIntroMessageSequence()
-    {
-        // don't enter if intro message has been shown
-        if(m_showedIntroMessage)
-        {
-            return false;
-        }
+    // ensures the display of the intro message (when, how, if and for how long)
+    bool doIntroMessageSequence();
 
-        if(millis() - m_introMessageTime < INTRO_MESSAGE_MILLIS)
-        {
-            if(m_changedState)
-            {
-                displayStartMessage();
-                m_changedState = false;
-            }
-        }
-        else if (!m_showedIntroMessage)
-        {
-            m_showedIntroMessage = true;
-            m_lcd.clear();
-            m_changedState = true;
-            return false;
-        }
+    // ensures the display of the end game message (when, how, if and for how long)
+    bool doEndMessageSequence();
 
-        // bypass intro message mechanism
-        int xCommand, yCommand;
-        if(m_hwCtrl.pressedButton() || m_hwCtrl.joystickDetected(xCommand, yCommand))
-        {
-            m_showedIntroMessage = true;
-            m_lcd.clear();
-            m_changedState = true;
-            return false;
-        }
-
-        return true;
-    }
-
-    bool doEndMessageSequence()
-    {
-        // don't enter if intro message has been shown
-        if(!m_showEndMessage)
-        {
-            return false;
-        }
-
-        if(millis() - m_endMessageTime < END_MESSAGE_MILLIS)
-        {
-            if(m_changedState)
-            {
-                displayEndMessage();
-                m_changedState = false;
-            }
-        }
-        else if (m_showEndMessage)
-        {
-            m_showEndMessage = false;
-            m_lcd.clear();
-            m_changedState = true;
-            return false;
-        }
-
-        // bypass end message mechanism
-        int xCommand, yCommand;
-        if(m_hwCtrl.pressedButton() || m_hwCtrl.joystickDetected(xCommand, yCommand))
-        {
-            m_showEndMessage = false;
-            m_lcd.clear();
-            m_changedState = true;
-            return false;
-        }
-        return true;
-    }
-
-    void displayStartMessage()
-    {
-        m_lcd.setCursor(SECOND_LCD_COL, FIRST_LCD_ROW);
-        m_lcd.print(F("Welcome to ..."));
-        m_lcd.setCursor(SECOND_LCD_COL, SECOND_LCD_ROW);
-        m_lcd.print(F("ROCKET  COWBOY"));
-    }
+    // only does the printing of the acutal intro words
+    void displayStartMessage();
     
-    void displayEndMessage()
-    {
-        m_lcd.setCursor(FIRST_LCD_COL, FIRST_LCD_ROW);
-        m_lcd.print(F("Well done COWBOY"));
-        m_lcd.setCursor(SECOND_LCD_COL, SECOND_LCD_ROW);
-        m_lcd.print(F("keep  slingin'"));   
-    }
+    // only does the printing of the acutal end game words
+    void displayEndMessage();
 
-    void keepStateInBounds(int &p_state, const int p_lowerBound, const int p_upperBound)
-    {
-        if(p_state > p_upperBound)
-        {
-            p_state = p_lowerBound;
-        }
+    // makes sure the state given is within bounds and if not, modifies it to be
+    void keepStateInBounds(int &p_state, const int p_lowerBound, const int p_upperBound);
 
-        if(p_state < p_lowerBound)
-        {
-            p_state = p_upperBound;
-        }
-    }
-
-public:
-    gameMenu()
-    {
-        analogWrite(LCD_BRIGHTNESS, m_lcdBrightness);
-        m_lcd.begin(LCD_COLS, LCD_ROWS);
-        m_lcd.clear();
-        analogWrite(LCD_CONTRAST, m_lcdContrast);
-    }
-
-    void printEndMessage()
-    {
-        m_showEndMessage = true;
-        m_endMessageTime = millis();
-    }
-    
-    void setStateToDefault()
-    {
-        changeState(m_state, MENU_IN_START_GAME);
-    }
-
-    void refreshMenuVariables()
-    {
-        m_showAboutText = false;
-    }
-
-    void goToNextMenuOption(int &p_currentState, const int p_lowerBound, const int p_upperBound)
-    {
-        int xJsCommand, yJsCommand;
-        if(m_hwCtrl.joystickDetected(xJsCommand, yJsCommand))
-        {
-            if(millis() - m_lastCycleTime > CYCLE_DELAY_MILLIS)
-            {
-                // i want to only account for ups and downs, no lefts or rights
-                if(absolute(JS_DEFAULT_VALUE - xJsCommand) < absolute(JS_DEFAULT_VALUE - yJsCommand))
-                {
-                    return;
-                }
-
-                m_lastCycleTime = millis();
-
-                if(xJsCommand < MIN_JS_THRESHOLD)
-                {
-                    p_currentState --;
-                }
-                else if(xJsCommand > MIN_JS_THRESHOLD)
-                {
-                    p_currentState ++;
-                }
-        
-                keepStateInBounds(p_currentState, p_lowerBound, p_upperBound);
-
-                m_lcd.clear();
-                m_changedState = true;
-                refreshMenuVariables();
-            }
-        }
-    }
-
-    void printHashesLCD(int p_fillAmount)
-    {
-        m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
-
-        int percent = map(p_fillAmount, 0, PWM_RESOLUTION, LCD_COLS, 0);
-        for(int i = 0; i < LCD_COLS; i++)
-        {
-            if(i < percent)
-            {
-                m_lcd.print("#");
-            }
-            else
-            {
-                m_lcd.print(" ");
-            }
-        }
-    }
-
-    void printHashesForMatrix(int p_fillAmount)
-    {
-        m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
-
-        for(int i = 0; i < LCD_COLS; i++)
-        {
-            if(i <= p_fillAmount)
-            {
-                m_lcd.print("#");
-            }
-            else
-            {
-                m_lcd.print(" ");
-            }
-        }
-    }
-
+    // the settings menu logic that orchestrates the changes between settings-menu options
     void goToSettingsMenu();
 
+    // changes the current menu option by increasing/decreasing the menu state according to joystick input 
+    void goToNextMenuOption(int &p_currentState, const int p_lowerBound, const int p_upperBound);
+
+    // used to refresh menu variables when going from a state to another
+    void refreshMenuVariables();
+
+    // used to print percent hashes showing LCD related info in a graphical manner
+    void printHashesLCD(int p_fillAmount);
+
+    // used to print percent hashes showing Matrix related info in a graphical manner
+    void printHashesForMatrix(int p_fillAmount);
+
+public:
+    // constructor, does the initializations and setups for the lcd
+    gameMenu();
+
+    // the main menu logic called in the main .ino file that ensures the changes between menu options
     int menuSequence();
+
+    // initiates the printing of the main message by setting a variable to true
+    void printEndMessage();
+    
+    // used to reset the menu state to begin printing all the settings options after finishing a game
+    void setStateToDefault();
 };
 
 #endif
