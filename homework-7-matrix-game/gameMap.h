@@ -1,9 +1,10 @@
 #ifndef GAME_MAP_H
 #define GAME_MAP_H
 
+#include <EEPROM.h>
 #include "LedControl.h" // Include LedControl library for controlling the LED matrix
 #include "utility.h"
-// #include "player.h"
+#include "memory.h"
 
 // bit shifter 
 #define DATA_IN_PIN 12

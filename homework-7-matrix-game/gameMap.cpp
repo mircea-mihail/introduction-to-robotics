@@ -50,6 +50,8 @@ void gameMap::displayElement(int realRow, int realCol, int p_row, int p_col)
 
 void gameMap::initMatrix()
 {
+    m_matrixBrightness = EEPROM.read(EEPROM_MATRIX_BRIGHTNESS_ADDRESS);
+
     m_ledControl.shutdown(MATRIX_ADDRESS, false); // turn off power saving, enables display
     m_ledControl.setIntensity(MATRIX_ADDRESS, m_matrixBrightness); // sets brightness (0~15 possible values)
     m_ledControl.clearDisplay(MATRIX_ADDRESS); // Clear the matrix display
