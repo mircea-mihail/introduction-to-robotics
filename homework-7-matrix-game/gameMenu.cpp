@@ -215,7 +215,8 @@ void gameMenu::goToSettingsMenu()
                 m_lastMatrixBrightnessChange = millis();
                 byte matrixBrightness = g_map.decrementMatrixBrightness();
                 printHashesForMatrix(matrixBrightness);
-                Serial.print(matrixBrightness);
+                
+                EEPROM.update(EEPROM_MATRIX_BRIGHTNESS_ADDRESS, matrixBrightness);
             }
         }
 
@@ -226,7 +227,8 @@ void gameMenu::goToSettingsMenu()
                 m_lastMatrixBrightnessChange = millis();
                 byte matrixBrightness = g_map.incrementMatrixBrightness();
                 printHashesForMatrix(matrixBrightness);
-                Serial.print(matrixBrightness);
+                
+                EEPROM.update(EEPROM_MATRIX_BRIGHTNESS_ADDRESS, matrixBrightness);
             }
         }
 
@@ -239,6 +241,7 @@ void gameMenu::goToSettingsMenu()
             m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
             m_lcd.print(F("< "));
             printHashesLCD(m_lcdContrast);
+            
             m_changedState = false;
         }
 
@@ -251,6 +254,7 @@ void gameMenu::goToSettingsMenu()
                 printHashesLCD(m_lcdContrast);
 
                 analogWrite(LCD_CONTRAST, m_lcdContrast);
+                EEPROM.update(EEPROM_LCD_CONTRAST_ADDRESS, m_lcdContrast);
             }
         }
 
@@ -263,6 +267,8 @@ void gameMenu::goToSettingsMenu()
                 printHashesLCD(m_lcdContrast);
 
                 analogWrite(LCD_CONTRAST, m_lcdContrast);
+                EEPROM.update(EEPROM_LCD_CONTRAST_ADDRESS, m_lcdContrast);
+
             }
         }
         break;
@@ -273,7 +279,8 @@ void gameMenu::goToSettingsMenu()
             m_lcd.print(F("<   lcd  sun"));
             m_lcd.setCursor(FIRST_LCD_COL, SECOND_LCD_ROW);
             m_lcd.print(F("< "));
-            printHashesLCD(m_lcdBrightness);
+            printHashesLCD(PWM_RESOLUTION - m_lcdBrightness);
+
             m_changedState = false;
         }
 
@@ -282,10 +289,11 @@ void gameMenu::goToSettingsMenu()
             if(millis() - m_lastBrightnessChange > CYCLE_DELAY_MILLIS)
             {
                 m_lastBrightnessChange = millis();
-                m_lcdBrightness += CONTRAST_INCREMENT_VAL;
-                printHashesLCD(m_lcdBrightness);
+                m_lcdBrightness -= CONTRAST_INCREMENT_VAL;
+                printHashesLCD(PWM_RESOLUTION - m_lcdBrightness);
 
-                analogWrite(LCD_BRIGHTNESS, PWM_RESOLUTION - m_lcdBrightness);
+                analogWrite(LCD_BRIGHTNESS, m_lcdBrightness);
+                EEPROM.update(EEPROM_LCD_BRIGHTNESS_ADDRESS, m_lcdBrightness);
             }
         }
 
@@ -294,10 +302,11 @@ void gameMenu::goToSettingsMenu()
             if(millis() - m_lastBrightnessChange > CYCLE_DELAY_MILLIS)
             {
                 m_lastBrightnessChange = millis();
-                m_lcdBrightness -= CONTRAST_INCREMENT_VAL;
-                printHashesLCD(m_lcdBrightness);
+                m_lcdBrightness += CONTRAST_INCREMENT_VAL;
+                printHashesLCD(PWM_RESOLUTION - m_lcdBrightness);
 
-                analogWrite(LCD_BRIGHTNESS, PWM_RESOLUTION - m_lcdBrightness);
+                analogWrite(LCD_BRIGHTNESS, m_lcdBrightness);
+                EEPROM.update(EEPROM_LCD_BRIGHTNESS_ADDRESS, m_lcdBrightness);
             }
         }
         break;
@@ -313,6 +322,9 @@ void gameMenu::goToSettingsMenu()
 
 gameMenu::gameMenu()
 {
+    m_lcdBrightness = EEPROM.read(EEPROM_LCD_BRIGHTNESS_ADDRESS);
+    m_lcdContrast = EEPROM.read(EEPROM_LCD_CONTRAST_ADDRESS);
+
     analogWrite(LCD_BRIGHTNESS, m_lcdBrightness);
     m_lcd.begin(LCD_COLS, LCD_ROWS);
     m_lcd.clear();

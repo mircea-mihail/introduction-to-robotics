@@ -3,9 +3,11 @@
 
 #include <Arduino.h>
 #include <LiquidCrystal.h>
+#include <EEPROM.h>
 #include "utility.h"
 #include "inputHwControl.h"
 #include "gameMap.h"
+#include "memory.h"
 
 // lcd default characteristics
 #define LCD_COLS 16
