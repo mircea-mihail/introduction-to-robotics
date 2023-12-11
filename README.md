@@ -400,6 +400,6 @@ https://www.youtube.com/watch?v=iEq4sabx84g
 <img src="media/Hw7-5-project.jpg" alt="Hw7-project" height="300"/>
 <img src="media/Hw7-5-1-project.jpg" alt="Hw7-5-1-project" height="300"/>
 <img src="media/Hw7-5-2-project.jpg" alt="Hw7-5-2-project" height="300"/>
-<img src="media/Hw7-5-3-project.jpg" alt="Hw7-5-3-project" width="1200"/>
+<img src="media/Hw7-5-3-project.jpg" alt="Hw7-5-3-project" width="900"/>
 
 </details>
