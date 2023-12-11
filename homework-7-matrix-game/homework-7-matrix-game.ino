@@ -61,7 +61,7 @@ void startLevelSequence()
     g_player1.resetPowerUps();
     g_player1.goToDefaultPosition();
 
-    // g_map.printEmptyMatrix();
+    g_map.printEmptyMatrix();
     // g_score.clearScores();
 }
 
@@ -80,7 +80,6 @@ void adjustBrightness()
     else
     {
         int newBrightness = map(outsideBrightness, MIN_BRIGHTNESS_INPUT, MAX_BRIGHTNESS_INPUT, MIN_MATRIX_BRIGHTNESS, MAX_MATRIX_BRIGHTNESS);
-        // Serial.println(newBrightness);
         g_map.setMatrixBrightness(newBrightness);
     } 
 }   
@@ -114,6 +113,11 @@ void doInGameRoutine()
 
 void doInStartAnimationRoutine()
 {
+    // skip animation 
+    if(g_hwCtrl.joystickRight() && g_hwCtrl.pressedButton())
+    {
+        g_finishedAnimiation = true;
+    }
     // places the player on 0 0 to display what is printed on the "map" during animation
     if(!g_finishedAnimiation && g_map.printStartGameMatrixAnimation())
     {
@@ -137,6 +141,12 @@ void doInStartAnimationRoutine()
 
 void doInWinningStateRoutine()
 {
+    // skip animation 
+    if(g_hwCtrl.joystickRight() && g_hwCtrl.pressedButton())
+    {
+        g_finishedAnimiation = true;
+    }
+
     // winning animation
     if(!g_finishedAnimiation && g_map.printWinningMatrixAnimation())
     {
